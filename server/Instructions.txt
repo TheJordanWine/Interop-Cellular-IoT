@@ -1,0 +1,11 @@
+# These instructions are based off of https://os-iot.org/testing-with-a-cse
+
+# OM2M version 1.0.0 is included in this directory.
+# It assumes that java 1.7 is already installed on the server
+
+# To run OM2M, run the following commands
+# Enter the IN-CSE directory
+cd IN-CSE
+
+# Run the CSE
+bash start.sh
