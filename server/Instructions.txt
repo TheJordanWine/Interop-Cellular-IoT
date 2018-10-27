@@ -1,11 +1,41 @@
+# Author: Jordan Wine
+# Date: 2018/10/26
+# Description: Installation instructions for the Eclipse OM2M server
 # These instructions are based off of https://os-iot.org/testing-with-a-cse
 
-# OM2M version 1.0.0 is included in this directory.
-# It assumes that java 1.7 is already installed on the server
 
-# To run OM2M, run the following commands
-# Enter the IN-CSE directory
-cd IN-CSE
 
-# Run the CSE
-bash start.sh
+# OPTION 1 - Run OM2M Server locally on localhost
+# Step 1 - Install OM2M
+# The instllation files for OM2M 1.0.0 are already included in this repository.
+# Version 1.0.0 is based off oneM2M version 1 which is compatible with the current
+# release of OS-IoT.
+#
+# Step 2 - Run oneM2M
+bash IN-CSE/start.sh
+
+
+# OPTION 2 - Build and Run OM2M Server inside a docker container
+# These procedures assume an ubuntu host version 18.04
+# this option could be especially useful to handle the depenency of OM2M on java 1.7
+# Step 1 - Install docker
+sudo apt-get install docker -y
+
+# Step 2 - Buikd docker container
+# (if desired, edit the Dockerfile first)
+sudo docker build -t ser401group6/om2m:1.0.0 -t ser401group6/om2m:latest .
+
+# Step 3 - Run the container containing the OM2M server
+run --restart unless-stopped -h om2m -dit -p 8080:8080 --name om2m ser401group6/om2m:latest
+
+
+# OPTION 3 - Use pre-built container labeled "ser401group6/om2m:1.0.0"
+# (same as Option 2 you just don't have to build the image first)
+# Step 1 - Extract tarball
+gzip -d ser401group6-om2m-1.0.0.tar.gz
+
+# Step 2 - Load docker image
+sudo docker load --input ser401group6-om2m-1.0.0.tar
+
+# Step 3 - Run the container containing te OM2M server
+sudo docker build -t ser401group6/om2m:1.0.0 -t ser401group6/om2m:latest .
