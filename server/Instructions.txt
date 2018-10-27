@@ -8,8 +8,9 @@
 # OPTION 1 - Run OM2M Server locally on localhost
 # Step 1 - Install OM2M
 # The instllation files for OM2M 1.0.0 are already included in this repository.
-# Version 1.0.0 is based off oneM2M version 1 which is compatible with the current
-# release of OS-IoT.
+# Version 1.0.0 supports oneM2M version 1 which is compatible with the current
+# release of OS-IoT. This release requires Java 1.7.
+# These files were downloaded from http://ftp.osuosl.org/pub/eclipse/om2m/releases/1.0.0/OM2M-1.0.0.zip
 #
 # Step 2 - Run oneM2M
 bash IN-CSE/start.sh
@@ -21,12 +22,12 @@ bash IN-CSE/start.sh
 # Step 1 - Install docker
 sudo apt-get install docker -y
 
-# Step 2 - Buikd docker container
-# (if desired, edit the Dockerfile first)
+# Step 2 - Build docker container
+# (if desired, edit file "Dockerfile" first)
 sudo docker build -t ser401group6/om2m:1.0.0 -t ser401group6/om2m:latest .
 
 # Step 3 - Run the container containing the OM2M server
-run --restart unless-stopped -h om2m -dit -p 8080:8080 --name om2m ser401group6/om2m:latest
+sudo docker run --restart unless-stopped -h om2m -dit -p 8080:8080 --name om2m ser401group6/om2m:latest
 
 
 
