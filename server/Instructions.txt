@@ -29,3 +29,4 @@ sudo docker build -t ser401group6/om2m:1.0.0 -t ser401group6/om2m:latest .
 run --restart unless-stopped -h om2m -dit -p 8080:8080 --name om2m ser401group6/om2m:latest
 
 
+
