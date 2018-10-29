@@ -24,10 +24,10 @@ class UtilityMeter {
 
     // Public Functions for this class
     bool getPowerStatus();
-    setPowerStatus(bool inputValue);
+    void setPowerStatus(bool inputValue);
 
-    resetMeterValue();
-    setMeterValue(int inputValue);
+    void resetMeterValue();
+    void setMeterValue(int inputValue);
     int getMeterValue();
     int getRandomValue();
 
