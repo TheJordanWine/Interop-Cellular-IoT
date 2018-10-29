@@ -29,6 +29,7 @@ class UtilityMeter {
     resetMeterValue();
     setMeterValue(int inputValue);
     int getMeterValue();
+    int getRandomValue();
 
   private:
 

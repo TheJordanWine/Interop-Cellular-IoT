@@ -13,6 +13,7 @@
  */
 
 #include <iostream>
+#include <cstdlib>
 #include "UtilityMeter.h"
 using namespace std;
 
@@ -101,4 +102,31 @@ UtilityMeter::setMeterValue(int inputValue) {
  */
 int UtilityMeter::getMeterValue() {
   return meterValue;
+}
+
+
+
+
+/**
+ * This function gets a random integer value between 0 and 1000.
+ * The random value returned is used to simulate data from a
+ * Utility Meter.
+ *
+ * This function makes use of the existing rand() function which
+ * generates a number form 0 to at least 32767. In order to achieve
+ * generating a number from 0 to 1000, we have to take the modulus
+ * of the resulting random number; the modulus value would be the
+ * desired maximum. Then add 1 to the result.
+ *
+ * @return result The random value between 0 and 1000 that simulates
+ * a Utility Meter value. 
+ */
+int UtilityMeter::getRandomValue() {
+
+  // The desired maximum value for the random number.
+  int desiredMaximum = 1000;
+
+  int result = (rand() % desiredMaximum) + 1;
+
+  return result;
 }
