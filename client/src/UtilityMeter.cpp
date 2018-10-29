@@ -82,11 +82,11 @@ void UtilityMeter::setMeterValue(int inputValue) {
 
   // If inputValue is >0 then use this value.
   if (inputValue > 0) {
-    meterValue = inputValue
+    meterValue = inputValue;
   }
   // Otherwise, just set the meter value to "0".
   else {
-    meterValue = 0
+    meterValue = 0;
   }
 
 } // End of setMeterValue function
