@@ -1,0 +1,3 @@
+[submodule "client/lib/atis-os-iot"]
+	path = client/lib/atis-os-iot
+	url = https://atis.codebasehq.com/atis-os-iot/atis-os-iot.git
