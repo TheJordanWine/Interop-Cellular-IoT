@@ -37,6 +37,6 @@ class UtilityMeter {
     int meterValue;
     bool powerStatus;
 
-}
+};
 
 #endif
