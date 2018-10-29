@@ -1,0 +1,1 @@
+curl --request POST --url 'http://127.0.0.1:8080/~/in-cse/in-name/MY_TEST' --header 'content-type: application/xml;ty=3' --header 'x-m2m-origin: admin:admin' --data '<m2m:cnt xmlns:m2m="http://www.onem2m.org/xml/protocols" rn="DATA"></m2m:cnt>'
