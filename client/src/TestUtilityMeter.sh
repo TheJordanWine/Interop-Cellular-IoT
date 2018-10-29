@@ -23,4 +23,25 @@
 # @version 1.0
 #
 
+#
+# First, compile the Test program for UtilityMeter implementation.
+#
+echo "Compiling TestUtilityMeter.cpp and UtilityMeter.cpp..."
 g++ -o test UtilityMeter.cpp TestUtilityMeter.cpp
+echo "   Done!"
+
+#
+# Next, execute the compmiled test program.
+#
+echo "Executing test program..."
+echo ""
+./test
+echo ""
+
+#
+# Clean up by removing the compiled test program.  
+#
+echo "Cleaning up..."
+sleep 5
+rm test
+echo "   Finished!"
