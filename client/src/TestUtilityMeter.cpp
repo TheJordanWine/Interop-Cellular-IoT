@@ -8,8 +8,11 @@
  * to see if expected values are returned.  It echos the result of each
  * test.
  *
+ * Instructions: 
  * Compile this test file along with the UtilityMeter implementation, then
- * execute the binary file.
+ * execute the binary file using the steps below:
+ *    1) Compile:  g++ -o main UtilityMeter.cpp TestUtilityMeter.cpp
+ *    2) Execute:  ./main
  *
  * @author Team 6
  *
