@@ -106,16 +106,28 @@ int UtilityMeter::getMeterValue() {
 }
 
 
+
+
 /**
  * This function gets the Meter Descriptor value of the Utility Meter
  * object.
- * 
+ *
  * @return description The current descriptor value of the Utility Meter.
  */
 string UtilityMeter::getMeterDescriptor(){
   return descriptor;
 }
 
+
+
+
+/**
+ * This function sets the Meter Descriptor value of the Utility meter
+ * object.
+ *
+ * @param inputValue The input string representing the Meter Descriptor.
+ *
+ */
 void UtilityMeter::setMeterDescriptor(string inputValue){
   if(inputValue.empty()){
     descriptor = "Utility_Meter";
@@ -123,6 +135,7 @@ void UtilityMeter::setMeterDescriptor(string inputValue){
     descriptor = inputValue;
   }
 }
+
 
 
 
