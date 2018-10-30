@@ -14,6 +14,7 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <ctime>
 #include "UtilityMeter.h"
 using namespace std;
 
@@ -29,6 +30,7 @@ UtilityMeter::UtilityMeter() {
   powerStatus = true;
   meterValue = 0;
   descriptor = "";
+  srand(time(NULL));         // Invoke srand() only once, for random values.
 }
 
 
@@ -158,7 +160,7 @@ int UtilityMeter::getRandomValue() {
   // The desired maximum value for the random number.
   int desiredMaximum = 1000;
 
-  int result = (rand() % desiredMaximum) + 1;
+  int result = rand() % desiredMaximum + 1;
 
   return result;
 }
