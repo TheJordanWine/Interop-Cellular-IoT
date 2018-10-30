@@ -51,6 +51,9 @@ app.get('/test', function(req, res) {
                 response: body
             });
         }
+        else {
+            res.render('error', {"message" : "Server not running!"});
+        }
     });
 });
 
@@ -63,7 +66,7 @@ app.post('/monitor', function(req, res) {
     parseString(req.body['m2m:sgn'].nev[0].rep[0].con[0], (err, result) => {
         incomingTemp = result.obj.int[0]['$'].val;
     });
-    
+
     console.log("Got temperature of: " + incomingTemp);
     res.status(200).send("thanks!");
 });
@@ -113,7 +116,7 @@ var sendSubscription = function() {
             console.log("prosessing response to subscription");
             console.log(response.statusCode);
             console.log(response.headers);
-            console.log("Got from oneM2M server: " + body);  
+            console.log("Got from oneM2M server: " + body);
         }
     });
 }
