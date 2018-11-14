@@ -8,10 +8,10 @@ var xmlparser = require('express-xml-bodyparser');
 var parseString = require('xml2js').parseString;
 // We'll use request to be able to send post requests to the oneM2M server
 var request = require('request');
-const ONE_M2M_HOST = "192.168.0.50";
+const ONE_M2M_HOST = "127.0.0.1";
 const ONE_M2M_PORT = 8080;
 const LISTEN_PORT = 3000;
-const LISTEN_ADDR = "192.168.0.90";
+const LISTEN_ADDR = "127.0.0.1";
 const AE_NAME = "MY_SENSOR";
 
 
