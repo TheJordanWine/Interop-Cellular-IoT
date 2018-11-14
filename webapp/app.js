@@ -6,6 +6,8 @@
 var express = require('express');
 // We'll use request to be able to send post requests to the oneM2M server
 var request = require('request');
+const ONE_M2M_HOST = "192.168.0.50";
+const ONE_M2M_PORT = 8080;
 const LISTEN_PORT = 3000;
 const LISTEN_ADDR = "192.168.0.80";
 const AE_NAME = "MY_SENSOR";
@@ -41,14 +43,12 @@ app.listen(LISTEN_PORT, function() {
 });
 
 
-var oneM2MHost = "192.168.0.50";
-var oneM2MPort = 8080;
 var xmlSubscription = '<m2m:sub xmlns:m2m="http://www.onem2m.org/xml/protocols" rn="SUB_'
 xmlSubscription +=AE_NAME +'"><nu>http://';
 xmlSubscription += LISTEN_ADDR + ":" + LISTEN_PORT;
 xmlSubscription += '/monitor</nu><nct>2</nct></m2m:sub>';
 request({
-    url: "http://" + oneM2MHost + ':' + oneM2MPort + '/~/in-cse/in-name/' + AE_NAME + '/DATA',
+    url: "http://" + ONE_M2M_HOST + ':' + ONE_M2M_PORT + '/~/in-cse/in-name/' + AE_NAME + '/DATA',
     method: "POST",
     headers: {
         "X-M2M-Origin": "admin:admin",
