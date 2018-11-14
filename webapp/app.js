@@ -4,7 +4,8 @@
  * complient IoT application.
  */
 var express = require('express');
-var bodyParser = require('body-parser');
+var xmlparser = require('express-xml-bodyparser');
+var parseString = require('xml2js').parseString;
 // We'll use request to be able to send post requests to the oneM2M server
 var request = require('request');
 const ONE_M2M_HOST = "192.168.0.50";
@@ -21,7 +22,7 @@ var app = express();
     app.set('view engine', 'pug');
 
 
-app.use(bodyParser.raw({ type: 'application/xml'}));
+app.use(xmlparser());
 
 /**
  * signifys a get request for the inital path of the site
@@ -39,8 +40,12 @@ app.post('/monitor', function(req, res) {
     //res is the response object
     //render will take string and search for a pug file in views/ and will render it out
     console.log("prosessing incoming subscription data");
-    console.log(req.headers);
-    console.log(req.body);
+    var incomingTemp;
+    parseString(req.body['m2m:sgn'].nev[0].rep[0].con[0], (err, result) => {
+        incomingTemp = result.obj.int[0]['$'].val;
+    });
+    
+    console.log("got temperature of: " + incomingTemp);
     res.status(200).send("thanks!");
 });
 
