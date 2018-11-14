@@ -4,12 +4,13 @@
  * complient IoT application.
  */
 var express = require('express');
+var bodyParser = require('body-parser');
 // We'll use request to be able to send post requests to the oneM2M server
 var request = require('request');
 const ONE_M2M_HOST = "192.168.0.50";
 const ONE_M2M_PORT = 8080;
 const LISTEN_PORT = 3000;
-const LISTEN_ADDR = "192.168.0.80";
+const LISTEN_ADDR = "192.168.0.90";
 const AE_NAME = "MY_SENSOR";
 
 
@@ -18,6 +19,9 @@ const AE_NAME = "MY_SENSOR";
 
 var app = express();
     app.set('view engine', 'pug');
+
+
+app.use(bodyParser.raw({ type: 'application/xml'}));
 
 /**
  * signifys a get request for the inital path of the site
@@ -34,8 +38,15 @@ app.get('/', function(req, res) {
 app.post('/monitor', function(req, res) {
     //res is the response object
     //render will take string and search for a pug file in views/ and will render it out
+    console.log("prosessing incoming subscription data");
+    console.log(req.headers);
     console.log(req.body);
+    res.status(200).send("thanks!");
 });
+
+app.all('/monitor', function(req,res) {
+    res.status(405).send("Bad method. I need POST");
+})
 
 app.listen(LISTEN_PORT, function() {
     console.log('Listening on port 3000...');
@@ -56,6 +67,7 @@ request({
     },
     body: xmlSubscription
 }, function (error, response, body){
+    console.log("prosessing response to subscription");
     console.log(response.statusCode);
     console.log(response.headers);
     console.log("Got from oneM2M server: " + body);  
