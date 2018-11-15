@@ -6,6 +6,7 @@
 var express = require('express');
 var xmlparser = require('express-xml-bodyparser');
 var parseString = require('xml2js').parseString;
+
 // We'll use request to be able to send post requests to the oneM2M server
 var request = require('request');
 const ONE_M2M_HOST = "127.0.0.1";
@@ -21,15 +22,15 @@ const AE_NAME = "MY_SENSOR";
 var app = express();
     app.set('view engine', 'pug');
 
-
 app.use(xmlparser());
 
 /**
- * signifys a get request for the inital path of the site
+ * signifies a get request for the inital path of the site
  */
 app.get('/', function(req, res) {
     //res is the response object
     //render will take string and search for a pug file in views/ and will render it out
+    res.status(200);
     res.render('index');
 });
 
@@ -38,19 +39,21 @@ app.get('/', function(req, res) {
  */
 app.post('/monitor', function(req, res) {
     //res is the response object
-    //render will take string and search for a pug file in views/ and will render it out
-    console.log("prosessing incoming subscription data");
     var incomingTemp;
     parseString(req.body['m2m:sgn'].nev[0].rep[0].con[0], (err, result) => {
         incomingTemp = result.obj.int[0]['$'].val;
     });
     
-    console.log("got temperature of: " + incomingTemp);
+    console.log("Got temperature of: " + incomingTemp);
     res.status(200).send("thanks!");
 });
 
+/**
+ * Reject anything that is not a post to /monitor
+ */
 app.all('/monitor', function(req,res) {
-    res.status(405).send("Bad method. I need POST");
+    res.status(405);
+    res.render('error', {"message" : "Bad method. POST required"});
 })
 
 app.listen(LISTEN_PORT, function() {
@@ -59,21 +62,57 @@ app.listen(LISTEN_PORT, function() {
 });
 
 
-var xmlSubscription = '<m2m:sub xmlns:m2m="http://www.onem2m.org/xml/protocols" rn="SUB_'
-xmlSubscription +=AE_NAME +'"><nu>http://';
-xmlSubscription += LISTEN_ADDR + ":" + LISTEN_PORT;
-xmlSubscription += '/monitor</nu><nct>2</nct></m2m:sub>';
-request({
-    url: "http://" + ONE_M2M_HOST + ':' + ONE_M2M_PORT + '/~/in-cse/in-name/' + AE_NAME + '/DATA',
-    method: "POST",
-    headers: {
-        "X-M2M-Origin": "admin:admin",
-        "Content-Type": "application/xml;ty=23"
-    },
-    body: xmlSubscription
-}, function (error, response, body){
-    console.log("prosessing response to subscription");
-    console.log(response.statusCode);
-    console.log(response.headers);
-    console.log("Got from oneM2M server: " + body);  
-});
+
+
+var subscription = {
+    "m2m:sub": {
+        // Resource Name
+        "rn" : "SUB_" + AE_NAME,
+        // Notification URI
+        "nu" : "http://" + LISTEN_ADDR + ":" + LISTEN_PORT + "/monitor",
+        // Notificaation Content Type
+        "nct" : 2
+    }
+}
+/**
+ * Sends a subscription to the IN-CSE
+ */
+var sendSubscription = function() {
+    request({
+        url: "http://" + ONE_M2M_HOST + ':' + ONE_M2M_PORT + '/~/in-cse/in-name/' + AE_NAME + '/DATA',
+        method: "POST",
+        headers: {
+            "X-M2M-Origin": "admin:admin",
+            "Content-Type": "application/json;ty=23"
+        },
+        body: JSON.stringify(subscription)
+    }, function (error, response, body){
+        if (error) {
+            console.log(error);
+        } else {
+            console.log("prosessing response to subscription");
+            console.log(response.statusCode);
+            console.log(response.headers);
+            console.log("Got from oneM2M server: " + body);  
+        }
+    });
+}
+
+var deleteSubscription = function() {
+    request({
+        url: "http://" + ONE_M2M_HOST + ':' + ONE_M2M_PORT + '/~/in-cse/in-name/' + AE_NAME + "/DATA/SUB_" + AE_NAME,
+        method: "DELETE",
+        headers: {
+            "X-M2M-Origin": "admin:admin",
+            "Accept": "application/json;"
+        }
+    }, function (error, response, body){
+        if (error) {
+            console.log(error);
+        } else {
+            console.log("Subscription was deleted");
+        }
+    });
+}
+
+sendSubscription();

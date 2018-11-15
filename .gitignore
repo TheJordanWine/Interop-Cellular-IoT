@@ -32,4 +32,5 @@
 *.app
 
 node_modules/
+**/org.eclipse.osgi
 *package-lock*.*
