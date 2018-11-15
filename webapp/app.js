@@ -4,7 +4,7 @@ var express = require('express');
 
 var app = express();
     app.set('view engine', 'pug');
-
+    app.use(express.static(__dirname + '/public'));
 /**
  * signifys a get request for the inital path of the site
  */
@@ -14,7 +14,11 @@ app.get('/', function(req, res) {
     res.render('index');
 });
 
-app.listen(3000, function() {
-    console.log('Listening on port 3000...');
-    console.log('Head over to localhost:3000');
+app.get('/test', function(req, res) {
+    res.render('test');
+})
+
+app.listen(1400, function() {
+    console.log('Listening on port 1400...');
+    console.log('Head over to localhost:1400');
 });
