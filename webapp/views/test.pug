@@ -6,8 +6,10 @@ html(lang="en")
         meta(http-equiv="X-UA-Compatible", content="ie=edge")
         title Home Page
     body
+        -var pugResponse = response
         p Retrieve a resource
-        label(id="command-1")
-        button(onclick="getResource();") Get Resource
+        label(id="command-1") Results below
+        code=pugResponse
+        button(onclick="location.reload()") Refresh
         script(src="/js/jquery.js")
         script(src="/js/script.js")

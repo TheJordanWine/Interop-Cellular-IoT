@@ -35,6 +35,26 @@ app.get('/', function(req, res) {
 });
 
 /**
+ * Simple ping to the IN-CSE server done server side
+ */
+app.get('/test', function(req, res) {
+    var options = {
+        url: 'http://127.0.0.1:8080/~/in-cse',
+        headers: {
+          'X-M2M-Origin': 'admin:admin',
+          'Accept': 'application/json'
+        }
+      };
+    request(options, function(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            res.render('test', {
+                response: body
+            });
+        }
+    });
+});
+
+/**
  * This is where we'll expect the oneM2M server to post info to.
  */
 app.post('/monitor', function(req, res) {
