@@ -1,0 +1,1 @@
+curl --request GET --url 'http://127.0.0.1:8080/~/in-cse' --header 'accept: application/xml' --header 'x-m2m-origin: admin:admin'
