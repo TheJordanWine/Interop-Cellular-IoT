@@ -101,6 +101,13 @@ main() {
         fi
     done
 
+    # install nodemon
+    sudo npm install -g nodemon
+
+    # Install required packages
+    sudo npm install
+
+    # Start server    
     nodemon app.js
     return 0
 }
