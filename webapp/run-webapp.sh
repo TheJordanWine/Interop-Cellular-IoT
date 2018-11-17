@@ -7,7 +7,7 @@
 
 # GLOBAL VARIABLES
 declare -a dependencies
-dependencies = ("nodejs" "npm")
+dependencies=("nodejs" "npm")
 
 
 # FUNCTIONS
@@ -46,11 +46,11 @@ isInstalled() {
 getPackageManger() {
     # First lets find out which package manager we're using based on distribution
     if [[ $(getLinuxDist) == "ubuntu" ]]; then
-        packageManger = "apt-get"
+        packageManger="apt-get"
     elif [[ $(getLinuxDist) == "redhat" || $(getLinuxDist) == "centos" ]]; then
-        packageManger = "yum"
+        packageManger="yum"
     else
-        packageManger = "unknown"
+        packageManger="unknown"
     fi
 
     echo ${packageManger}
@@ -61,10 +61,13 @@ getPackageManger() {
 # 
 getLinuxDist() {
     for dist in ubuntu centos redhat; do
-        if grep -q -i ${dist} /etc/*-release; then
+        if grep -q -i ${dist} /etc/*-release 2>/dev/null; then
             echo ${dist}
+            return 0
         fi
     done
+    echo "unknown"
+    return 1
 }
 
 ##
@@ -94,6 +97,7 @@ main() {
                 echo "Failed to install dependency: ${package}"
                 echo "Exiting now"
                 return 1
+            fi
         fi
     done
 
