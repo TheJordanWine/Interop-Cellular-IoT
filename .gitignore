@@ -32,5 +32,6 @@
 *.app
 
 node_modules/
+server/IN-CSE/database/indb.trace.db
 **/org.eclipse.osgi
 *package-lock*.*

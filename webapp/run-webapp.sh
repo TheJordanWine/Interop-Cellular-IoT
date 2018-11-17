@@ -97,8 +97,7 @@ main() {
         fi
     done
 
-
-
+    nodemon app.js
     return 0
 }
 
