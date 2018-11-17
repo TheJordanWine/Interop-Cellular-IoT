@@ -54,7 +54,7 @@ bool UtilityMeter::getPowerStatus() {
  *
  * @param The desired power state to set the Utility Meter to.
  */
-UtilityMeter::setPowerStatus(bool inputValue) {
+void UtilityMeter::setPowerStatus(bool inputValue) {
   powerStatus = inputValue;
 }
 
@@ -65,7 +65,7 @@ UtilityMeter::setPowerStatus(bool inputValue) {
  * This function resets the Meter Value of the Utility Meter object
  * back to a value of "0".
  */
-UtilityMeter::resetMeterValue() {
+void UtilityMeter::resetMeterValue() {
   meterValue = 0;
 }
 
@@ -78,15 +78,15 @@ UtilityMeter::resetMeterValue() {
  *
  * @param inputValue The desired Meter Value for the Utility Meter.
  */
-UtilityMeter::setMeterValue(int inputValue) {
+void UtilityMeter::setMeterValue(int inputValue) {
 
   // If inputValue is >0 then use this value.
   if (inputValue > 0) {
-    meterValue = inputValue
+    meterValue = inputValue;
   }
   // Otherwise, just set the meter value to "0".
   else {
-    meterValue = 0
+    meterValue = 0;
   }
 
 } // End of setMeterValue function
@@ -119,7 +119,7 @@ int UtilityMeter::getMeterValue() {
  * desired maximum. Then add 1 to the result.
  *
  * @return result The random value between 0 and 1000 that simulates
- * a Utility Meter value. 
+ * a Utility Meter value.
  */
 int UtilityMeter::getRandomValue() {
 
