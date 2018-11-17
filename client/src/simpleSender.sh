@@ -60,5 +60,5 @@ main() {
 }
 
 # RUN
-main
+main $@
 exit $?
