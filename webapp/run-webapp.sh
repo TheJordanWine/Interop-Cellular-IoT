@@ -28,7 +28,7 @@ isInstalled() {
             retVal=1
         fi  
     elif [[ $(getPackageManger) == "apt-get" ]]; then
-        if dpkg -l |grep -q ${pacakge}; then
+        if dpkg -l |grep -q ${package}; then
             retVal=0
         else
             retVal=1
