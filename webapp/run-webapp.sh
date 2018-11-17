@@ -7,7 +7,7 @@
 
 # GLOBAL VARIABLES
 declare -a dependencies
-dependencies=("nodejs" "npm" "nodemon")
+dependencies=("nodejs" "npm")
 
 
 # FUNCTIONS
