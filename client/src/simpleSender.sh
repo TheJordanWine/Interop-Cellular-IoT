@@ -24,16 +24,14 @@ main() {
     trap "echo Interupted; exit 255" INT SIGINT
 
     # Parse command line arguments
-    while getopts "h:p:" opt; do
-        case "$opt" in
-        h)  IN_CSE_HOST=$opt
-            ;;
-        p)  IN_CSE_PORT=$opt
-            ;;
-        *)  usage
-            ;;
-        esac
-    done
+    # Since this is a simple demo, assume $1 is the host and $2 is the port
+    if [[ -n $1 ]]; then
+        IN_CSE_HOST=$1
+    fi
+    if [[ -n $2 ]]; then
+        IN_CSE_PORT=$2
+    fi
+
 
     if [[ -f osiotcmd ]]; then
         chmod 755 osiotcmd
