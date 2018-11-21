@@ -64,7 +64,12 @@ app.post('/monitor', function(req, res) {
     //res is the response object
     var incomingTemp;
     parseString(req.body['m2m:sgn'].nev[0].rep[0].con[0], (err, result) => {
-        incomingTemp = result.obj.int[0]['$'].val;
+        if (!err) {
+            incomingTemp = result.obj.int[0]['$'].val;
+        } else {
+            var content = req.body['m2m:sgn'].nev[0].rep[0].con[0];
+            incomingTemp = JSON.parse(content).temp;
+        }
     });
 
     console.log("Got temperature of: " + incomingTemp);
@@ -121,7 +126,7 @@ var sendSubscription = function() {
     });
 }
 
-var deleteSubscription = function() {
+var deleteSubscription = function(callback) {
     request({
         url: "http://" + ONE_M2M_HOST + ':' + ONE_M2M_PORT + '/~/in-cse/in-name/' + AE_NAME + "/DATA/SUB_" + AE_NAME,
         method: "DELETE",
@@ -134,8 +139,13 @@ var deleteSubscription = function() {
             console.log(error);
         } else {
             console.log("Subscription was deleted");
+            callback();
         }
     });
 }
 
-sendSubscription();
+var cleanSubscription = function() {
+    deleteSubscription(sendSubscription);
+}
+
+cleanSubscription();
