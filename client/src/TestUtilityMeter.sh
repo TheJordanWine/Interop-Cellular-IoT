@@ -24,10 +24,16 @@
 #
 
 #
+# Get current working dirctory
+#
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+g++ -o $DIR/test $DIR/UtilityMeter.cpp $DIR/TestUtilityMeter.cpp
+
+#
 # First, compile the Test program for UtilityMeter implementation.
 #
 echo "Compiling TestUtilityMeter.cpp and UtilityMeter.cpp..."
-g++ -o test UtilityMeter.cpp TestUtilityMeter.cpp
+g++ -o $DIR/test $DIR/UtilityMeter.cpp $DIR/TestUtilityMeter.cpp
 echo "   Done!"
 
 #
@@ -35,7 +41,7 @@ echo "   Done!"
 #
 echo "Executing test program..."
 echo ""
-./test
+$DIR/test
 echo ""
 
 #
@@ -43,5 +49,5 @@ echo ""
 #
 echo "Cleaning up..."
 sleep 5
-rm test
+rm $DIR/test
 echo "   Finished!"
