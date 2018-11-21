@@ -35,6 +35,29 @@ app.get('/', function(req, res) {
 });
 
 /**
+ * Simple ping to the IN-CSE server done server side
+ */
+app.get('/test', function(req, res) {
+    var options = {
+        url: 'http://127.0.0.1:8080/~/in-cse',
+        headers: {
+          'X-M2M-Origin': 'admin:admin',
+          'Accept': 'application/json'
+        }
+      };
+    request(options, function(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            res.render('test', {
+                response: body
+            });
+        }
+        else {
+            res.render('error', {"message" : "Server not running!"});
+        }
+    });
+});
+
+/**
  * This is where we'll expect the oneM2M server to post info to.
  */
 app.post('/monitor', function(req, res) {
@@ -43,7 +66,7 @@ app.post('/monitor', function(req, res) {
     parseString(req.body['m2m:sgn'].nev[0].rep[0].con[0], (err, result) => {
         incomingTemp = result.obj.int[0]['$'].val;
     });
-    
+
     console.log("Got temperature of: " + incomingTemp);
     res.status(200).send("thanks!");
 });
@@ -93,7 +116,7 @@ var sendSubscription = function() {
             console.log("prosessing response to subscription");
             console.log(response.statusCode);
             console.log(response.headers);
-            console.log("Got from oneM2M server: " + body);  
+            console.log("Got from oneM2M server: " + body);
         }
     });
 }
