@@ -13,7 +13,7 @@ const ONE_M2M_HOST = "127.0.0.1";
 const ONE_M2M_PORT = 8080;
 const LISTEN_PORT = 3000;
 const LISTEN_ADDR = "127.0.0.1";
-const AE_NAME = "MY_SENSOR";
+const AE_NAMES = ["MY_SENSOR" , "MY_METER"];
 
 
 
@@ -93,56 +93,61 @@ app.listen(LISTEN_PORT, function() {
 
 
 
-var subscription = {
-    "m2m:sub": {
-        // Resource Name
-        "rn" : "SUB_" + AE_NAME,
-        // Notification URI
-        "nu" : "http://" + LISTEN_ADDR + ":" + LISTEN_PORT + "/monitor",
-        // Notificaation Content Type
-        "nct" : 2
-    }
-}
+
 /**
  * Sends a subscription to the IN-CSE
  */
 var sendSubscription = function() {
-    request({
-        url: "http://" + ONE_M2M_HOST + ':' + ONE_M2M_PORT + '/~/in-cse/in-name/' + AE_NAME + '/DATA',
-        method: "POST",
-        headers: {
-            "X-M2M-Origin": "admin:admin",
-            "Content-Type": "application/json;ty=23"
-        },
-        body: JSON.stringify(subscription)
-    }, function (error, response, body){
-        if (error) {
-            console.log(error);
-        } else {
-            console.log("prosessing response to subscription");
-            console.log(response.statusCode);
-            console.log(response.headers);
-            console.log("Got from oneM2M server: " + body);
-        }
+    AE_NAMES.forEach( (AE_NAME) =>  {
+        var subscription = {
+            "m2m:sub": {
+                // Resource Name
+                "rn" : "SUB_" + AE_NAME,
+                // Notification URI
+                "nu" : "http://" + LISTEN_ADDR + ":" + LISTEN_PORT + "/monitor",
+                // Notificaation Content Type
+                "nct" : 2
+            }
+        }   
+        request({
+            url: "http://" + ONE_M2M_HOST + ':' + ONE_M2M_PORT + '/~/in-cse/in-name/' + AE_NAME + '/DATA',
+            method: "POST",
+            headers: {
+                "X-M2M-Origin": "admin:admin",
+                "Content-Type": "application/json;ty=23"
+            },
+            body: JSON.stringify(subscription)
+        }, function (error, response, body){
+            if (error) {
+                console.log(error);
+            } else {
+                console.log("prosessing response to subscription");
+                console.log(response.statusCode);
+                console.log(response.headers);
+                console.log("Got from oneM2M server: " + body);
+            }
+        });
     });
 }
 
 
 var deleteSubscription = function(callback) {
-    request({
-        url: "http://" + ONE_M2M_HOST + ':' + ONE_M2M_PORT + '/~/in-cse/in-name/' + AE_NAME + "/DATA/SUB_" + AE_NAME,
-        method: "DELETE",
-        headers: {
-            "X-M2M-Origin": "admin:admin",
-            "Accept": "application/json;"
-        }
-    }, function (error, response, body){
-        if (error) {
-            console.log(error);
-        } else {
-            console.log("Subscription was deleted");
-            callback();
-        }
+    AE_NAMES.forEach( (AE_NAME) =>  {
+        request({
+            url: "http://" + ONE_M2M_HOST + ':' + ONE_M2M_PORT + '/~/in-cse/in-name/' + AE_NAME + "/DATA/SUB_" + AE_NAME,
+            method: "DELETE",
+            headers: {
+                "X-M2M-Origin": "admin:admin",
+                "Accept": "application/json;"
+            }
+        }, function (error, response, body){
+            if (error) {
+                console.log(error);
+            } else {
+                console.log("Subscription was deleted");
+                callback();
+            }
+        });
     });
 }
 
