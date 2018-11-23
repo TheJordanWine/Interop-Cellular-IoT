@@ -6,6 +6,8 @@
 var express = require('express');
 var xmlparser = require('express-xml-bodyparser');
 var parseString = require('xml2js').parseString;
+var path = require('path');
+var fs = require('fs');
 
 // We'll use request to be able to send post requests to the oneM2M server
 var request = require('request');
@@ -67,7 +69,16 @@ app.post('/monitor', function(req, res) {
         if (!err) {
             incomingTemp = result.obj.int[0]['$'].val;
         } else {
+            //get the actual request body content in the form of :  {"temp" : 49}
             var content = req.body['m2m:sgn'].nev[0].rep[0].con[0];
+            //get the CT data in the form of : 20181123T112401
+            var ct = req.body['m2m:sgn'].nev[0].rep[0].ct[0].match(/(\d{4})(\d{2})(\d{2})(\w)(\d{2})(\d{2})(\d{2})/);
+            //Javscript Object Data with toString functionaility
+            var creationData = new Date(ct[1], ct[2], ct[3], ct[5], ct[6], ct[7]);
+            //Get the application name from the incoming request
+            var AEName = req.body['m2m:sgn'].sur[0].match(/(?<=\/)(.*)(?=\/)/)[1].split('/')[2];
+            saveDataToJSON(AEName, creationData.toUTCString(), content);
+
             incomingTemp = JSON.parse(content).temp;
         }
     });
@@ -82,7 +93,7 @@ app.post('/monitor', function(req, res) {
 app.all('/monitor', function(req,res) {
     res.status(405);
     res.render('error', {"message" : "Bad method. POST required"});
-})
+});
 
 app.listen(LISTEN_PORT, function() {
     console.log('Listening on port 3000...');
@@ -92,6 +103,54 @@ app.listen(LISTEN_PORT, function() {
 
 
 
+var saveDataToJSON = function(ae,ct,incomingData) {
+    var dataFolder = ae + '_data';
+
+    //Check if the folder is created, if not create it
+    //Using sync since async exists is deprecated https://stackoverflow.com/questions/4482686/check-synchronously-if-file-directory-exists-in-node-js/4482701
+    if (!fs.existsSync(dataFolder)){
+        fs.mkdirSync(dataFolder);
+    }
+
+    //Full path to the JSON data file
+    var dataFile = path.resolve(__dirname + '/' + dataFolder + '/data.json');
+    
+    //Append the data if file exists
+    if(fs.existsSync(dataFile)) {
+        fs.readFile(dataFile, {encoding: 'utf8'}, function(err, data) {
+            if(err) {
+                console.log(err);
+            }
+            var dataJSON = JSON.parse(data);
+            var newObj = {
+                date: ct,
+                data: incomingData
+            };
+            dataJSON.push(newObj);
+            fs.writeFile(dataFile, JSON.stringify(dataJSON, null, 2), {encoding: 'utf8'}, function(err2, data2) {
+                if(err2) {
+                    console.log(err2);
+                }else {
+                    console.log('JSON updated in ' + dataFile);
+                }
+            });
+        });
+    }else { //brand new file lets make it count!
+        var dataJSON = [];
+        var newObj = {
+            date: ct,
+            data: incomingData
+        };
+        dataJSON.push(newObj);
+        fs.writeFile(dataFile, JSON.stringify(dataJSON, null, 2), {encoding: 'utf8'}, function(err2, data2) {
+            if(err2) {
+                console.log(err2);
+            }else {
+                console.log('JSON updated in ' + dataFile);
+            }
+        });
+    }
+};
 
 /**
  * Sends a subscription to the IN-CSE
@@ -107,7 +166,7 @@ var sendSubscription = function() {
                 // Notificaation Content Type
                 "nct" : 2
             }
-        }   
+        };   
         request({
             url: "http://" + ONE_M2M_HOST + ':' + ONE_M2M_PORT + '/~/in-cse/in-name/' + AE_NAME + '/DATA',
             method: "POST",
@@ -127,7 +186,7 @@ var sendSubscription = function() {
             }
         });
     });
-}
+};
 
 var deleteSubscription = function(callback) {
     AE_NAMES.forEach( (AE_NAME) =>  {
@@ -147,10 +206,10 @@ var deleteSubscription = function(callback) {
             }
         });
     });
-}
+};
 
 var cleanSubscription = function() {
     deleteSubscription(sendSubscription);
-}
+};
 
 cleanSubscription();
