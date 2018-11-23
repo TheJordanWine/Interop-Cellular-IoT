@@ -14,11 +14,11 @@ int main (int argc, char* argv[]) {
 
   // Global Function Variables
   long result;                          // HTTP Result code.
-  string hostName = "127.0.0.1:8080";   // The IP:Port of OM2M server.
+  string hostName = "192.168.0.177:8080"; //"127.0.0.1:8080";   // The IP:Port of OM2M server.
   string loginCred = "admin:admin";     // The OM2M Server login credentials.
   string aeName = "MY_METER";           // Name of the AE Resource to create.
   string aeAppId = "app1";              // Name of the AE App Id. Mandatory.
-  string contName = "meter-value";      // Container Name.
+  string contName = "meter-value";      // Data Container Name.
   ::xml_schema::integer respObjType;    // The response data from server.
   string cseRootAddr = "/in-cse/in-name";            // SP-Relative address.
   std::unique_ptr< ::xml_schema::type > respObj;     // The result code from server.
@@ -61,6 +61,29 @@ int main (int argc, char* argv[]) {
     "5555", result, respObjType);
   cout << "Result = " << result << "\n";
   cout << "respObjType = " << respObjType << "\n";
+  
+  /*
+   * Create a container in our AE. This container will store the AE description.
+   */
+   cout << "\nCreating Descriptor Container...\n";
+  auto dsccnt = ::onem2m::container();
+  dsccnt.resourceName("DESCRIPTOR");
+  respObj = ::onem2m::createResource(cseRootAddr+"/"+aeName,
+    "5555", dsccnt, result, respObjType);
+  cout << "\nContainer creation result code: " << result << "\n";
+  
+  /*
+   * Populate the descriptor container with an actual discription
+   */
+  cout << "\nCreating Descriptor Content Instance...\n";
+  auto descInst = ::onem2m::contentInstance();
+  descInst.contentInfo("application/text");      // Text data.
+  string desctxt= "type = Utility_Meter\n"
+    "location = Home\n"
+    "appIDd = MY_METER";
+   descInst.content(desctxt);
+   respObj = ::onem2m::createResource(cseRootAddr+"/"+aeName+"/"+"DESCRIPTOR",
+    "5555", descInst, result, respObjType);
 
   /*
    * Create a Container in our AE. This container will store the meter value.
