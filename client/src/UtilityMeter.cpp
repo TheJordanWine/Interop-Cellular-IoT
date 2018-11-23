@@ -28,6 +28,7 @@ using namespace std;
 UtilityMeter::UtilityMeter() {
   powerStatus = true;
   meterValue = 0;
+  descriptor = "";
 }
 
 
@@ -104,6 +105,24 @@ int UtilityMeter::getMeterValue() {
   return meterValue;
 }
 
+
+/**
+ * This function gets the Meter Descriptor value of the Utility Meter
+ * object.
+ * 
+ * @return description The current descriptor value of the Utility Meter.
+ */
+string UtilityMeter::getMeterDescriptor(){
+  return descriptor;
+}
+
+void UtilityMeter::setMeterDescriptor(string inputValue){
+  if(inputValue.empty()){
+    descriptor = "Utility_Meter";
+  }else{
+    descriptor = inputValue;
+  }
+}
 
 
 

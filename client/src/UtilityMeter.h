@@ -15,6 +15,8 @@
 #ifndef UtilityMeter_H
 #define UtilityMeter_H
 
+#include <string>
+
 class UtilityMeter {
 
   public:
@@ -30,12 +32,16 @@ class UtilityMeter {
     void setMeterValue(int inputValue);
     int getMeterValue();
     int getRandomValue();
+    
+    void setMeterDescriptor(std::string inputValue);
+    std::string getMeterDescriptor();
 
   private:
 
     // Private Variables
     int meterValue;
     bool powerStatus;
+    std::string descriptor;
 
 };
 

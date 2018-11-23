@@ -25,6 +25,10 @@ int main (int argc, char* argv[]) {
   UtilityMeter um;                      // Construct our UtilityMeter object.
   int meterValue;                       // Represents Utility Meter Value.
   string meterValueStr;                 // Utility Meter Value as a string.
+  string buff= "type = Utility_Meter\n"           //String for UtilityMeter description.
+    "location = Home\n"
+    "appIDd = MY_METER";
+  um.setMeterDescriptor(buff);               // Set the Descriptor for the UtilityMeter object.
 
  /*
   * First, initialize the OS-IoT library.
@@ -78,11 +82,8 @@ int main (int argc, char* argv[]) {
   cout << "\nCreating Descriptor Content Instance...\n";
   auto descInst = ::onem2m::contentInstance();
   descInst.contentInfo("application/text");      // Text data.
-  string desctxt= "type = Utility_Meter\n"
-    "location = Home\n"
-    "appIDd = MY_METER";
-   descInst.content(desctxt);
-   respObj = ::onem2m::createResource(cseRootAddr+"/"+aeName+"/"+"DESCRIPTOR",
+  descInst.content(um.getMeterDescriptor());
+  respObj = ::onem2m::createResource(cseRootAddr+"/"+aeName+"/"+"DESCRIPTOR",
     "5555", descInst, result, respObjType);
 
   /*
