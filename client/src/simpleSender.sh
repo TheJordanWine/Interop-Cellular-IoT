@@ -3,7 +3,11 @@
 # Version:  1.0
 # Descirption: This is a shell based implementation of an OneM2M Application Entity which
 # uses the OS-IoT library via it's command line interface to simulate sending data
+<<<<<<< HEAD
 # 
+=======
+#
+>>>>>>> 2d76435825176831ab21ce67dae07b29b41c14c8
 
 # GLOBAL VARIABLES
 AE_NAME="MY_SENSOR"
