@@ -69,11 +69,6 @@ app.post('/monitor', function(req, res) {
         if (!err) {
             incomingTemp = result.obj.int[0]['$'].val;
         } else {
-<<<<<<< HEAD
-            var content = req.body['m2m:sgn'].nev[0].rep[0].con[0];
-            incomingTemp = JSON.parse(content).temp;
-        }
-=======
             //get the actual request body content in the form of :  {"temp" : 49}
             var content = req.body['m2m:sgn'].nev[0].rep[0].con[0];
             //get the CT data in the form of : 20181123T112401
@@ -87,7 +82,6 @@ app.post('/monitor', function(req, res) {
             incomingTemp = JSON.parse(content).temp;
         }
 
->>>>>>> 2d76435825176831ab21ce67dae07b29b41c14c8
     });
 
     console.log("Got temperature of: " + incomingTemp);
@@ -193,25 +187,6 @@ var sendSubscription = function() {
             }
         });
     });
-<<<<<<< HEAD
-}
-
-var deleteSubscription = function(callback) {
-    request({
-        url: "http://" + ONE_M2M_HOST + ':' + ONE_M2M_PORT + '/~/in-cse/in-name/' + AE_NAME + "/DATA/SUB_" + AE_NAME,
-        method: "DELETE",
-        headers: {
-            "X-M2M-Origin": "admin:admin",
-            "Accept": "application/json;"
-        }
-    }, function (error, response, body){
-        if (error) {
-            console.log(error);
-        } else {
-            console.log("Subscription was deleted");
-            callback();
-        }
-=======
 };
 
 
@@ -232,7 +207,6 @@ var deleteSubscription = function(callback) {
                 callback();
             }
         });
->>>>>>> 2d76435825176831ab21ce67dae07b29b41c14c8
     });
 };
 
@@ -241,11 +215,4 @@ var cleanSubscription = function() {
     deleteSubscription(sendSubscription);
 };
 
-<<<<<<< HEAD
-var cleanSubscription = function() {
-    deleteSubscription(sendSubscription);
-}
-
-=======
->>>>>>> 2d76435825176831ab21ce67dae07b29b41c14c8
 cleanSubscription();
