@@ -14,6 +14,7 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <ctime>
 #include "UtilityMeter.h"
 using namespace std;
 
@@ -28,6 +29,8 @@ using namespace std;
 UtilityMeter::UtilityMeter() {
   powerStatus = true;
   meterValue = 0;
+  descriptor = "";
+  srand(time(NULL));         // Invoke srand() only once, for random values.
 }
 
 
@@ -108,6 +111,37 @@ int UtilityMeter::getMeterValue() {
 
 
 /**
+ * This function gets the Meter Descriptor value of the Utility Meter
+ * object.
+ *
+ * @return description The current descriptor value of the Utility Meter.
+ */
+string UtilityMeter::getMeterDescriptor(){
+  return descriptor;
+}
+
+
+
+
+/**
+ * This function sets the Meter Descriptor value of the Utility meter
+ * object.
+ *
+ * @param inputValue The input string representing the Meter Descriptor.
+ *
+ */
+void UtilityMeter::setMeterDescriptor(string inputValue){
+  if(inputValue.empty()){
+    descriptor = "Utility_Meter";
+  }else{
+    descriptor = inputValue;
+  }
+}
+
+
+
+
+/**
  * This function gets a random integer value between 0 and 1000.
  * The random value returned is used to simulate data from a
  * Utility Meter.
@@ -126,7 +160,7 @@ int UtilityMeter::getRandomValue() {
   // The desired maximum value for the random number.
   int desiredMaximum = 1000;
 
-  int result = (rand() % desiredMaximum) + 1;
+  int result = rand() % desiredMaximum + 1;
 
   return result;
 }
