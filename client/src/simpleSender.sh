@@ -3,12 +3,15 @@
 # Version:  1.0
 # Descirption: This is a shell based implementation of an OneM2M Application Entity which
 # uses the OS-IoT library via it's command line interface to simulate sending data
-#
+# 
 
 # GLOBAL VARIABLES
 AE_NAME="MY_SENSOR"
 IN_CSE_HOST="127.0.0.1"
-IN_CSE_PORT="8080"
+#IN_CSE_PORT="8080" # HTTP Port
+IN_CSE_PORT="8443" # HTTPS Port
+
+
 
 
 # FUNCTIONS
@@ -32,6 +35,7 @@ main() {
         IN_CSE_PORT=$2
     fi
 
+    OPTIONS="--https --subjectANA om2mServer --caPath certstore --caInfo certstore/serverCertificate.pem -h ${IN_CSE_HOST}:${IN_CSE_PORT} -f admin:admin"
 
     if [[ -f osiotcmd ]]; then
         chmod 755 osiotcmd
@@ -43,16 +47,16 @@ main() {
     echo "Connecting to ${IN_CSE_HOST}:${IN_CSE_PORT}"
 
     # Create AE
-    ./osiotcmd -h ${IN_CSE_HOST}:${IN_CSE_PORT} -f admin:admin --ae --rn ${AE_NAME}
+    ./osiotcmd ${OPTIONS} --ae --rn ${AE_NAME}
 
     # Create DATA Container
-    ./osiotcmd -h ${IN_CSE_HOST}:${IN_CSE_PORT} -f admin:admin --container -A "~/in-cse/in-name/${AE_NAME}" --rn DATA
+    ./osiotcmd ${OPTIONS} --container -A "~/in-cse/in-name/${AE_NAME}" --rn DATA
 
     # Send data
     while true; do
         number=$RANDOM
         let "number %= 100"
-        ./osiotcmd -h ${IN_CSE_HOST}:${IN_CSE_PORT} -f admin:admin --ci -A "~/in-cse/in-name/${AE_NAME}/DATA" -j --content '{"temp" : '${number}'}'
+        ./osiotcmd ${OPTIONS} --ci -A "~/in-cse/in-name/${AE_NAME}/DATA" -j --content '{"temp" : '${number}'}'
         sleep 5
     done
 

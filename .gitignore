@@ -36,4 +36,9 @@ node_modules/
 *package-lock*.*
 .vscode/
 .jshintrc
+<<<<<<< HEAD
 server/IN-CSE/configuration/*.log
+=======
+server/IN-CSE/database/
+server/IN-CSE/configuration/*.log
+>>>>>>> b159401eaa471d638456b4b71574fe7db2a0f53b
