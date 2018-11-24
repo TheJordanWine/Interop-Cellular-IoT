@@ -85,7 +85,7 @@ app.get('/test', function(req, res) {
 app.post('/monitor', function(req, res) {
     //res is the response object
     var incomingTemp;
-    if (req.body['m2m:sgn'].nev) {
+    if (req.body['m2m:sgn'].nev) { // First check if we're actually getting a data notification
         parseString(req.body['m2m:sgn'].nev[0].rep[0].con[0], (err, result) => {
             if (!err) {
                 incomingTemp = result.obj.int[0]['$'].val;
