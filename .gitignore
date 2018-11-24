@@ -36,3 +36,4 @@ node_modules/
 *package-lock*.*
 .vscode/
 .jshintrc
+server/IN-CSE/configuration/*.log
