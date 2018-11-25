@@ -26,6 +26,11 @@
 using namespace std;
 
 /**
+  * Function declarations.
+  */
+bool isValidIP (char x[]);
+
+/**
   * Main function, program entry point.
   */
 int main (int argc, char* argv[]) {
@@ -65,14 +70,22 @@ int main (int argc, char* argv[]) {
   if (argc >= 2) {   // Arg count 2 is the OM2M server in format IP:Port
     cout << "\nCommand line arg passed for OM2M server: ";
     cout << argv[1] << endl;
-    hostName = argv[1];        // Set hostName to command line arg IP:Port
+    // Validate the argument is in IP:Port format.
+    if (isValidIP(argv[1])) {
+      hostName = argv[1];    // Set hostName to command line arg IP:Port
+    }
+    else {
+      cout << "Invalid argument for OM2M IP:Port - " << argv[1]
+      << "\n   Exiting...\n";
+      return 0;
+    }
   }
   if (argc >= 3) { // Arg count 3 is the desired run-time in minutes
         cout << "\nCommand line arg passed for run-time in minutes: ";
         cout << argv[2] << endl;
         runtime = atoi(argv[2]);
         countCalc = 60 * runtime / secondsToDelay + 1;
-    }
+  }
 
   /*
    * First, initialize the OS-IoT library.
@@ -202,3 +215,17 @@ int main (int argc, char* argv[]) {
   return 1;
 
 } // End of main
+
+
+
+
+/**
+  * This function checks to ensure that the provided char
+  * array is in a valid IP:Port-number format.  For example,
+  * 127.0.0.1:8080 is a valid IP:Port-number formatted char
+  * array.
+  */
+bool isValidIP(char x[]) {
+  bool result = false;
+  return result;
+}
