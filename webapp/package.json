@@ -17,7 +17,8 @@
     "express-xml-bodyparser": "^0.3.0",
     "nodemon": "^1.18.6",
     "pug": "^2.0.3",
-    "request": "^2.88.0"
+    "request": "^2.88.0",
+    "rimraf": "^2.6.3"
   },
   "nodemonConfig": {
     "ignore": [
