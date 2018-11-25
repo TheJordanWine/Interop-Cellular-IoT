@@ -16,7 +16,8 @@ const LISTEN_PORT = 3000;
 const LISTEN_ADDR = "127.0.0.1";
 // One M2M Sever Connection
 const ONE_M2M_HOST = "127.0.0.1"; // IP of OM2M server
-const ONE_M2M_PORT = 8080;  // PORT to access OM2M server
+//const ONE_M2M_PORT = 8080;  // PORT to access OM2M server
+const ONE_M2M_PORT = 8443;  // PORT to access OM2M server
 const AE_NAMES = ["MY_SENSOR" , "MY_METER"];
 
 function subscribeToServer(aeName) {
@@ -26,7 +27,7 @@ function subscribeToServer(aeName) {
         listenAddress : LISTEN_ADDR,
         listenPort : LISTEN_PORT,
         aeName : aeName,
-        https : false,
+        https : true,
         listenRoute : "/monitor"
     }
     var onem2m = new Onem2m(onem2mOptions);
