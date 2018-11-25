@@ -1,4 +1,21 @@
+/**
+ * Meter Main Application File:  MeterMain.cpp
+ *
+ * This file is the main source code file for the client application.
+ * It represents the Utility Meter reader and uses various classes to
+ * store data.  It utilizes the OneM2M open standards to communicate with
+ * the server.
+ *
+ * Instructions:
+ *     See docs/client.md for the instructions on how to compile and execute
+ *         this client application.
+ *
+ * @author Team 6
+ *
+ * @version 1.0
+ */
 
+// Imports
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -10,7 +27,7 @@ using namespace std;
 
 /**
   * Main function, program entry point.
- */
+  */
 int main (int argc, char* argv[]) {
 
   // Global Function Variables
