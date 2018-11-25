@@ -20,3 +20,18 @@
 //         }
 //     });
 // }
+
+$.ajax({
+    method: "GET",
+    url: "/status",
+    success: function (data) {
+        setTimeout(() => {
+            var status = data;
+            if(data == 'true') {
+                document.getElementById('status').innerHTML = 'IN-CSE Server Status<span class="badge badge-success">Running</span>';
+            }else {
+                document.getElementById('status').innerHTML = 'IN-CSE Server Status<span class="badge badge-danger">Not Running</span>';
+            }
+        }, 2000);
+    }
+});

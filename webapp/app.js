@@ -45,6 +45,7 @@ function subscribeToServer(aeName) {
 
 var app = express();
     app.set('view engine', 'pug');
+    app.use(express.static(__dirname + '/public'));
 
 app.use(xmlparser());
 
@@ -79,12 +80,14 @@ app.get('/status', function(req, res) {
       };
     request(options, function(error, response, body) {
         if (!error && response.statusCode == 200) {
-            res.render('status', {
-                message: "Server is running!"
-            });
+            // res.render('status', {
+            //     message: "Server is running!"
+            // });
+            res.end('true');
         }
         else {
-            res.render('error', {"message" : "Server not running!"});
+            // res.render('error', {"message" : "Server not running!"});
+            res.end('false');
         }
     });
 });
