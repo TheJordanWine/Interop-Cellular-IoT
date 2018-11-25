@@ -29,7 +29,11 @@ using namespace std;
 /**
   * Function declarations.
   */
-bool isValidIP (char x[]);
+bool isValidIP(char x[]);
+bool isValidCred(char x[]);
+bool isValidInt(char x[]);
+bool isValidName(char x[]);
+bool isValidPath(char x[]);
 
 /**
   * Main function, program entry point.
@@ -43,50 +47,151 @@ int main (int argc, char* argv[]) {
   string aeName = "MY_METER";           // Name of the AE Resource to create.
   string aeAppId = "app1";              // Name of the AE App Id. Mandatory.
   string contName = "DATA";             // Data Container Name.
+  string location = "Home";             // Location of Utility Meter
   ::xml_schema::integer respObjType;    // The response data from server.
   string cseRootAddr = "/in-cse/in-name";            // SP-Relative address.
   std::unique_ptr< ::xml_schema::type > respObj;     // The result code from server.
   UtilityMeter um;                      // Construct our UtilityMeter object.
   int meterValue;                       // Represents Utility Meter Value.
   string meterValueStr;                 // Utility Meter Value as a string.
-  string buff= "type = Utility_Meter\n"           //String for UtilityMeter description.
-    "location = Home\n"
-    "appIDd = MY_METER";
-  um.setMeterDescriptor(buff);          // Set the Descriptor for the UtilityMeter object.
   double secondsPassed;
   double secondsToDelay = 10;           // Seconds between meter-value updates
   int count = 0;                        // Test value counter
-  int runtime = 0;                      // Runtime value in minutes
+  int runtime = 2;                      // Runtime value in minutes. Default to 2 minutes
   int countCalc = 13;                   // To be calculated using 60 * runtime / secondsToDelay + 1 , Default to 13 for 2 minutes
   double time_counter = 0;              // Timer for simulated data
   clock_t this_time = clock();
   clock_t last_time = this_time;
 
   /*
-   * Parse command line args
+   * Parse for command line flags
    */
-  if (argc == 1) {   // Arg count 1 is just the program name.
-    cout << "\nNo command line args passed...\n";
-  }
-  if (argc >= 2) {   // Arg count 2 is the OM2M server in format IP:Port
-    cout << "\nCommand line arg passed for OM2M server: ";
-    cout << argv[1] << endl;
-    // Validate the argument is in IP:Port format.
-    if (isValidIP(argv[1])) {
-      hostName = argv[1];    // Set hostName to command line arg IP:Port
-    }
-    else {
-      cout << "Invalid argument for OM2M IP:Port - " << argv[1]
-      << "\n   Exiting...\n";
-      return 0;
-    }
-  }
-  if (argc >= 3) { // Arg count 3 is the desired run-time in minutes
+  for (int i = 1; i < argc; i++) {
+    if (argv[i][0] == '-') { // Check 1st character of arg for flag character
+      if (strcmp(argv[i],"-a") == 0) { // aeAppId flag
+        cout << "\nCommand line arg passed for AE App Id: ";
+        cout << argv[i+1] << endl;
+        if (isValidName(argv[i+1])) { // Verify proper format
+          aeAppId = argv[i+1];      // set aeAppId to the next argument
+        }
+        else {
+          cout << "Invalid argument for AE App Id - " << argv[i+1]
+          << "\n   Exiting...\n";
+          return 0;
+        }
+      }
+      else if (strcmp(argv[i],"-c") == 0) { // contName flag
+        cout << "\nCommand line arg passed for Container Name: ";
+        cout << argv[i+1] << endl;
+        if (isValidName(argv[i+1])) { // Verify proper format
+          contName = argv[i+1];       // set contName to the next argument
+        }
+        else {
+          cout << "Invalid argument for Container Name - " << argv[i+1]
+          << "\n   Exiting...\n";
+          return 0;
+        }
+      }
+      else if (strcmp(argv[i],"-d") == 0) { // secondsToDelay flag
+        cout << "\nCommand line arg passed for delay in seconds: ";
+        cout << argv[i+1] << endl;
+        if (isValidInt(argv[i+1])) { // Verify proper format TODO
+          secondsToDelay = atoi(argv[i+1]);    // set runtime to the next argument
+        }
+        else {
+          cout << "Invalid argument for delay in seconds - " << argv[i+1]
+          << "\n   Exiting...\n";
+          return 0;
+        }
+      }
+      else if (strcmp(argv[i],"-h") == 0) { // hostName flag
+        cout << "\nCommand line arg passed for OM2M server: ";
+        cout << argv[i+1] << endl;
+        if (isValidIP(argv[i+1])) { // Verify proper format
+          hostName = argv[i+1];    // set hostName to the next argument
+        }
+        else {
+          cout << "Invalid argument for OM2M server - " << argv[i+1]
+          << "\n   Exiting...\n";
+          return 0;
+        }
+      }
+      else if (strcmp(argv[i],"-l") == 0) { // loginCred flag
+        cout << "\nCommand line arg passed for login credentials: ";
+        cout << argv[i+1] << endl;
+        if (isValidCred(argv[i+1])) { // Verify proper format
+          loginCred = argv[i+1];       // set loginCred to the next argument
+        }
+        else {
+          cout << "Invalid argument for login credentials - " << argv[i+1]
+          << "\n   Exiting...\n";
+          return 0;
+        }
+      }
+      else if (strcmp(argv[i],"-L") == 0) { // location flag * May change naming convention
+        cout << "\nCommand line arg passed for location : ";
+        cout << argv[i+1] << endl;
+        if (isValidName(argv[i+1])) { // Verify proper format
+          location = argv[i+1];       // set loginCred to the next argument
+        }
+        else {
+          cout << "Invalid argument for location - " << argv[i+1]
+          << "\n   Exiting...\n";
+          return 0;
+        }
+      }
+      else if (strcmp(argv[i],"-n") == 0) { // aeName flag
+        cout << "\nCommand line arg passed for the AE Resource Name: ";
+        cout << argv[i+1] << endl;
+        if (isValidName(argv[i+1])) { // Verify proper format
+          aeName = argv[i+1];       // set aeName to the next argument
+        }
+        else {
+          cout << "Invalid argument for AE Resource Name - " << argv[i+1]
+          << "\n   Exiting...\n";
+          return 0;
+        }
+      }
+      else if (strcmp(argv[i],"-r") == 0) { // cseRootAddr flag
+        cout << "\nCommand line arg passed for the SP-Relative address: ";
+        cout << argv[i+1] << endl;
+        if (isValidPath(argv[i+1])) {   // Verify proper format
+          cseRootAddr = argv[i+1];      // set cseRootAddr to the next argument
+        }
+        else {
+          cout << "Invalid argument for SP-Relative address - " << argv[i+1]
+          << "\n   Exiting...\n";
+          return 0;
+        }
+      }
+      else if (strcmp(argv[i],"-t") == 0) { // runtime flag
         cout << "\nCommand line arg passed for run-time in minutes: ";
-        cout << argv[2] << endl;
-        runtime = atoi(argv[2]);
-        countCalc = 60 * runtime / secondsToDelay + 1;
+        cout << argv[i+1] << endl;
+        if (isValidInt(argv[i+1])) { // Verify proper format
+          runtime = atoi(argv[i+1]);    // set runtime to the next argument
+        }
+        else {
+          cout << "Invalid argument for run-time in minutes - " << argv[i+1]
+          << "\n   Exiting...\n";
+          return 0;
+        }
+      }
+      else { // invalid flag
+        cout << "Invalid flag  - " << argv[i]
+        << "\n   Exiting...\n";
+        return 0;
+      }
+    }
   }
+
+  um.setMeterDescriptor( // Set the Descriptor for the UtilityMeter object.
+    "type = Utility_Meter\n"
+    "location = " + location + "\n"
+    "appIDd = " + aeAppId
+  );
+
+  countCalc = 60 * runtime / secondsToDelay + 1; // Calculate count after all arguments have been read
+
 
   /*
    * First, initialize the OS-IoT library.
@@ -267,3 +372,99 @@ bool isValidIP(char x[]) {
   return result;
 
 } // End of function isValidIP.
+
+
+/**
+  * This function checks to ensure that the provided char
+  * array is in a valid Username:Password format.  For example,
+  * admin:admin is a valid Username:Password formatted char
+  * array.
+  *
+  * @param The input char array to validate.
+  * @return Boolean indicating whether input is valid or not.
+  */
+  bool isValidCred(char x[]) {
+
+    int c1 = 0;     // Count number of ":" characters.
+
+    // Iterate through the input char array.
+    int i = 0;
+    while (x[i] != '\0') {
+
+      // If the character matches ":" then increment the relevant counter.
+      if (x[i] == ':') {
+        if (i == 0) { // Username cannot begin with ':', return false if so.
+          return false;
+        }
+        else if (x[i+1] == '\0') { // Check for the last character, return false if character is ':'
+          return false;
+        }
+        c1++;
+      }
+
+      i++;
+    } // End of while loop.
+    //
+
+    if (c1 != 1) { // Return false if there is more than one ':' character
+      return false;
+    }
+    else { // All previous checks have passed, return true
+      return true;
+    }
+
+  } // End of function isValidCred.
+
+
+  /**
+    * This function checks to ensure that the provided char
+    * array is in an integer format.
+    *
+    * @param The input char array to validate.
+    * @return Boolean indicating whether input is valid or not.
+    */
+  bool isValidInt(char x[]) {
+    // Iterate through the input char array.
+    int i = 0;
+    while (x[i] != '\0') {
+      if (!isdigit(x[i])) { // Return false if not valid integer character
+        return false;
+      }
+      i++;
+    }
+    return true; // Argument is an integer
+  }
+
+  /**
+    * This function checks to ensure that the provided char
+    * array is in a name format. This includes alphanumberic characters, '-' and '_'
+    *
+    * @param The input char array to validate.
+    * @return Boolean indicating whether input is valid or not.
+    */
+  bool isValidName(char x[]) {
+    // Iterate through the input char array.
+    int i = 0;
+    while (x[i] != '\0') {
+      if (!isalpha(x[i]) && x[i] != '_' && x[i] != '-' ) { // Return false if not a valid alphanumberic, '-' or '_'  character
+        return false;
+      }
+      i++;
+    }
+    return true; // Argument is an integer
+  }
+
+  /**
+    * This function checks to ensure that the provided char
+    * array is in a file path format beginning with /.
+    *
+    * @param The input char array to validate.
+    * @return Boolean indicating whether input is valid or not.
+    */
+  bool isValidPath(char x[]) {
+    int i = 0;
+    while (x[i] != '\0') { // get last character of path
+      i++;
+    }
+      return x[0] == '/' && x[i-1] != '/'; // Return true if path begins with / and does not end with /.
+  }
