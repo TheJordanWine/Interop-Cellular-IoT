@@ -1,10 +1,22 @@
 doctype html
 html(lang="en")
     head
-        meta(charset="UTF-8")
-        meta(name="viewport" content="width=device-width, initial-scale=1.0")
-        meta(http-equiv="X-UA-Compatible", content="ie=edge")
-        title Home Page
+        include templates/cssframeworks.pug
+        include templates/meta.pug
+        style(type="text/css").
+            * {
+                margin: 5px;
+            }
+            .btn-primary {
+                color: white!important;
+            }
+
     body
+        -var pugAENames = AENames
         h2 Welcome
-        a(href="/test") Test Commands
+        p Click on any of the Application Entity Buttons to see their respective data
+        a(href="/status") Check IN-CSE Server Status
+        br
+        each ae in pugAENames
+            a(class="btn btn-primary" href=`/data?ae=${ae}`)= ae
+            br
