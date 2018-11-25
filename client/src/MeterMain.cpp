@@ -305,7 +305,7 @@ int main (int argc, char* argv[]) {
   /*
    * Create a Container in our AE. This container will store the meter value.
    */
-  cout << "\nCreating Container...\n";
+  cout << "\nCreating DATA Container...\n";
   auto cnt = ::onem2m::container();
   cnt.resourceName(contName);
   respObj = ::onem2m::createResource(cseRootAddr+"/"+aeName,
@@ -316,7 +316,7 @@ int main (int argc, char* argv[]) {
    * Create a new receiver Container in our AE. The client will subscribe to this
    * container for instructions from the webapp.
    */
-  cout << "\nCreating receiver Container...\n";
+  cout << "\nCreating receiver POLL_METER Container...\n";
   auto cntRcv = ::onem2m::container();
   cntRcv.resourceName("POLL_METER");
   respObj = ::onem2m::createResource(cseRootAddr+"/"+aeName,
