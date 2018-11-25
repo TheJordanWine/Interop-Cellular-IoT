@@ -28,6 +28,9 @@ int main (int argc, char* argv[]) {
   // Start HTTP service
   onem2m_http_start();
 
+  // Start an HTTP session
+  onem2m_http_sess_start();
+  
   // TODO
 
 } // End of main function
