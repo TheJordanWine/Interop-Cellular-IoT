@@ -8,6 +8,7 @@ var xmlparser = require('express-xml-bodyparser');
 var parseString = require('xml2js').parseString;
 var path = require('path');
 var fs = require('fs');
+var request = require('request');
 const Onem2m = require("./onem2m");
 
 
@@ -19,6 +20,7 @@ const ONE_M2M_HOST = "127.0.0.1"; // IP of OM2M server
 //const ONE_M2M_PORT = 8080;  // PORT to access OM2M server
 const ONE_M2M_PORT = 8443;  // PORT to access OM2M server
 const AE_NAMES = ["MY_SENSOR" , "MY_METER"];
+const IS_HTTPS = true;
 
 function subscribeToServer(aeName) {
     onem2mOptions = {
@@ -27,7 +29,7 @@ function subscribeToServer(aeName) {
         listenAddress : LISTEN_ADDR,
         listenPort : LISTEN_PORT,
         aeName : aeName,
-        https : true,
+        https : IS_HTTPS,
         listenRoute : "/monitor"
     }
     var onem2m = new Onem2m(onem2mOptions);
@@ -44,6 +46,7 @@ function subscribeToServer(aeName) {
 
 var app = express();
     app.set('view engine', 'pug');
+    app.use(express.static(__dirname + '/public'));
 
 app.use(xmlparser());
 
@@ -54,15 +57,23 @@ app.get('/', function(req, res) {
     //res is the response object
     //render will take string and search for a pug file in views/ and will render it out
     res.status(200);
-    res.render('index');
+    res.render('index', {
+        AENames: AE_NAMES
+    });
 });
 
+app.get('/data', function(req, res) {
+    
+    res.render('data', {
+        AEName: req.query.ae
+    });
+});
 /**
  * Simple ping to the IN-CSE server done server side
  */
-app.get('/test', function(req, res) {
+app.get('/status', function(req, res) {
     var options = {
-        url: 'http://127.0.0.1:8080/~/in-cse',
+        url: `${IS_HTTPS ? 'https' : 'http'}://${ONE_M2M_HOST}:${ONE_M2M_PORT}/~/in-cse`,
         headers: {
           'X-M2M-Origin': 'admin:admin',
           'Accept': 'application/json'
@@ -70,12 +81,14 @@ app.get('/test', function(req, res) {
       };
     request(options, function(error, response, body) {
         if (!error && response.statusCode == 200) {
-            res.render('test', {
-                response: body
-            });
+            // res.render('status', {
+            //     message: "Server is running!"
+            // });
+            res.end('true');
         }
         else {
-            res.render('error', {"message" : "Server not running!"});
+            // res.render('error', {"message" : "Server not running!"});
+            res.end('false');
         }
     });
 });

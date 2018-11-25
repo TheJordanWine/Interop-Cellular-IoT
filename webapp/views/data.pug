@@ -1,0 +1,30 @@
+doctype html
+html(lang="en")
+    head
+        include templates/meta.pug
+        include templates/cssframeworks.pug
+        title Data Page
+        style(type="text/css").
+            *, button {
+                margin: 5px;
+            }
+            .btn-info {
+                display: inline;
+            }
+            a {
+                color:white;
+            }
+    body
+        -var pugAE = AEName;
+        .container
+            .row
+                .col-12
+                    h2= 'Data View for ' + pugAE
+            .row    
+                .col-1
+                    a(class="btn btn-success" href="/" )
+                            i.material-icons arrow_back
+                .col-1 
+                    button(class="btn btn-info")
+                        i.material-icons refresh
+                
