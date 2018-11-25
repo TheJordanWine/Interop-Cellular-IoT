@@ -316,9 +316,9 @@ int main (int argc, char* argv[]) {
    * Create a new receiver Container in our AE. The client will subscribe to this
    * container for instructions from the webapp.
    */
-  cout << "\nCreating receiver POLL_METER Container...\n";
+  cout << "\nCreating receiver PING_METER Container...\n";
   auto cntRcv = ::onem2m::container();
-  cntRcv.resourceName("POLL_METER");
+  cntRcv.resourceName("PING_METER");
   respObj = ::onem2m::createResource(cseRootAddr+"/"+aeName,
     "5555", cntRcv, result, respObjType);
   cout << "\nContainer creation result code: " << result << "\n";
