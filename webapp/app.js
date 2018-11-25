@@ -1,8 +1,19 @@
 /**
- * Version: 1.0
- * Description: This is a web app that allows a user to interface with a oneM2M
- * complient IoT application.
+ * Web application file:  app.js
+ *
+ * This is a web app that allows the user to interface with a oneM2M
+ * standards IoT application.  It launches the web application which
+ * users will utilize.
+ *
+ * Instructions:
+ *     See docs/webapp.md for the instructions on how to run this
+ *         web application.
+ *
+ * @author Team 6
+ *
+ * @version 1.0
  */
+
 var express = require('express');
 var xmlparser = require('express-xml-bodyparser');
 var parseString = require('xml2js').parseString;
@@ -132,12 +143,12 @@ app.post('/monitor', function(req, res) {
                 //Get the application name from the incoming request
                 var AEName = req.body['m2m:sgn'].sur[0].match(/(?<=\/)(.*)(?=\/)/)[1].split('/')[2];
                 saveDataToJSON(AEName, creationData.toUTCString(), content);
-    
+
                 incomingTemp = JSON.parse(content).temp;
             }
-    
-        });    
-        console.log("Got temperature of: " + incomingTemp);        
+
+        });
+        console.log("Got temperature of: " + incomingTemp);
     }
     res.status(200).send("thanks!");
 });
@@ -174,7 +185,7 @@ var saveDataToJSON = function(ae,ct,incomingData) {
 
     //Full path to the JSON data file
     var dataFile = path.resolve(__dirname + '/' + dataFolder + '/data.json');
-    
+
     //Append the data if file exists
     if(fs.existsSync(dataFile)) {
         fs.readFile(dataFile, {encoding: 'utf8'}, function(err, data) {

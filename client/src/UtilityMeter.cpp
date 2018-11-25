@@ -12,6 +12,7 @@
  * @version 1.0
  */
 
+//Imports
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
@@ -164,7 +165,12 @@ int UtilityMeter::getRandomValue() {
   return result;
 }
 
-
+/**
+ * This function adds a random integer value retrieved from the 
+ * getRandomValue() function to the current meterValue. The purpose
+ * of this is to simulate power consumption that is being tracked by
+ * the utility meter.
+ */
 int UtilityMeter::updateMeterValueRand(){
   meterValue = (meterValue + getRandomValue());
 }

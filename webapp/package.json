@@ -4,7 +4,7 @@
   "description": "Simple Web Interface to see posted data from the meterreader",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "wdio test/configuration.js ",
     "start": "nodemon app.js"
   },
   "author": "",
@@ -21,5 +21,16 @@
     "ignore": [
       "*/data.json"
     ]
+  },
+  "devDependencies": {
+    "@wdio/cli": "^5.3.3",
+    "@wdio/dot-reporter": "^5.2.3",
+    "@wdio/local-runner": "^5.3.3",
+    "@wdio/mocha-framework": "^5.3.2",
+    "@wdio/selenium-standalone-service": "^5.2.2",
+    "@wdio/sync": "^5.3.2",
+    "wdio-chromedriver-service": "^0.1.5",
+    "wdio-iedriver-service": "^0.1.0",
+    "webdriverio": "^5.3.3"
   }
 }
