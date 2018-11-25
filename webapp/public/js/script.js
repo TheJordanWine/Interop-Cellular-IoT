@@ -107,6 +107,43 @@ function getJSON() {
     });
 }
 
+function subscribe() {
+    localStorage.setItem('ishttps', document.forms[0].ishttps.checked);
+    localStorage.setItem('om2mhost', document.forms[0].om2mhost.value);
+    localStorage.setItem('om2mport', document.forms[0].om2mport.value);
+    localStorage.setItem('listenaddr', document.forms[0].listenaddr.value);
+    localStorage.setItem('listenport', document.forms[0].listenport.value);
+    $.ajax({
+        type: "post",
+        url: '/api/subscribe',
+        data: jQuery('form').serialize(),
+        contentType: "application/x-www-form-urlencoded",
+        success: function (responseData, textStatus, jqXHR) {
+            location.reload();
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            alert(errorThrown);
+        }
+    });
+}
+function deleteResource(resourceName) {
+    var userConfirm = confirm('Are you sure you want to delete the resource?');
+    if(userConfirm) {
+        $.ajax({
+            type: "post",
+            url: '/api/delete',
+            data: `resourceName=${resourceName}&ishttps=${localStorage.getItem('ishttps')}&om2mhost=${localStorage.getItem('om2mhost')}&om2mport=${localStorage.getItem('om2mport')}`,
+            contentType: "application/x-www-form-urlencoded",
+            success: function (responseData, textStatus, jqXHR) {
+                location.reload();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert(errorThrown);
+            }
+        });
+    }
+}
+
 var ctx = "myChart";
 
 var data = {
@@ -136,10 +173,14 @@ var data = {
 var option = {
     showLines: true
 };
-var myLineChart = Chart.Line(ctx, {
-    data: data,
-    options: option
-});
+var myLineChart;
+if(!!document.querySelector('canvas#myChart')) {
+    myLineChart = Chart.Line(ctx, {
+        data: data,
+        options: option
+    });
+}
+
 
 if(typeof M !== 'undefined') {
     M.AutoInit();

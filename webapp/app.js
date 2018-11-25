@@ -20,6 +20,8 @@ var parseString = require('xml2js').parseString;
 var path = require('path');
 var fs = require('fs');
 var request = require('request');
+var session = require('express-session');
+var bodyParser = require('body-parser');
 const Onem2m = require("./onem2m");
 
 
@@ -33,22 +35,40 @@ const ONE_M2M_PORT = process.env.npm_config_m2mport || 8443;  // PORT to access 
 var AE_NAMES = [];
 const IS_HTTPS = process.env.npm_config_ishttps || false;
 
-function subscribeToServer(aeName) {
-    onem2mOptions = {
-        port: ONE_M2M_PORT,
-        host: ONE_M2M_HOST,
-        listenAddress : LISTEN_ADDR,
-        listenPort : LISTEN_PORT,
-        aeName : aeName,
-        https : IS_HTTPS,
-        listenRoute : "/monitor"
+
+function isAuthenticatedCustomMiddleware(req, res, next) {
+    var loggedIn = typeof req.session !== 'undefined' ? typeof req.session.isAuth !== 'undefined' ? true : false : false;
+    if (loggedIn) {
+        return next();
     }
+    res.redirect('/login');
+}
+
+function subscribeToServer(aeName, subscriptionOpts) {
+    var onem2mOptions;
+    if(typeof subscriptionOpts !== 'undefined') {
+        onem2mOptions = subscriptionOpts;
+    }else {
+        onem2mOptions = {
+            port: ONE_M2M_PORT,
+            host: ONE_M2M_HOST,
+            listenAddress : LISTEN_ADDR,
+            listenPort : LISTEN_PORT,
+            aeName : aeName,
+            https : IS_HTTPS,
+            listenRoute : "/monitor"
+        }
+    }
+     
+    
     var onem2m = new Onem2m(onem2mOptions);
-    onem2m.createAE()
-    .then( () => { return onem2m.createDataContainer() })
-    .then( () => { return onem2m.deleteSubscription() })
-    .then( () => { return onem2m.sendSubscription() })
-    .catch( (err) => {console.log("Encountered error: " + err.toString())});
+    var PendingSub = onem2m.createAE()
+        .then( () => { return onem2m.createDataContainer() })
+        .then( () => { return onem2m.deleteSubscription() })
+        .then( () => { return onem2m.sendSubscription() })
+        .catch( (err) => {console.log("Encountered error: " + err.toString())});
+    
+    return PendingSub;
 }
 
 
@@ -58,13 +78,18 @@ function subscribeToServer(aeName) {
 var app = express();
     app.set('view engine', 'pug');
     app.use(express.static(__dirname + '/public'));
-
-app.use(xmlparser());
+    app.use(session({
+        secret: 'SER401_SECRET',
+        resave: false,
+        saveUninitialized: true
+    }));
+    app.use(bodyParser.urlencoded({extended: true }));
+    app.use(xmlparser());
 
 /**
  * signifies a get request for the inital path of the site
  */
-app.get('/', function(req, res) {
+app.get('/', isAuthenticatedCustomMiddleware, function(req, res) {
     //res is the response object
     //render will take string and search for a pug file in views/ and will render it out
     res.status(200);
@@ -73,13 +98,30 @@ app.get('/', function(req, res) {
     });
 });
 
-app.get('/data', function(req, res) {
+app.get('/login', function(req, res) {
+    res.render('login');
+});
+app.post('/login', function(req, res) {
+    if(req.body.username == 'admin' && req.body.password == 'admin') {
+        req.session.isAuth = true;
+        res.redirect('/');
+    }else {
+        res.redirect('/login?wrong_login')
+    }
+});
+app.get('/logout', function(req, res) {
+    if(!!req.session && !!req.session.isAuth) {
+        req.session.isAuth = undefined;
+    }
+    res.redirect('/login');
+});
+app.get('/data', isAuthenticatedCustomMiddleware, function(req, res) {
     res.render('data', {
         AEName: req.query.ae
     });
 });
 
-app.get('/api/get/:ae', function(req, res) {
+app.get('/api/get/:ae', isAuthenticatedCustomMiddleware, function(req, res) {
     var resourceName = req.params.ae;
     if(AE_NAMES.includes(resourceName)) {
         if(fs.existsSync(resourceName)) {
@@ -95,12 +137,121 @@ app.get('/api/get/:ae', function(req, res) {
         res.send('null');
         res.end();
     }
-    // res.send("HI");
 });
+
+
+/**
+ * Manual subscription from webapp
+ */
+app.post('/api/subscribe', function(req, res) {
+    /**
+     * Posted data
+     */
+    let isHttps = req.body.ishttps,
+        om2mhost = req.body.om2mhost,
+        om2mport = req.body.om2mport,
+        listenaddr = req.body.listenaddr,
+        listenport = req.body.listenport;
+
+    var options = {
+        url: `${isHttps ? 'https' : 'http'}://${om2mhost}:${om2mport}/~/in-cse/?rcn=5`,
+        headers: {
+            'X-M2M-Origin': 'admin:admin',
+            'Accept': 'application/json'
+        }
+    };
+    request(options, function(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            try {
+                var CSEBase = JSON.parse(body)["m2m:cb"],
+                    childrenResources = CSEBase.ch,
+                    applicationEntityResources = childrenResources.filter(ae => ae.ty === 2).map(ae => ae.rn);
+                
+                AE_NAMES = applicationEntityResources;
+                AE_SUBSCRIPTIONS = [];
+                AE_NAMES.forEach((aeName) => {
+                    AE_SUBSCRIPTIONS.push(subscribeToServer(aeName, {
+                        port: om2mport,
+                        host: om2mhost,
+                        listenAddress : listenaddr,
+                        listenPort : listenport,
+                        aeName : aeName,
+                        https : !!isHttps ? true : false,
+                        listenRoute : "/monitor"
+                    }));
+                });
+                Promise.all(AE_SUBSCRIPTIONS).then(function(values) {
+                    res.json({
+                        message: 'success'
+                    });
+                });
+            }catch(e) {
+                console.log(e);
+                res.statusCode = 500;
+                res.json({
+                    message: 'Error unable to grab resources from subscription settings, check logs'
+                });
+                
+            }   
+        }else {
+            console.log('error');
+            res.statusCode = 400;
+            res.json({
+                message: 'Bad request'
+            });
+        }
+    });
+});
+
+/**
+ * Manually delete resource
+ */
+
+ app.post('/api/delete', function(req, res) {
+    let isHttps = req.body.ishttps,
+        om2mhost = req.body.om2mhost,
+        om2mport = req.body.om2mport,
+        resourceName = req.body.resourceName;
+    console.log(isHttps);
+
+    var options = {
+        method: 'DELETE',
+        url: `${isHttps == 'true' ? 'https' : 'http'}://${om2mhost}:${om2mport}/~/in-cse/in-name/${resourceName}`,
+        headers: {
+            'X-M2M-Origin': 'admin:admin'
+        }
+    };
+    request(options, function(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            var tempAE_NAMES = [];
+            AE_NAMES.forEach(rn => {
+                if(rn != resourceName) {
+                    tempAE_NAMES.push(rn);
+                }
+            });
+            AE_NAMES = tempAE_NAMES;
+            res.statusCode = 200;
+            res.json({
+                message: 'Deleted successfully'
+            });
+        }
+        else {
+            console.log(body);
+            res.statusCode = 500;
+            res.json({
+                message: 'Unable to complete request'
+            });
+            console.log(error);
+        }
+    });
+    // DELETE http://127.0.0.1:8080/~/in-cse/in-name/MY_TEST
+    // X-M2M-Origin: admin:admin 
+ });
+
 /**
  * Simple ping to the IN-CSE server done server side
  */
-app.get('/status', function(req, res) {
+app.get('/status', isAuthenticatedCustomMiddleware, function(req, res) {
     var options = {
         url: `${IS_HTTPS ? 'https' : 'http'}://${ONE_M2M_HOST}:${ONE_M2M_PORT}/~/in-cse`,
         headers: {
@@ -144,11 +295,11 @@ app.post('/monitor', function(req, res) {
                 var AEName = req.body['m2m:sgn'].sur[0].match(/(?<=\/)(.*)(?=\/)/)[1].split('/')[2];
                 saveDataToJSON(AEName, creationData.toUTCString(), content);
 
-                incomingTemp = JSON.parse(content).temp;
+                incomingTemp = JSON.parse(content).kWH;
             }
 
         });
-        console.log("Got temperature of: " + incomingTemp);
+        console.log("Got voltage of: " + incomingTemp);
     }
     res.status(200).send("thanks!");
 });
@@ -166,35 +317,6 @@ app.all('/monitor', function(req,res) {
 app.listen(LISTEN_PORT, function() {
     console.log('Listening on port: ' + LISTEN_PORT);
     console.log('Head over to ' + LISTEN_ADDR + ':' + LISTEN_PORT);
-    var options = {
-        url: `${IS_HTTPS ? 'https' : 'http'}://${ONE_M2M_HOST}:${ONE_M2M_PORT}/~/in-cse/?rcn=5`,
-        headers: {
-            'X-M2M-Origin': 'admin:admin',
-            'Accept': 'application/json'
-        }
-    };
-    request(options, function(error, response, body) {
-        if (!error && response.statusCode == 200) {
-            try {
-                var CSEBase = JSON.parse(body)["m2m:cb"],
-                    childrenResources = CSEBase.ch,
-                    applicationEntityResources = childrenResources.filter(ae => ae.ty === 2).map(ae => ae.rn);
-                
-                AE_NAMES = applicationEntityResources;
-            }catch(e) {
-                console.log(e);
-                AE_NAMES = ["MY_METER"];
-            }
-            AE_NAMES.forEach((aeName) => {
-                subscribeToServer(aeName);
-            });
-            
-        }
-        else {
-            console.log(error);
-        }
-    });
-
 });
 
 

@@ -8,11 +8,21 @@ html(lang="en")
         nav
             .nav-wrapper
                 a.brand-logo(href='#!') Interop Cellular Dashboard
+                a.sidenav-trigger(href='#', data-target='mobile-demo')
+                    i.material-icons menu
+                ul#mobile-demo.sidenav
+                    li
+                        a(class="modal-trigger" href="#subscription") Subscribe
+                    li
+                        a(href="/logout") Logout
                 ul.right.hide-on-med-and-down
                     li
                         a(class="waves-effect waves-light btn modal-trigger" href="#subscription")
                             i.material-icons.left settings
                             | Subscribe
+                        a(class="waves-effect waves-light btn logout" href="/logout")
+                            i.material-icons.left power_settings_new
+                            | Logout
         h2 Welcome
         p Click on any of the Application Entity Buttons to see their respective data
         br
@@ -24,5 +34,8 @@ html(lang="en")
                             span.card-title=ae
                         .card-action
                             a(class="waves-effect waves-light btn orange darken-2 monitor-data" href=`/data?ae=${ae}`) Monitor Data
+                            a(class="waves-effect waves-light btn red" onclick=`deleteResource('${ae}')`)
+                                i.material-icons.left delete
+                                | Delete
                             a(class="waves-effect waves-light btn disabled ping-data" href=`/ping?ae=${ae}`) Ping for data
         include templates/jsscripts.pug
