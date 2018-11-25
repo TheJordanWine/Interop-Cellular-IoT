@@ -16,6 +16,7 @@
  */
 
 // Imports
+#include <algorithm>
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -224,8 +225,45 @@ int main (int argc, char* argv[]) {
   * array is in a valid IP:Port-number format.  For example,
   * 127.0.0.1:8080 is a valid IP:Port-number formatted char
   * array.
+  *
+  * @param The input char array to validate.
+  * @return Boolean indicating whether input is valid or not.
   */
 bool isValidIP(char x[]) {
-  bool result = false;
+
+  // Initialize the result boolean to true.
+  bool result = true;
+
+  int c1 = 0;     // Count number of "." characters.
+  int c2 = 0;     // Count number of ":" characters.
+
+  // Iterate through the input char array.
+  int i = 0;
+  while (x[i] != '\0') {
+
+    // If the character matches "." then increment the relevant counter.
+    if (x[i] == '.') {
+      c1++;
+    }
+
+    // If the character matches ":" then increment the relevant counter.
+    else if (x[i] == ':') {
+      c2++;
+    }
+
+    i++;
+  } // End of while loop.
+
+  // If "." characters do not equal 3, result is false.
+  if (c1 != 3) {
+    result = false;
+  }
+  // If ":" characters do not equal 1, result is false.
+  else if (c2 != 1) {
+    result = false;
+  }
+
+  // Return the result back.
   return result;
-}
+
+} // End of function isValidIP.
