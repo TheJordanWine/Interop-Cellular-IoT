@@ -257,7 +257,7 @@ int main (int argc, char* argv[]) {
    * server instance running locally on this client (127.0.0.1)
    * and port number 8082. Use a callback routine callbackNotification.
    */
-  onem2m::startHttpServer({""}, 8082, &callbackNotification);
+  onem2m::startHttpServer(vector<string>(), 8082, &callbackNotification);
 
   /*
    * Create the main MY_METER AE resource object and push to OM2M server.
@@ -333,8 +333,9 @@ int main (int argc, char* argv[]) {
   ss.resourceName("SUB_CPP_CLIENT");   // The name of the subscription
   uri.push_back(cseRootAddr+"/"+aeName);
   ss.notificationURI(uri);
+  ss.notificationContentType(1);  // Receive updates on any resource change.
   respObj = ::onem2m::createResource(cseRootAddr+"/"+aeName+"/"+"PING_METER",
-    "5555", ss, result, respObjType);
+    "5600", ss, result, respObjType);
   cout << "\nSubscription result code: " << result << "\n";
 
   /*
@@ -688,9 +689,10 @@ bool isValidIP(const char x[]) {
   * separate thread from the main.
   */
 onem2m::onem2mResponseStatusCode callbackNotification(
-  string h,
-  string &from,
-  onem2m::notification* n)
+  string h,                  // The OM2M 'to' attribute.
+  string &from,              // The OM2M 'from' attribute.
+  onem2m::notification* n)   // The OM2M notification object contents pointer.
 {
-  return onem2m::rcACCEPTED;
+  cout << "\nNotification from: " << onem2m::getFrom() << endl;
+  return onem2m::rcOK;
 }
