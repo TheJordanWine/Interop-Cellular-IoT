@@ -19,7 +19,7 @@ int main (int argc, char* argv[]) {
   string loginCred = "admin:admin";     // The OM2M Server login credentials.
   string aeName = "MY_METER";           // Name of the AE Resource to create.
   string aeAppId = "app1";              // Name of the AE App Id. Mandatory.
-  string contName = "meter-value";      // Data Container Name.
+  string contName = "DATA";             // Data Container Name.
   ::xml_schema::integer respObjType;    // The response data from server.
   string cseRootAddr = "/in-cse/in-name";            // SP-Relative address.
   std::unique_ptr< ::xml_schema::type > respObj;     // The result code from server.
@@ -72,7 +72,7 @@ int main (int argc, char* argv[]) {
     "5555", result, respObjType);
   cout << "Result = " << result << "\n";
   cout << "respObjType = " << respObjType << "\n";
-  
+
   /*
    * Create a container in our AE. This container will store the AE description.
    */
@@ -82,7 +82,7 @@ int main (int argc, char* argv[]) {
   respObj = ::onem2m::createResource(cseRootAddr+"/"+aeName,
     "5555", dsccnt, result, respObjType);
   cout << "\nContainer creation result code: " << result << "\n";
-  
+
   /*
    * Populate the descriptor container with an actual discription
    */
@@ -105,12 +105,12 @@ int main (int argc, char* argv[]) {
 
   /*
    * Write simulated utility meter value data to Content Instance in the Container
-   */   
+   */
   cout << "\nCreating Content Instance...\n";
   auto contInst = ::onem2m::contentInstance();
   contInst.contentInfo("application/text");      // Text data.
   meterValue = um.getRandomValue();              // Get a simulated value from meter.
-  meterValueStr = to_string(meterValue);         // Convert int to Str.
+  meterValueStr = "{\"kWH\": " + to_string(meterValue) + "}";   // Convert int to Str.
   contInst.content(meterValueStr);               // Write simulated value.
   respObj = ::onem2m::createResource(cseRootAddr+"/"+aeName+"/"+contName,
     "5555", contInst, result, respObjType);
@@ -123,9 +123,9 @@ int main (int argc, char* argv[]) {
     "5555", result, respObjType);
   cout << "Result = " << result << "\n";
   cout << "respObjType = " << respObjType << "\n";
-  
+
   /*
-   * Update and display the meter-value every 10 seconds for webapp 
+   * Update and display the meter-value every 10 seconds for webapp
    * testing (based on secondsToDelay).
    */
   cout << "Meter values will now update every " << secondsToDelay;
@@ -139,18 +139,18 @@ int main (int argc, char* argv[]) {
         if(time_counter > (double)(secondsToDelay * CLOCKS_PER_SEC))
         {
             time_counter -= (double)(secondsToDelay * CLOCKS_PER_SEC);
-            
+
             um.updateMeterValueRand(); //update meterValue with random number.
             meterValue = um.getMeterValue();
             cout << "meter-value: " << meterValue << endl;
             // create a new contentInstance
             contInst = ::onem2m::contentInstance();
             contInst.contentInfo("application/text");      // Text data.
-            meterValueStr = to_string(meterValue);         // Convert int to Str.
+            meterValueStr = "{\"kWH\": " + to_string(meterValue) + "}"; // Convert int to Str.
             contInst.content(meterValueStr);               // Write simulated value.
             respObj = ::onem2m::createResource(cseRootAddr+"/"+aeName+"/"+contName,
               "5555", contInst, result, respObjType);
-              
+
             count++;
         }
     }
