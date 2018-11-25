@@ -324,6 +324,20 @@ int main (int argc, char* argv[]) {
   cout << "\nContainer creation result code: " << result << "\n";
 
   /*
+   * Create a subscription to the OM2M server's PING_METER Container
+   * that is under the MY_METER AE.
+   */
+  cout << "\nSubscribing to PING_METER container on OM2M server...\n";
+  auto ss = ::onem2m::subscription();
+  auto uri = ::onem2m::listOfURIs();
+  ss.resourceName("SUB_CPP_CLIENT");   // The name of the subscription
+  uri.push_back(cseRootAddr+"/"+aeName);
+  ss.notificationURI(uri);
+  respObj = ::onem2m::createResource(cseRootAddr+"/"+aeName+"/"+"PING_METER",
+    "5555", ss, result, respObjType);
+  cout << "\nSubscription result code: " << result << "\n";
+
+  /*
    * Write simulated utility meter value data to Content Instance in the Container
    */
   cout << "\nCreating Content Instance...\n";
