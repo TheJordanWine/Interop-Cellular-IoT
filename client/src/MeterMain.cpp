@@ -261,6 +261,8 @@ int main (int argc, char* argv[]) {
 
   /*
    * Create the main MY_METER AE resource object and push to OM2M server.
+   * This will be used by the client to send meter values to and to receive
+   * commands/instructions from.
    */
   cout << "Creating MY_METER AE resource object...\n";
   auto aeMyMeter = onem2m::AE();
@@ -291,7 +293,7 @@ int main (int argc, char* argv[]) {
   cout << "\nContainer creation result code: " << result << "\n";
 
   /*
-   * Populate the descriptor container with an actual discription
+   * Populate the descriptor container with an actual description
    */
   cout << "\nCreating Descriptor Content Instance...\n";
   auto descInst = ::onem2m::contentInstance();
@@ -308,6 +310,17 @@ int main (int argc, char* argv[]) {
   cnt.resourceName(contName);
   respObj = ::onem2m::createResource(cseRootAddr+"/"+aeName,
     "5555", cnt, result, respObjType);
+  cout << "\nContainer creation result code: " << result << "\n";
+
+  /*
+   * Create a new receiver Container in our AE. The client will subscribe to this
+   * container for instructions from the webapp.
+   */
+  cout << "\nCreating receiver Container...\n";
+  auto cntRcv = ::onem2m::container();
+  cntRcv.resourceName("POLL_METER");
+  respObj = ::onem2m::createResource(cseRootAddr+"/"+aeName,
+    "5555", cntRcv, result, respObjType);
   cout << "\nContainer creation result code: " << result << "\n";
 
   /*
