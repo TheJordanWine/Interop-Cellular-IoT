@@ -54,9 +54,21 @@ int main (int argc, char* argv[]) {
   clock_t this_time = clock();
   clock_t last_time = this_time;
 
- /*
-  * First, initialize the OS-IoT library.
-  */
+  /*
+   * Parse command line args
+   */
+  if (argc == 1) {   // Arg count 1 is just the program name.
+    cout << "\nNo command line args passed...\n";
+  }
+  if (argc >= 2) {   // Arg count 2 is the OM2M server in format IP:Port
+    cout << "\nCommand line arg passed for OM2M server: ";
+    cout << argv[1] << endl;
+    hostName = argv[1];        // Set hostName to command line arg IP:Port
+  }
+
+  /*
+   * First, initialize the OS-IoT library.
+   */
   cout << "\nInitializing oneM2M library...";
   onem2m::initialize();
   cout << "Done!\n";
