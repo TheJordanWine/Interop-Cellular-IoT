@@ -8,14 +8,34 @@ var xmlparser = require('express-xml-bodyparser');
 var parseString = require('xml2js').parseString;
 var path = require('path');
 var fs = require('fs');
+const Onem2m = require("./onem2m");
 
-// We'll use request to be able to send post requests to the oneM2M server
-var request = require('request');
-const ONE_M2M_HOST = "127.0.0.1";
-const ONE_M2M_PORT = 8080;
+
+// Listen for client data on the following IP:PORT
 const LISTEN_PORT = 3000;
 const LISTEN_ADDR = "127.0.0.1";
+// One M2M Sever Connection
+const ONE_M2M_HOST = "127.0.0.1"; // IP of OM2M server
+const ONE_M2M_PORT = 8080;  // PORT to access OM2M server
 const AE_NAMES = ["MY_SENSOR" , "MY_METER"];
+
+function subscribeToServer(aeName) {
+    onem2mOptions = {
+        port: ONE_M2M_PORT,
+        host: ONE_M2M_HOST,
+        listenAddress : LISTEN_ADDR,
+        listenPort : LISTEN_PORT,
+        aeName : aeName,
+        https : false,
+        listenRoute : "/monitor"
+    }
+    var onem2m = new Onem2m(onem2mOptions);
+    onem2m.createAE()
+    .then( () => { return onem2m.createDataContainer() })
+    .then( () => { return onem2m.deleteSubscription() })
+    .then( () => { return onem2m.sendSubscription() })
+    .catch( (err) => {console.log("Encountered error: " + err.toString())});
+}
 
 
 
@@ -65,26 +85,27 @@ app.get('/test', function(req, res) {
 app.post('/monitor', function(req, res) {
     //res is the response object
     var incomingTemp;
-    parseString(req.body['m2m:sgn'].nev[0].rep[0].con[0], (err, result) => {
-        if (!err) {
-            incomingTemp = result.obj.int[0]['$'].val;
-        } else {
-            //get the actual request body content in the form of :  {"temp" : 49}
-            var content = req.body['m2m:sgn'].nev[0].rep[0].con[0];
-            //get the CT data in the form of : 20181123T112401
-            var ct = req.body['m2m:sgn'].nev[0].rep[0].ct[0].match(/(\d{4})(\d{2})(\d{2})(\w)(\d{2})(\d{2})(\d{2})/);
-            //Javscript Object Data with toString functionaility
-            var creationData = new Date(ct[1], ct[2], ct[3], ct[5], ct[6], ct[7]);
-            //Get the application name from the incoming request
-            var AEName = req.body['m2m:sgn'].sur[0].match(/(?<=\/)(.*)(?=\/)/)[1].split('/')[2];
-            saveDataToJSON(AEName, creationData.toUTCString(), content);
-
-            incomingTemp = JSON.parse(content).temp;
-        }
-
-    });
-
-    console.log("Got temperature of: " + incomingTemp);
+    if (req.body['m2m:sgn'].nev) { // First check if we're actually getting a data notification
+        parseString(req.body['m2m:sgn'].nev[0].rep[0].con[0], (err, result) => {
+            if (!err) {
+                incomingTemp = result.obj.int[0]['$'].val;
+            } else {
+                //get the actual request body content in the form of :  {"temp" : 49}
+                var content = req.body['m2m:sgn'].nev[0].rep[0].con[0];
+                //get the CT data in the form of : 20181123T112401
+                var ct = req.body['m2m:sgn'].nev[0].rep[0].ct[0].match(/(\d{4})(\d{2})(\d{2})(\w)(\d{2})(\d{2})(\d{2})/);
+                //Javscript Object Data with toString functionaility
+                var creationData = new Date(ct[1], ct[2], ct[3], ct[5], ct[6], ct[7]);
+                //Get the application name from the incoming request
+                var AEName = req.body['m2m:sgn'].sur[0].match(/(?<=\/)(.*)(?=\/)/)[1].split('/')[2];
+                saveDataToJSON(AEName, creationData.toUTCString(), content);
+    
+                incomingTemp = JSON.parse(content).temp;
+            }
+    
+        });    
+        console.log("Got temperature of: " + incomingTemp);        
+    }
     res.status(200).send("thanks!");
 });
 
@@ -96,9 +117,14 @@ app.all('/monitor', function(req,res) {
     res.render('error', {"message" : "Bad method. POST required"});
 });
 
+
+
 app.listen(LISTEN_PORT, function() {
-    console.log('Listening on port 3000...');
-    console.log('Head over to localhost:3000');
+    console.log('Listening on port: ' + LISTEN_PORT);
+    console.log('Head over to ' + LISTEN_ADDR + ':' + LISTEN_PORT);
+    AE_NAMES.forEach((aeName) => {
+        subscribeToServer(aeName);
+    });
 });
 
 
@@ -152,67 +178,3 @@ var saveDataToJSON = function(ae,ct,incomingData) {
         });
     }
 };
-
-/**
- * Sends a subscription to the IN-CSE
- */
-var sendSubscription = function() {
-    AE_NAMES.forEach( (AE_NAME) =>  {
-        var subscription = {
-            "m2m:sub": {
-                // Resource Name
-                "rn" : "SUB_" + AE_NAME,
-                // Notification URI
-                "nu" : "http://" + LISTEN_ADDR + ":" + LISTEN_PORT + "/monitor",
-                // Notificaation Content Type
-                "nct" : 2
-            }
-        };   
-        request({
-            url: "http://" + ONE_M2M_HOST + ':' + ONE_M2M_PORT + '/~/in-cse/in-name/' + AE_NAME + '/DATA',
-            method: "POST",
-            headers: {
-                "X-M2M-Origin": "admin:admin",
-                "Content-Type": "application/json;ty=23"
-            },
-            body: JSON.stringify(subscription)
-        }, function (error, response, body){
-            if (error) {
-                console.log(error);
-            } else {
-                console.log("prosessing response to subscription");
-                console.log(response.statusCode);
-                console.log(response.headers);
-                console.log("Got from oneM2M server: " + body);
-            }
-        });
-    });
-};
-
-
-var deleteSubscription = function(callback) {
-    AE_NAMES.forEach( (AE_NAME) =>  {
-        request({
-            url: "http://" + ONE_M2M_HOST + ':' + ONE_M2M_PORT + '/~/in-cse/in-name/' + AE_NAME + "/DATA/SUB_" + AE_NAME,
-            method: "DELETE",
-            headers: {
-                "X-M2M-Origin": "admin:admin",
-                "Accept": "application/json;"
-            }
-        }, function (error, response, body){
-            if (error) {
-                console.log(error);
-            } else {
-                console.log("Subscription was deleted");
-                callback();
-            }
-        });
-    });
-};
-
-
-var cleanSubscription = function() {
-    deleteSubscription(sendSubscription);
-};
-
-cleanSubscription();
