@@ -21,6 +21,4 @@ html(lang="en")
         each ae in pugAENames
             a(class="btn btn-primary" href=`/data?ae=${ae}`)= ae
             br
-        
-        script(src="/js/jquery.js")
-        script(src="/js/script.js")
+        include templates/jsscripts.pug
