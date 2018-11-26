@@ -128,7 +128,7 @@ echo "   Done!"
 #
 echo ""
 echo "Compiling program with g++..."
-g++ -v -o main MeterMain.cpp UtilityMeter.cpp ValidityCheck.cpp RandomMeterValue.cpp -Wl,-rpath=. -L. -losiot -lssl -lcrypto -lxerces-c -lcurl -lpthread
+g++ -v -o main MeterMain.cpp UtilityMeter.cpp Arguments.cpp ValidityCheck.cpp RandomMeterValue.cpp -Wl,-rpath=. -L. -losiot -lssl -lcrypto -lxerces-c -lcurl -lpthread
 
 #
 # Done
