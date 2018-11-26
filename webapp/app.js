@@ -63,10 +63,28 @@ app.get('/', function(req, res) {
 });
 
 app.get('/data', function(req, res) {
-    
     res.render('data', {
         AEName: req.query.ae
     });
+});
+
+app.get('/api/get/:ae', function(req, res) {
+    var resourceName = req.params.ae;
+    if(AE_NAMES.includes(resourceName)) {
+        if(fs.existsSync(resourceName)) {
+            var dataFile = path.resolve(__dirname + '/' + resourceName + '/data.json');
+            res.sendfile(dataFile);
+        }else {
+            res.statusCode = 500;
+            res.send('null');
+            res.end();
+        }
+    }else {
+        res.statusCode = 400;
+        res.send('null');
+        res.end();
+    }
+    // res.send("HI");
 });
 /**
  * Simple ping to the IN-CSE server done server side
@@ -98,6 +116,7 @@ app.get('/status', function(req, res) {
  */
 app.post('/monitor', function(req, res) {
     //res is the response object
+    console.log('test');
     var incomingTemp;
     if (req.body['m2m:sgn'].nev) { // First check if we're actually getting a data notification
         parseString(req.body['m2m:sgn'].nev[0].rep[0].con[0], (err, result) => {
@@ -145,7 +164,7 @@ app.listen(LISTEN_PORT, function() {
 
 
 var saveDataToJSON = function(ae,ct,incomingData) {
-    var dataFolder = ae + '_data';
+    var dataFolder = ae;
 
     //Check if the folder is created, if not create it
     //Using sync since async exists is deprecated https://stackoverflow.com/questions/4482686/check-synchronously-if-file-directory-exists-in-node-js/4482701
