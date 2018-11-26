@@ -6,7 +6,7 @@ matrix:
       script: true
 
     - language: node_js
-      node_js: 8.9
+      node_js: 11.0.0
       env:
         - CHROME_BIN="/usr/bin/google-chrome-stable"
       addons:
