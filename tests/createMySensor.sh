@@ -1,0 +1,1 @@
+curl --request POST --url 'http://127.0.0.1:8080/~/in-cse' --header 'content-type: application/xml;ty=2' --header 'x-m2m-origin: admin:admin' --data '<m2m:ae xmlns:m2m="http://www.onem2m.org/xml/protocols" rn="MY_SENSOR" ><api>app-sensor</api><lbl>Type/sensor Category/temperature Location/home</lbl><rr>false</rr></m2m:ae>'
