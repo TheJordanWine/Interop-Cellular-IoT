@@ -2,13 +2,14 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <ctime>
 #include "onem2m.hxx"
 #include "UtilityMeter.h"
 
 using namespace std;
 
 /**
- * Main function, program entry point.
+  * Main function, program entry point.
  */
 int main (int argc, char* argv[]) {
 
@@ -28,7 +29,10 @@ int main (int argc, char* argv[]) {
   string buff= "type = Utility_Meter\n"           //String for UtilityMeter description.
     "location = Home\n"
     "appIDd = MY_METER";
-  um.setMeterDescriptor(buff);               // Set the Descriptor for the UtilityMeter object.
+  um.setMeterDescriptor(buff);          // Set the Descriptor for the UtilityMeter object.
+  clock_t timer = clock();              // Timer for intermitent meter-value updates
+  double secondsPassed;
+  double secondsToDelay = 10;           // Seconds between meter-value updates
 
  /*
   * First, initialize the OS-IoT library.
@@ -116,6 +120,21 @@ int main (int argc, char* argv[]) {
     "5555", result, respObjType);
   cout << "Result = " << result << "\n";
   cout << "respObjType = " << respObjType << "\n";
+  
+  /*
+   * Update and display the meter-value every 10 seconds for webapp 
+   * testing (based on secondsToDelay).
+   */
+  cout << "Meter values will now update every " + secondsToDelay + "seconds..."
+  
+  while(true){
+    secondsPassed = (clock() - timer) / CLOCKS_PER_SEC;
+    if(secondsPassed >= secondsToDelay){
+      um.updateMeterValueRand(); //update meterValue with random number.
+      meterValue = um.getMeterValue;
+      cout << "meter-value: " + meterValue << std::endl;
+    }
+  }
 
   /*
    * Close the OS-IoT library and exit.
