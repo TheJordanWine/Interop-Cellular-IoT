@@ -700,9 +700,20 @@ onem2m::onem2mResponseStatusCode callbackNotification(
   int meterReading;
   string meterReadingStr;
   long result;
+  int stringCompareResult;   // For comparing strings. 0 means equal.
 
   // Write to console
   cout << "\nCallback executed - Notification from: " << onem2m::getFrom() << endl;
+
+  // Process verificationRequest and decide to accept it here.
+  if (n->verificationRequest().present()) {
+    cout << "   Processing verification request..." << endl;
+
+    // TODO: Check "From" field to validate if desired.
+
+    return onem2m::rcOK;
+  } // End of verificationRequest processing.
+
   cout << "Sending meter value to OM2M server...\n";
   // Get the current meter value of the UtilityMeter object.
   meterReading = um.getMeterValue();
