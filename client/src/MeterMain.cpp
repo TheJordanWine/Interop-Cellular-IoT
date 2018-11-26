@@ -18,13 +18,17 @@ int main (int argc, char* argv[]) {
   string loginCred = "admin:admin";     // The OM2M Server login credentials.
   string aeName = "MY_METER";           // Name of the AE Resource to create.
   string aeAppId = "app1";              // Name of the AE App Id. Mandatory.
-  string contName = "meter-value";      // Container Name.
+  string contName = "meter-value";      // Data Container Name.
   ::xml_schema::integer respObjType;    // The response data from server.
   string cseRootAddr = "/in-cse/in-name";            // SP-Relative address.
   std::unique_ptr< ::xml_schema::type > respObj;     // The result code from server.
   UtilityMeter um;                      // Construct our UtilityMeter object.
   int meterValue;                       // Represents Utility Meter Value.
   string meterValueStr;                 // Utility Meter Value as a string.
+  string buff= "type = Utility_Meter\n"           //String for UtilityMeter description.
+    "location = Home\n"
+    "appIDd = MY_METER";
+  um.setMeterDescriptor(buff);               // Set the Descriptor for the UtilityMeter object.
 
  /*
   * First, initialize the OS-IoT library.
@@ -61,6 +65,26 @@ int main (int argc, char* argv[]) {
     "5555", result, respObjType);
   cout << "Result = " << result << "\n";
   cout << "respObjType = " << respObjType << "\n";
+  
+  /*
+   * Create a container in our AE. This container will store the AE description.
+   */
+   cout << "\nCreating Descriptor Container...\n";
+  auto dsccnt = ::onem2m::container();
+  dsccnt.resourceName("DESCRIPTOR");
+  respObj = ::onem2m::createResource(cseRootAddr+"/"+aeName,
+    "5555", dsccnt, result, respObjType);
+  cout << "\nContainer creation result code: " << result << "\n";
+  
+  /*
+   * Populate the descriptor container with an actual discription
+   */
+  cout << "\nCreating Descriptor Content Instance...\n";
+  auto descInst = ::onem2m::contentInstance();
+  descInst.contentInfo("application/text");      // Text data.
+  descInst.content(um.getMeterDescriptor());
+  respObj = ::onem2m::createResource(cseRootAddr+"/"+aeName+"/"+"DESCRIPTOR",
+    "5555", descInst, result, respObjType);
 
   /*
    * Create a Container in our AE. This container will store the meter value.

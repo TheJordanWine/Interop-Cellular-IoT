@@ -38,3 +38,4 @@ node_modules/
 .jshintrc
 server/IN-CSE/database/
 server/IN-CSE/configuration/*.log
+
