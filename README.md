@@ -18,3 +18,23 @@
     * Complete Sprint 2
     * Prototype Implementation
     * Final Deliverable
+
+
+## Project Documentation
+
+Install vuepress globally with:
+```sh
+$ npm install -g vuepress
+```
+
+Navigate to `docs/`
+```sh
+$ cd docs/
+```
+
+Run documentation server:
+
+```sh
+$ vuepress dev
+```
+
