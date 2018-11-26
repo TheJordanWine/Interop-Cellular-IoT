@@ -1,6 +1,11 @@
 
 // We'll use request to be able to send post requests to the oneM2M server
 var request = require('request');
+var fs = require('fs');
+const CA_FILE = "./certstore/serverCertificate.pem"
+
+// Accept self-signed certs for now
+process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 
 module.exports = class Onem2m {
     constructor(options) {
@@ -71,9 +76,16 @@ module.exports = class Onem2m {
                 "nct" : 2
             }
         };
+        var protocol;
+        if (this.https) {
+            protocol = "https";
+        } else {
+            protocol = "http";
+        }
         var requestContent = {
-            url: "http://" + this.host + ':' + this.port + '/~/in-cse/in-name/' + this.aeName + '/DATA',
+            url: protocol +"://" + this.host + ':' + this.port + '/~/in-cse/in-name/' + this.aeName + '/DATA',
             method: "POST",
+            ca: fs.readFileSync(CA_FILE),
             headers: {
                 "X-M2M-Origin": this.credentials,
                 "Content-Type": "application/json;ty=23"
@@ -94,9 +106,16 @@ module.exports = class Onem2m {
 
     deleteSubscription() {
         console.log("deleting subscription");
+        var protocol;
+        if (this.https) {
+            protocol = "https";
+        } else {
+            protocol = "http";
+        }
         var requestContent = {
-            url: "http://" + this.host + ':' + this.port + '/~/in-cse/in-name/' + this.aeName + "/DATA/SUB_" + this.aeName,
+            url: protocol +"://" + this.host + ':' + this.port + '/~/in-cse/in-name/' + this.aeName + "/DATA/SUB_" + this.aeName,
             method: "DELETE",
+            ca: fs.readFileSync(CA_FILE),
             headers: {
                 "X-M2M-Origin": this.credentials,
                 "Accept": "application/json;"
@@ -125,10 +144,17 @@ module.exports = class Onem2m {
                 "lbl" : ["Type/sensor", "Category/temperature", "Location/home"],
                 "rr" : "false"
             }
-        };   
+        };
+        var protocol;
+        if (this.https) {
+            protocol = "https";
+        } else {
+            protocol = "http";
+        }
         var requestContent = {
-            url: "http://" + this.host + ':' + this.port + '/~/in-cse',
+            url: protocol +"://" + this.host + ':' + this.port + '/~/in-cse',
             method: "POST",
+            ca: fs.readFileSync(CA_FILE),
             headers: {
                 "X-M2M-Origin": this.credentials,
                 "Content-Type": "application/json;ty=2"
@@ -154,9 +180,16 @@ module.exports = class Onem2m {
                 "rn" : "DATA",
             }
         };
+        var protocol;
+        if (this.https) {
+            protocol = "https";
+        } else {
+            protocol = "http";
+        }
         var requestContent = {
-            url: "http://" + this.host + ':' + this.port + '/~/in-cse/in-name/' + this.aeName,
+            url: protocol +"://" + this.host + ':' + this.port + '/~/in-cse/in-name/' + this.aeName,
             method: "POST",
+            ca: fs.readFileSync(CA_FILE),
             headers: {
                 "X-M2M-Origin": this.credentials,
                 "Content-Type": "application/json;ty=3"
