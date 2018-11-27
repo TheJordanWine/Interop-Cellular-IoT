@@ -15,8 +15,8 @@
     * ~~Set up User Stories by 10/20/2018~~
     * ~~Complete Sprint 1~~
     * ~~Set up User Stories by 11/12/2018~~
-    * Complete Sprint 2
-    * Prototype Implementation
+    * ~~Complete Sprint 2~~
+    * ~~Prototype Implementation~~
     * Final Deliverable
 
 
@@ -37,4 +37,3 @@ Run documentation server:
 ```sh
 $ vuepress dev
 ```
-
