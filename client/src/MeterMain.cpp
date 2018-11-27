@@ -2,13 +2,14 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <ctime>
 #include "onem2m.hxx"
 #include "UtilityMeter.h"
 
 using namespace std;
 
 /**
- * Main function, program entry point.
+  * Main function, program entry point.
  */
 int main (int argc, char* argv[]) {
 
@@ -28,7 +29,13 @@ int main (int argc, char* argv[]) {
   string buff= "type = Utility_Meter\n"           //String for UtilityMeter description.
     "location = Home\n"
     "appIDd = MY_METER";
-  um.setMeterDescriptor(buff);               // Set the Descriptor for the UtilityMeter object.
+  um.setMeterDescriptor(buff);          // Set the Descriptor for the UtilityMeter object.
+  double secondsPassed;
+  double secondsToDelay = 10;           // Seconds between meter-value updates
+  int count = 0;                        // Test value counter
+  double time_counter = 0;              // Timer for simulated data
+  clock_t this_time = clock();
+  clock_t last_time = this_time;
 
  /*
   * First, initialize the OS-IoT library.
@@ -98,7 +105,7 @@ int main (int argc, char* argv[]) {
 
   /*
    * Write simulated utility meter value data to Content Instance in the Container
-   */
+   */   
   cout << "\nCreating Content Instance...\n";
   auto contInst = ::onem2m::contentInstance();
   contInst.contentInfo("application/text");      // Text data.
@@ -116,6 +123,37 @@ int main (int argc, char* argv[]) {
     "5555", result, respObjType);
   cout << "Result = " << result << "\n";
   cout << "respObjType = " << respObjType << "\n";
+  
+  /*
+   * Update and display the meter-value every 10 seconds for webapp 
+   * testing (based on secondsToDelay).
+   */
+  cout << "Meter values will now update every " << secondsToDelay;
+  cout << " seconds for 2 minutes...\n";
+
+    while(count < 13){
+        this_time = clock();
+        time_counter += (double)(this_time - last_time);
+        last_time = this_time;
+
+        if(time_counter > (double)(secondsToDelay * CLOCKS_PER_SEC))
+        {
+            time_counter -= (double)(secondsToDelay * CLOCKS_PER_SEC);
+            
+            um.updateMeterValueRand(); //update meterValue with random number.
+            meterValue = um.getMeterValue();
+            cout << "meter-value: " << meterValue << endl;
+            // create a new contentInstance
+            contInst = ::onem2m::contentInstance();
+            contInst.contentInfo("application/text");      // Text data.
+            meterValueStr = to_string(meterValue);         // Convert int to Str.
+            contInst.content(meterValueStr);               // Write simulated value.
+            respObj = ::onem2m::createResource(cseRootAddr+"/"+aeName+"/"+contName,
+              "5555", contInst, result, respObjType);
+              
+            count++;
+        }
+    }
 
   /*
    * Close the OS-IoT library and exit.

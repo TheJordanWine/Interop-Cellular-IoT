@@ -158,9 +158,13 @@ void UtilityMeter::setMeterDescriptor(string inputValue){
 int UtilityMeter::getRandomValue() {
 
   // The desired maximum value for the random number.
-  int desiredMaximum = 1000;
+  int desiredMaximum = 100;
 
   int result = rand() % desiredMaximum + 1;
-
   return result;
+}
+
+
+int UtilityMeter::updateMeterValueRand(){
+  meterValue = (meterValue + getRandomValue());
 }

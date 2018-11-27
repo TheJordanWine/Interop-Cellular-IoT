@@ -32,6 +32,7 @@ class UtilityMeter {
     void setMeterValue(int inputValue);
     int getMeterValue();
     int getRandomValue();
+    int updateMeterValueRand();
     
     void setMeterDescriptor(std::string inputValue);
     std::string getMeterDescriptor();
