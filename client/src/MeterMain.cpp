@@ -15,7 +15,7 @@ int main (int argc, char* argv[]) {
 
   // Global Function Variables
   long result;                          // HTTP Result code.
-  string hostName = "192.168.0.177:8080"; //"127.0.0.1:8080";   // The IP:Port of OM2M server.
+  string hostName = "127.0.0.1:8080";   // The IP:Port of OM2M server.
   string loginCred = "admin:admin";     // The OM2M Server login credentials.
   string aeName = "MY_METER";           // Name of the AE Resource to create.
   string aeAppId = "app1";              // Name of the AE App Id. Mandatory.
