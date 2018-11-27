@@ -1,0 +1,2 @@
+DELETE http://127.0.0.1:8080/~/in-cse/in-name/MY_TEST
+X-M2M-Origin: admin:admin 

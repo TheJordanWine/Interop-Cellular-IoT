@@ -30,3 +30,13 @@
 *.exe
 *.out
 *.app
+
+node_modules/
+**/org.eclipse.osgi
+*package-lock*.*
+.vscode/
+.jshintrc
+server/IN-CSE/database/
+server/IN-CSE/configuration/*.log
+webapp/MY_METER/
+webapp/MY_METER_data/
