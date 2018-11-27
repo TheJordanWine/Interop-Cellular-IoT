@@ -1,1 +1,1 @@
-curl --request DELETE --url 'http://127.0.0.1:8080/~/in-cse/in-name/MY_TEST' --header 'x-m2m-origin: admin:admin'
+curl --request DELETE --url 'http://127.0.0.1:8080/~/in-cse/in-name/MY_SENSOR' --header 'x-m2m-origin: admin:admin'
