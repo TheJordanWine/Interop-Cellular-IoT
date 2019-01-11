@@ -9,7 +9,6 @@ if (!!statusButton) {
         url: "/status",
         success: function (data) {
             setTimeout(() => {
-                var status = data;
                 if (data == 'true') {
                     statusButton.innerHTML = 'IN-CSE Server Status<span class="badge badge-success">Running</span>';
                 } else {
@@ -83,11 +82,12 @@ function getJSON() {
             data = data.reverse();
             data = data.slice(0, limitChart);
             data = data.reverse();
-            data = data.map(el => {
-                return {
+            data = data.map(function(el) {
+                var respObj = {
                     date: new Date(el.date).toLocaleString().split(', ')[1],
-                    data: JSON.parse(el.data).temp
+                    data: JSON.parse(el.data).kWH
                 };
+                return respObj;
             });
             window.AE_JSON = data;
             updateChart(window.AE_JSON);
