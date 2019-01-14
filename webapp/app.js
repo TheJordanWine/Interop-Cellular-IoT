@@ -13,14 +13,14 @@ const Onem2m = require("./onem2m");
 
 
 // Listen for client data on the following IP:PORT
-const LISTEN_PORT = 3000;
-const LISTEN_ADDR = "127.0.0.1";
+const LISTEN_PORT = process.env.npm_config_port || 3000;
+const LISTEN_ADDR = process.env.npm_config_addr || "127.0.0.1";
 // One M2M Sever Connection
-const ONE_M2M_HOST = "127.0.0.1"; // IP of OM2M server
+const ONE_M2M_HOST = process.env.npm_config_m2mhost || "127.0.0.1"; // IP of OM2M server
 //const ONE_M2M_PORT = 8080;  // PORT to access OM2M server
-const ONE_M2M_PORT = 8443;  // PORT to access OM2M server
+const ONE_M2M_PORT = process.env.npm_config_m2mport || 8443;  // PORT to access OM2M server
 const AE_NAMES = ["MY_SENSOR" , "MY_METER"];
-const IS_HTTPS = true;
+const IS_HTTPS = process.env.npm_config_ishttps || true;
 
 function subscribeToServer(aeName) {
     onem2mOptions = {
