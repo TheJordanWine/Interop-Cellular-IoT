@@ -50,6 +50,8 @@ int main (int argc, char* argv[]) {
   double secondsPassed;
   double secondsToDelay = 10;           // Seconds between meter-value updates
   int count = 0;                        // Test value counter
+  int runtime = 0;                      // Runtime value in minutes
+  int countCalc = 13;                   // To be calculated using 60 * runtime / secondsToDelay + 1 , Default to 13 for 2 minutes
   double time_counter = 0;              // Timer for simulated data
   clock_t this_time = clock();
   clock_t last_time = this_time;
@@ -65,6 +67,12 @@ int main (int argc, char* argv[]) {
     cout << argv[1] << endl;
     hostName = argv[1];        // Set hostName to command line arg IP:Port
   }
+  if (argc >= 3) { // Arg count 3 is the desired run-time in minutes
+        cout << "\nCommand line arg passed for run-time in minutes: ";
+        cout << argv[2] << endl;
+        runtime = atoi(argv[2]);
+        countCalc = 60 * runtime / secondsToDelay + 1;
+    }
 
   /*
    * First, initialize the OS-IoT library.
@@ -158,9 +166,10 @@ int main (int argc, char* argv[]) {
    * testing (based on secondsToDelay).
    */
   cout << "Meter values will now update every " << secondsToDelay;
-  cout << " seconds for 2 minutes...\n";
+  cout << " seconds for " << runtime;
+  cout << " minutes...\n";
 
-    while(count < 13){
+    while(count < countCalc){
         this_time = clock();
         time_counter += (double)(this_time - last_time);
         last_time = this_time;
