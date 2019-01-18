@@ -1,218 +1,210 @@
-/**
- * JavaScript OneM2M file:  onem2m.js
- *
- * This is a JavaScript app that subscribes to the oneM2M
- * standards server for updates from the client application.
- *
- * Instructions:
- *     See docs/webapp.md for the instructions on how to run this
- *         web application.
- *
- * @author Team 6
- *
- * @version 1.0
- */
 
 // We'll use request to be able to send post requests to the oneM2M server
-var request = require("request");
-var fs = require("fs");
-const CA_FILE = "./certstore/serverCertificate.pem";
+var request = require('request');
+var fs = require('fs');
+const CA_FILE = "./certstore/serverCertificate.pem"
 
 // Accept self-signed certs for now
 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 
 module.exports = class Onem2m {
-  constructor(options) {
-    // Copy options
-    this.options = options;
-
-    // Set defaults for required options
-    this.options.host = "127.0.0.1" || options.host;
-    this.options.port = 8080 || options.port;
-    this.options.aeName = "MY_SENSOR" || options.aeName;
-    this.options.listenAddress = "127.0.0.1" || options.listenAddress;
-    this.options.listenPort = 3000 || options.listenPort;
-    this.options.listenRoute = "/monitor" || options.listenRoute;
-    this.options.credentials = "admin:admin" || options.credentials;
-  }
-
-  /**
-   * Sends a subscription to the IN-CSE
-   */
-  sendSubscription() {
-    console.log("sending  subscription");
-    var subscription = {
-      "m2m:sub": {
-        // Resource Name
-        rn: "SUB_" + this.options.aeName,
-        // Notification URI
-        nu:
-          "http://" +
-          this.options.listenAddress +
-          ":" +
-          this.options.listenPort +
-          this.options.listenRoute,
-        // Notificaation Content Type
-        nct: 2
-      }
-    };
-    var protocol;
-    if (this.options.https) {
-      protocol = "https";
-    } else {
-      protocol = "http";
-    }
-    var requestContent = {
-      url:
-        protocol +
-        "://" +
-        this.options.host +
-        ":" +
-        this.options.port +
-        "/~/in-cse/in-name/" +
-        this.options.aeName +
-        "/DATA",
-      method: "POST",
-      ca: fs.readFileSync(CA_FILE),
-      headers: {
-        "X-M2M-Origin": this.options.credentials,
-        "Content-Type": "application/json;ty=23"
-      },
-      body: JSON.stringify(subscription)
-    };
-    return new Promise(function(resolve, reject) {
-      request(requestContent, function(error, response, body) {
-        if (error) {
-          reject(error);
+    constructor(options) {
+        if (options.https) {
+            this.https = true;
         } else {
-          resolve();
+            this.https = false;
         }
-      });
-    });
-  }
-
-  deleteSubscription() {
-    console.log("deleting subscription");
-    var protocol;
-    if (this.options.https) {
-      protocol = "https";
-    } else {
-      protocol = "http";
-    }
-    var requestContent = {
-      url:
-        protocol +
-        "://" +
-        this.options.host +
-        ":" +
-        this.options.port +
-        "/~/in-cse/in-name/" +
-        this.options.aeName +
-        "/DATA/SUB_" +
-        this.options.aeName,
-      method: "DELETE",
-      ca: fs.readFileSync(CA_FILE),
-      headers: {
-        "X-M2M-Origin": this.options.credentials,
-        Accept: "application/json;"
-      }
-    };
-    return new Promise(function(resolve, reject) {
-      request(requestContent, function(error, response, body) {
-        if (error) {
-          reject(error);
+        if (options.host) {
+            this.host = options.host;
         } else {
-          resolve();
+            this.host = "127.0.0.1"
         }
-      });
-    });
-  }
-
-  createAE() {
-    console.log("creating AE");
-    var requestBody = {
-      "m2m:ae": {
-        // Resource Name
-        rn: this.options.aeName,
-        // Notification URI
-        api: "app-sensor",
-        // Notificaation Content Type
-        lbl: ["Type/sensor", "Category/temperature", "Location/home"],
-        rr: "false"
-      }
-    };
-    var protocol;
-    if (this.options.https) {
-      protocol = "https";
-    } else {
-      protocol = "http";
-    }
-    var requestContent = {
-      url:
-        protocol +
-        "://" +
-        this.options.host +
-        ":" +
-        this.options.port +
-        "/~/in-cse",
-      method: "POST",
-      ca: fs.readFileSync(CA_FILE),
-      headers: {
-        "X-M2M-Origin": this.options.credentials,
-        "Content-Type": "application/json;ty=2"
-      },
-      body: JSON.stringify(requestBody)
-    };
-    return new Promise(function(resolve, reject) {
-      request(requestContent, function(error, response, body) {
-        if (error) {
-          reject(error);
+        if (options.port) {
+            this.port = options.port;
         } else {
-          resolve();
+            this.port = 8080;
         }
-      });
-    });
-  }
-
-  createDataContainer() {
-    console.log("creating container");
-    var requestBody = {
-      "m2m:cnt": {
-        // Resource Name
-        rn: "DATA"
-      }
-    };
-    var protocol;
-    if (this.options.https) {
-      protocol = "https";
-    } else {
-      protocol = "http";
-    }
-    var requestContent = {
-      url:
-        protocol +
-        "://" +
-        this.options.host +
-        ":" +
-        this.options.port +
-        "/~/in-cse/in-name/" +
-        this.options.aeName,
-      method: "POST",
-      ca: fs.readFileSync(CA_FILE),
-      headers: {
-        "X-M2M-Origin": this.options.credentials,
-        "Content-Type": "application/json;ty=3"
-      },
-      body: JSON.stringify(requestBody)
-    };
-    return new Promise(function(resolve, reject) {
-      request(requestContent, function(error, response, body) {
-        if (error) {
-          reject(error);
+        if (options.caPath) {
+            this.caPath = options.caPath;
+        }
+        if (options.caInfo) {
+            this.caInfo = options.caInfo;
+        }
+        if (options.subjectANA) {
+            this.subjectANA = options.subjectANA;
+        }
+        if (options.aeName) {
+            this.aeName = options.aeName;
         } else {
-          resolve();
+            this.aeName = "MY_SENSOR";
         }
-      });
-    });
-  }
-};
+        if (options.listenAddress) {
+            this.listenAddress = options.listenAddress;
+        } else {
+            this.listenAddress = "127.0.0.1";
+        }
+        if (options.listenPort) {
+            this.listenPort = options.listenPort;
+        } else {
+            this.listenPort = 3000;
+        }
+        if (options.listenRoute) {
+            this.listenRoute = options.listenRoute;
+        } else {
+            this.listenRoute = "/monitor";
+        }
+        if (options.credentials) {
+            this.credentials = options.credentials;
+        } else {
+            this.credentials = "admin:admin";
+        }
+    }
+
+    
+    /**
+     * Sends a subscription to the IN-CSE
+     */
+    sendSubscription() {
+        console.log("sending  subscription");
+        var subscription = {
+            "m2m:sub": {
+                // Resource Name
+                "rn" : "SUB_" + this.aeName,
+                // Notification URI
+                "nu" : "http://" + this.listenAddress + ":" + this.listenPort + this.listenRoute,
+                // Notificaation Content Type
+                "nct" : 2
+            }
+        };
+        var protocol;
+        if (this.https) {
+            protocol = "https";
+        } else {
+            protocol = "http";
+        }
+        var requestContent = {
+            url: protocol +"://" + this.host + ':' + this.port + '/~/in-cse/in-name/' + this.aeName + '/DATA',
+            method: "POST",
+            ca: fs.readFileSync(CA_FILE),
+            headers: {
+                "X-M2M-Origin": this.credentials,
+                "Content-Type": "application/json;ty=23"
+            },
+            body: JSON.stringify(subscription)
+        }
+        return new Promise(function(resolve, reject) {
+            request(requestContent, function (error, response, body){
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve();
+                }
+            });
+        });
+    }
+
+
+    deleteSubscription() {
+        console.log("deleting subscription");
+        var protocol;
+        if (this.https) {
+            protocol = "https";
+        } else {
+            protocol = "http";
+        }
+        var requestContent = {
+            url: protocol +"://" + this.host + ':' + this.port + '/~/in-cse/in-name/' + this.aeName + "/DATA/SUB_" + this.aeName,
+            method: "DELETE",
+            ca: fs.readFileSync(CA_FILE),
+            headers: {
+                "X-M2M-Origin": this.credentials,
+                "Accept": "application/json;"
+            }
+        }
+        return new Promise(function(resolve, reject) {
+            request(requestContent, function (error, response, body){
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve();
+                }
+            });
+        });
+    };
+
+    createAE() {
+        console.log("creating AE");
+        var requestBody = {
+            "m2m:ae": {
+                // Resource Name
+                "rn" : this.aeName,
+                // Notification URI
+                "api" : "app-sensor",
+                // Notificaation Content Type
+                "lbl" : ["Type/sensor", "Category/temperature", "Location/home"],
+                "rr" : "false"
+            }
+        };
+        var protocol;
+        if (this.https) {
+            protocol = "https";
+        } else {
+            protocol = "http";
+        }
+        var requestContent = {
+            url: protocol +"://" + this.host + ':' + this.port + '/~/in-cse',
+            method: "POST",
+            ca: fs.readFileSync(CA_FILE),
+            headers: {
+                "X-M2M-Origin": this.credentials,
+                "Content-Type": "application/json;ty=2"
+            },
+            body: JSON.stringify(requestBody)
+        }
+        return new Promise(function(resolve, reject) {
+            request(requestContent, function (error, response, body){
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve();
+                }
+            });
+        });
+    }
+
+    createDataContainer() {
+        console.log("creating container");
+        var requestBody = {
+            "m2m:cnt": {
+                // Resource Name
+                "rn" : "DATA",
+            }
+        };
+        var protocol;
+        if (this.https) {
+            protocol = "https";
+        } else {
+            protocol = "http";
+        }
+        var requestContent = {
+            url: protocol +"://" + this.host + ':' + this.port + '/~/in-cse/in-name/' + this.aeName,
+            method: "POST",
+            ca: fs.readFileSync(CA_FILE),
+            headers: {
+                "X-M2M-Origin": this.credentials,
+                "Content-Type": "application/json;ty=3"
+            },
+            body: JSON.stringify(requestBody)
+        }
+        return new Promise(function(resolve, reject) {
+            request(requestContent, function (error, response, body){
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve();
+                }
+            });
+        });
+    }
+
+}
