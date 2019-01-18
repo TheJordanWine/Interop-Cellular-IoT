@@ -1,3 +1,5 @@
+"use strict";
+
 /**
  * CODE FOR THE INDEX PAGE
  */
@@ -7,9 +9,8 @@ if (!!statusButton) {
     $.ajax({
         method: "GET",
         url: "/status",
-        success: function (data) {
-            setTimeout(() => {
-                var status = data;
+        success: function success(data) {
+            setTimeout(function () {
                 if (data == 'true') {
                     statusButton.innerHTML = 'IN-CSE Server Status<span class="badge badge-success">Running</span>';
                 } else {
@@ -20,31 +21,30 @@ if (!!statusButton) {
     });
 }
 
-var intervalJSONGetter = function() {};
+var intervalJSONGetter = function intervalJSONGetter() {};
 /**
  * Functionaitly to change to play to stop and stop to play
  */
 var resumeBtn = document.getElementById('resume');
-if(!!resumeBtn) {
-    resumeBtn.addEventListener('click', function() {
-        if(resumeBtn.innerHTML.indexOf('play_arrow') > -1) {
+if (!!resumeBtn) {
+    resumeBtn.addEventListener('click', function () {
+        if (resumeBtn.innerHTML.indexOf('play_arrow') > -1) {
             intervalJSONGetter = setInterval(function () {
                 getJSON();
             }, 3000);
             resumeBtn.innerHTML = '<i class="material-icons">stop</i>';
-        }else {
+        } else {
             clearInterval(intervalJSONGetter);
             resumeBtn.innerHTML = '<i class="material-icons">play_arrow</i>';
         }
     });
 }
 
-
 var limitChart = 20;
 
 var rangeLimit = document.getElementById('range');
-if(!!rangeLimit) {
-    rangeLimit.onchange = function(e) {
+if (!!rangeLimit) {
+    rangeLimit.onchange = function (e) {
         limitChart = e.target.value;
     };
 }
@@ -54,8 +54,10 @@ if(!!rangeLimit) {
  */
 var resourceName;
 try {
-    var queryString = location.search.split('?').filter(el => el !== '');
-    queryString.forEach(el => {
+    var queryString = location.search.split('?').filter(function (el) {
+        return el !== '';
+    });
+    queryString.forEach(function (el) {
         if (el.split('=')[0] == 'ae') {
             resourceName = el.split('=')[1];
         }
@@ -70,8 +72,12 @@ try {
  * Adds the data to the chart
  */
 function updateChart(AE_JSON) {
-    myLineChart.data.datasets[0].data = AE_JSON.map(el => el.data);
-    myLineChart.data.labels = AE_JSON.map(el => el.date);
+    myLineChart.data.datasets[0].data = AE_JSON.map(function (el) {
+        return el.data;
+    });
+    myLineChart.data.labels = AE_JSON.map(function (el) {
+        return el.date;
+    });
     myLineChart.update();
 }
 
@@ -79,26 +85,26 @@ function getJSON() {
     $.ajax({
         method: "GET",
         url: "/api/get/" + resourceName,
-        success: function (data) {
+        success: function success(data) {
             data = data.reverse();
             data = data.slice(0, limitChart);
             data = data.reverse();
-            data = data.map(el => {
-                return {
+            data = data.map(function (el) {
+                var respObj = {
                     date: new Date(el.date).toLocaleString().split(', ')[1],
-                    data: JSON.parse(el.data).temp
+                    data: JSON.parse(el.data).kWH
                 };
+                return respObj;
             });
             window.AE_JSON = data;
             updateChart(window.AE_JSON);
         },
-        error: function() {
+        error: function error() {
             // console.log('Not active');
             alert('not active');
         }
     });
 }
-
 
 var ctx = "myChart";
 
@@ -123,7 +129,7 @@ var data = {
         pointHoverBorderWidth: 2,
         pointRadius: 5,
         pointHitRadius: 10,
-        data: [],
+        data: []
     }]
 };
 var option = {

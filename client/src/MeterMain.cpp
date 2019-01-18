@@ -1,4 +1,22 @@
+/**
+ * Meter Main Application File:  MeterMain.cpp
+ *
+ * This file is the main source code file for the client application.
+ * It represents the Utility Meter reader and uses various classes to
+ * store data.  It utilizes the OneM2M open standards to communicate with
+ * the server.
+ *
+ * Instructions:
+ *     See docs/client.md for the instructions on how to compile and execute
+ *         this client application.
+ *
+ * @author Team 6
+ *
+ * @version 1.0
+ */
 
+// Imports
+#include <algorithm>
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -9,8 +27,13 @@
 using namespace std;
 
 /**
+  * Function declarations.
+  */
+bool isValidIP (char x[]);
+
+/**
   * Main function, program entry point.
- */
+  */
 int main (int argc, char* argv[]) {
 
   // Global Function Variables
@@ -33,13 +56,41 @@ int main (int argc, char* argv[]) {
   double secondsPassed;
   double secondsToDelay = 10;           // Seconds between meter-value updates
   int count = 0;                        // Test value counter
+  int runtime = 0;                      // Runtime value in minutes
+  int countCalc = 13;                   // To be calculated using 60 * runtime / secondsToDelay + 1 , Default to 13 for 2 minutes
   double time_counter = 0;              // Timer for simulated data
   clock_t this_time = clock();
   clock_t last_time = this_time;
 
- /*
-  * First, initialize the OS-IoT library.
-  */
+  /*
+   * Parse command line args
+   */
+  if (argc == 1) {   // Arg count 1 is just the program name.
+    cout << "\nNo command line args passed...\n";
+  }
+  if (argc >= 2) {   // Arg count 2 is the OM2M server in format IP:Port
+    cout << "\nCommand line arg passed for OM2M server: ";
+    cout << argv[1] << endl;
+    // Validate the argument is in IP:Port format.
+    if (isValidIP(argv[1])) {
+      hostName = argv[1];    // Set hostName to command line arg IP:Port
+    }
+    else {
+      cout << "Invalid argument for OM2M IP:Port - " << argv[1]
+      << "\n   Exiting...\n";
+      return 0;
+    }
+  }
+  if (argc >= 3) { // Arg count 3 is the desired run-time in minutes
+        cout << "\nCommand line arg passed for run-time in minutes: ";
+        cout << argv[2] << endl;
+        runtime = atoi(argv[2]);
+        countCalc = 60 * runtime / secondsToDelay + 1;
+  }
+
+  /*
+   * First, initialize the OS-IoT library.
+   */
   cout << "\nInitializing oneM2M library...";
   onem2m::initialize();
   cout << "Done!\n";
@@ -129,9 +180,10 @@ int main (int argc, char* argv[]) {
    * testing (based on secondsToDelay).
    */
   cout << "Meter values will now update every " << secondsToDelay;
-  cout << " seconds for 2 minutes...\n";
+  cout << " seconds for " << runtime;
+  cout << " minutes...\n";
 
-    while(count < 13){
+    while(count < countCalc){
         this_time = clock();
         time_counter += (double)(this_time - last_time);
         last_time = this_time;
@@ -164,3 +216,54 @@ int main (int argc, char* argv[]) {
   return 1;
 
 } // End of main
+
+
+
+
+/**
+  * This function checks to ensure that the provided char
+  * array is in a valid IP:Port-number format.  For example,
+  * 127.0.0.1:8080 is a valid IP:Port-number formatted char
+  * array.
+  *
+  * @param The input char array to validate.
+  * @return Boolean indicating whether input is valid or not.
+  */
+bool isValidIP(char x[]) {
+
+  // Initialize the result boolean to true.
+  bool result = true;
+
+  int c1 = 0;     // Count number of "." characters.
+  int c2 = 0;     // Count number of ":" characters.
+
+  // Iterate through the input char array.
+  int i = 0;
+  while (x[i] != '\0') {
+
+    // If the character matches "." then increment the relevant counter.
+    if (x[i] == '.') {
+      c1++;
+    }
+
+    // If the character matches ":" then increment the relevant counter.
+    else if (x[i] == ':') {
+      c2++;
+    }
+
+    i++;
+  } // End of while loop.
+
+  // If "." characters do not equal 3, result is false.
+  if (c1 != 3) {
+    result = false;
+  }
+  // If ":" characters do not equal 1, result is false.
+  else if (c2 != 1) {
+    result = false;
+  }
+
+  // Return the result back.
+  return result;
+
+} // End of function isValidIP.
