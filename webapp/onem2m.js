@@ -1,3 +1,18 @@
+/**
+ * JavaScript OneM2M file:  onem2m.js
+ *
+ * This is a JavaScript app that subscribes to the oneM2M
+ * standards server for updates from the client application.
+ *
+ * Instructions:
+ *     See docs/webapp.md for the instructions on how to run this
+ *         web application.
+ *
+ * @author Team 6
+ *
+ * @version 1.0
+ */
+
 // We'll use request to be able to send post requests to the oneM2M server
 var request = require("request");
 var fs = require("fs");

@@ -1,8 +1,19 @@
 /**
- * Version: 1.0
- * Description: This is a web app that allows a user to interface with a oneM2M
- * complient IoT application.
+ * Web application file:  app.js
+ *
+ * This is a web app that allows the user to interface with a oneM2M
+ * standards IoT application.  It launches the web application which
+ * users will utilize.
+ *
+ * Instructions:
+ *     See docs/webapp.md for the instructions on how to run this
+ *         web application.
+ *
+ * @author Team 6
+ *
+ * @version 1.0
  */
+
 var express = require('express');
 var xmlparser = require('express-xml-bodyparser');
 var parseString = require('xml2js').parseString;
@@ -13,14 +24,14 @@ const Onem2m = require("./onem2m");
 
 
 // Listen for client data on the following IP:PORT
-const LISTEN_PORT = 3000;
-const LISTEN_ADDR = "127.0.0.1";
+const LISTEN_PORT = process.env.npm_config_port || 3000;
+const LISTEN_ADDR = process.env.npm_config_addr || "127.0.0.1";
 // One M2M Sever Connection
-const ONE_M2M_HOST = "127.0.0.1"; // IP of OM2M server
+const ONE_M2M_HOST = process.env.npm_config_m2mhost || "127.0.0.1"; // IP of OM2M server
 //const ONE_M2M_PORT = 8080;  // PORT to access OM2M server
-const ONE_M2M_PORT = 8443;  // PORT to access OM2M server
+const ONE_M2M_PORT = process.env.npm_config_m2mport || 8443;  // PORT to access OM2M server
 const AE_NAMES = ["MY_SENSOR" , "MY_METER"];
-const IS_HTTPS = true;
+const IS_HTTPS = process.env.npm_config_ishttps || true;
 
 function subscribeToServer(aeName) {
     onem2mOptions = {
@@ -132,12 +143,12 @@ app.post('/monitor', function(req, res) {
                 //Get the application name from the incoming request
                 var AEName = req.body['m2m:sgn'].sur[0].match(/(?<=\/)(.*)(?=\/)/)[1].split('/')[2];
                 saveDataToJSON(AEName, creationData.toUTCString(), content);
-    
+
                 incomingTemp = JSON.parse(content).temp;
             }
-    
-        });    
-        console.log("Got temperature of: " + incomingTemp);        
+
+        });
+        console.log("Got temperature of: " + incomingTemp);
     }
     res.status(200).send("thanks!");
 });
@@ -174,7 +185,7 @@ var saveDataToJSON = function(ae,ct,incomingData) {
 
     //Full path to the JSON data file
     var dataFile = path.resolve(__dirname + '/' + dataFolder + '/data.json');
-    
+
     //Append the data if file exists
     if(fs.existsSync(dataFile)) {
         fs.readFile(dataFile, {encoding: 'utf8'}, function(err, data) {
