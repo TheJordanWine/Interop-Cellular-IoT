@@ -14,7 +14,7 @@ module.exports = class Onem2m {
     // Set defaults for required options
     this.options.host = "127.0.0.1" || options.host;
     this.options.port = 8080 || options.port;
-    this.options.aeName = "MY_SENSOR" || options.aeName;
+    this.options.aeName = "MY_METER" || options.aeName;
     this.options.listenAddress = "127.0.0.1" || options.listenAddress;
     this.options.listenPort = 3000 || options.listenPort;
     this.options.listenRoute = "/monitor" || options.listenRoute;
