@@ -30,8 +30,8 @@ const LISTEN_ADDR = process.env.npm_config_addr || "127.0.0.1";
 const ONE_M2M_HOST = process.env.npm_config_m2mhost || "127.0.0.1"; // IP of OM2M server
 //const ONE_M2M_PORT = 8080;  // PORT to access OM2M server
 const ONE_M2M_PORT = process.env.npm_config_m2mport || 8443;  // PORT to access OM2M server
-const AE_NAMES = ["MY_SENSOR" , "MY_METER"];
-const IS_HTTPS = process.env.npm_config_ishttps || true;
+const AE_NAMES = ["MY_METER"];
+const IS_HTTPS = process.env.npm_config_ishttps || false;
 
 function subscribeToServer(aeName) {
     onem2mOptions = {
