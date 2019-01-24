@@ -32,6 +32,15 @@
 # @version 1.0
 #
 
+#
+# Install dependencies
+# g++ libxerces-c-dev libcurl4-openssl-dev libssl1.0-dev make git
+#
+echo ""
+echo "Installing dependencies..."
+apt-get install -qq g++ libxerces-c-dev libcurl4-openssl-dev libssl1.0-dev make git
+echo ""
+echo "Dependencies are installed."
 
 #
 # Get the OS-IoT library if it doesn't exist.
