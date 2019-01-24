@@ -10,13 +10,13 @@ if (!!statusButton) {
         method: "GET",
         url: "/status",
         success: function success(data) {
-            setTimeout(function () {
-                if (data == 'true') {
-                    statusButton.innerHTML = 'IN-CSE Server Status<span class="badge badge-success">Running</span>';
-                } else {
-                    statusButton.innerHTML = 'IN-CSE Server Status<span class="badge badge-danger">Not Running</span>';
-                }
-            }, 2000);
+            // setTimeout(function () {
+            //     if (data == 'true') {
+            //         statusButton.innerHTML = 'IN-CSE Server Status<span class="badge badge-success">Running</span>';
+            //     } else {
+            //         statusButton.innerHTML = 'IN-CSE Server Status<span class="badge badge-danger">Not Running</span>';
+            //     }
+            // }, 2000);
         }
     });
 }
