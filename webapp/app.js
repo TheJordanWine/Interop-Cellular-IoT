@@ -30,7 +30,7 @@ const LISTEN_ADDR = process.env.npm_config_addr || "127.0.0.1";
 const ONE_M2M_HOST = process.env.npm_config_m2mhost || "127.0.0.1"; // IP of OM2M server
 //const ONE_M2M_PORT = 8080;  // PORT to access OM2M server
 const ONE_M2M_PORT = process.env.npm_config_m2mport || 8443;  // PORT to access OM2M server
-const AE_NAMES = ["MY_METER"];
+var AE_NAMES = [];
 const IS_HTTPS = process.env.npm_config_ishttps || false;
 
 function subscribeToServer(aeName) {
@@ -166,9 +166,35 @@ app.all('/monitor', function(req,res) {
 app.listen(LISTEN_PORT, function() {
     console.log('Listening on port: ' + LISTEN_PORT);
     console.log('Head over to ' + LISTEN_ADDR + ':' + LISTEN_PORT);
-    AE_NAMES.forEach((aeName) => {
-        subscribeToServer(aeName);
+    var options = {
+        url: `${IS_HTTPS ? 'https' : 'http'}://${ONE_M2M_HOST}:${ONE_M2M_PORT}/~/in-cse/?rcn=5`,
+        headers: {
+            'X-M2M-Origin': 'admin:admin',
+            'Accept': 'application/json'
+        }
+    };
+    request(options, function(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            try {
+                var CSEBase = JSON.parse(body)["m2m:cb"],
+                    childrenResources = CSEBase.ch,
+                    applicationEntityResources = childrenResources.filter(ae => ae.ty === 2).map(ae => ae.rn);
+                
+                AE_NAMES = applicationEntityResources;
+            }catch(e) {
+                console.log(e);
+                AE_NAMES = ["MY_METER"];
+            }
+            AE_NAMES.forEach((aeName) => {
+                subscribeToServer(aeName);
+            });
+            
+        }
+        else {
+            console.log(error);
+        }
     });
+
 });
 
 
