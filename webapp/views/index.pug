@@ -5,6 +5,14 @@ html(lang="en")
         include templates/meta.pug
     body
         -var pugAENames = AENames
+        nav
+            .nav-wrapper
+                a.brand-logo(href='#!') Interop Cellular Dashboard
+                ul.right.hide-on-med-and-down
+                    li
+                        a(class="waves-effect waves-light btn modal-trigger" href="#subscription")
+                            i.material-icons.left settings
+                            | Subscribe
         h2 Welcome
         p Click on any of the Application Entity Buttons to see their respective data
         br

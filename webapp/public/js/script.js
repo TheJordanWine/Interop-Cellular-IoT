@@ -140,3 +140,7 @@ var myLineChart = Chart.Line(ctx, {
     data: data,
     options: option
 });
+
+if(typeof M !== 'undefined') {
+    M.AutoInit();
+}
