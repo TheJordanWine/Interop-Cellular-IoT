@@ -29,7 +29,8 @@ using namespace std;
 /**
   * Function declarations.
   */
-bool isValidIP (char x[]);
+bool isValidIP(char x[]);
+bool isValidCred(char x[]);
 
 /**
   * Main function, program entry point.
@@ -87,7 +88,18 @@ int main (int argc, char* argv[]) {
         runtime = atoi(argv[2]);
         countCalc = 60 * runtime / secondsToDelay + 1;
   }
-
+  if (argc >= 4) { // Arg count 4 is the server credentials in the format: username:password
+        cout << "\nCommand line arg passed for login credentials in : ";
+        cout << argv[3] << endl;
+        if (isValidCred(argv[3])) {
+          loginCred = argv[3]; // Set loginCred to command line arg Username:Password
+        }
+        else {
+          cout << "Invalid argument for Login Credentials Username:Password - " << argv[3]
+          << "\n   Exiting...\n";
+          return 0;
+        }
+  }
   /*
    * First, initialize the OS-IoT library.
    */
@@ -267,3 +279,45 @@ bool isValidIP(char x[]) {
   return result;
 
 } // End of function isValidIP.
+
+
+/**
+  * This function checks to ensure that the provided char
+  * array is in a valid Username:Password format.  For example,
+  * admin:admin is a valid Username:Password formatted char
+  * array.
+  *
+  * @param The input char array to validate.
+  * @return Boolean indicating whether input is valid or not.
+  */
+  bool isValidCred(char x[]) {
+
+    int c1 = 0;     // Count number of ":" characters.
+
+    // Iterate through the input char array.
+    int i = 0;
+    while (x[i] != '\0') {
+
+      // If the character matches ":" then increment the relevant counter.
+      if (x[i] == ':') {
+        if (i == 0) { // Username cannot begin with ':', return false if so.
+          return false;
+        }
+        else if (x[i+1] == '\0') { // Check for the last character, return false if character is ':'
+          return false;
+        }
+        c1++;
+      }
+
+      i++;
+    } // End of while loop.
+    //
+
+    if (c1 != 1) { // Return false if there is more than one ':' character
+      return false;
+    }
+    else { // All previous checks have passed, return true
+      return true;
+    }
+
+  } // End of function isValidCred.
