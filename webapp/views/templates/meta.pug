@@ -12,7 +12,7 @@ title Interop Cellular IoT
                 .switch
                     label
                         | Off
-                        input(type='checkbox')
+                        input(type='checkbox' name="ishttps")
                         span.lever
                         |       On
 
@@ -20,25 +20,25 @@ title Interop Cellular IoT
                 .col.s12
                     | OM2M Host
                     .input-field
-                        input#om2mhost(type='text')
+                        input#om2mhost(type='text' name="om2mhost")
                         label Address
             .row
                 .col.s12
                     | OM2M Port
                     .input-field
-                        input#om2mhost(type='text')
+                        input#om2mport(type='text' name="om2mport")
                         label Port
             .row
                 .col.s12
                     | WebApp Host
                     .input-field
-                        input#webapphost(type='text')
+                        input#webapphost(type='text' name="listenaddr")
                         label Address
             .row
                 .col.s12
                     | WebApp Port
                     .input-field
-                        input#webappport(type='text')
+                        input#webappport(type='text' name="listenport")
                         label Port
     .modal-footer
         a.modal-close.waves-effect.waves-green.btn-flat(href='#!') Subscribe

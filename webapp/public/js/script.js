@@ -136,10 +136,14 @@ var data = {
 var option = {
     showLines: true
 };
-var myLineChart = Chart.Line(ctx, {
-    data: data,
-    options: option
-});
+var myLineChart;
+if(!!document.querySelector('canvas#myChart')) {
+    myLineChart = Chart.Line(ctx, {
+        data: data,
+        options: option
+    });
+}
+
 
 if(typeof M !== 'undefined') {
     M.AutoInit();
