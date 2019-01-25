@@ -20,6 +20,8 @@ var parseString = require('xml2js').parseString;
 var path = require('path');
 var fs = require('fs');
 var request = require('request');
+var session = require('express-session');
+var bodyParser = require('body-parser');
 const Onem2m = require("./onem2m");
 
 
@@ -32,6 +34,15 @@ const ONE_M2M_HOST = process.env.npm_config_m2mhost || "127.0.0.1"; // IP of OM2
 const ONE_M2M_PORT = process.env.npm_config_m2mport || 8443;  // PORT to access OM2M server
 var AE_NAMES = [];
 const IS_HTTPS = process.env.npm_config_ishttps || false;
+
+
+function isAuthenticatedCustomMiddleware(req, res, next) {
+    var loggedIn = typeof req.session !== 'undefined' ? typeof req.session.isAuth !== 'undefined' ? true : false : false;
+    if (loggedIn) {
+        return next();
+    }
+    res.redirect('/login');
+}
 
 function subscribeToServer(aeName) {
     onem2mOptions = {
@@ -58,13 +69,18 @@ function subscribeToServer(aeName) {
 var app = express();
     app.set('view engine', 'pug');
     app.use(express.static(__dirname + '/public'));
-
-app.use(xmlparser());
+    app.use(session({
+        secret: 'SER401_SECRET',
+        resave: false,
+        saveUninitialized: true
+    }));
+    app.use(bodyParser.urlencoded({extended: true }));
+    app.use(xmlparser());
 
 /**
  * signifies a get request for the inital path of the site
  */
-app.get('/', function(req, res) {
+app.get('/', isAuthenticatedCustomMiddleware, function(req, res) {
     //res is the response object
     //render will take string and search for a pug file in views/ and will render it out
     res.status(200);
@@ -73,13 +89,30 @@ app.get('/', function(req, res) {
     });
 });
 
-app.get('/data', function(req, res) {
+app.get('/login', function(req, res) {
+    res.render('login');
+});
+app.post('/login', function(req, res) {
+    if(req.body.username == 'admin' && req.body.password == 'admin') {
+        req.session.isAuth = true;
+        res.redirect('/');
+    }else {
+        res.redirect('/login?wrong_login')
+    }
+});
+app.get('/logout', function(req, res) {
+    if(!!req.session && !!req.session.isAuth) {
+        req.session.isAuth = undefined;
+    }
+    res.redirect('/login');
+});
+app.get('/data', isAuthenticatedCustomMiddleware, function(req, res) {
     res.render('data', {
         AEName: req.query.ae
     });
 });
 
-app.get('/api/get/:ae', function(req, res) {
+app.get('/api/get/:ae', isAuthenticatedCustomMiddleware, function(req, res) {
     var resourceName = req.params.ae;
     if(AE_NAMES.includes(resourceName)) {
         if(fs.existsSync(resourceName)) {
@@ -100,7 +133,7 @@ app.get('/api/get/:ae', function(req, res) {
 /**
  * Simple ping to the IN-CSE server done server side
  */
-app.get('/status', function(req, res) {
+app.get('/status', isAuthenticatedCustomMiddleware, function(req, res) {
     var options = {
         url: `${IS_HTTPS ? 'https' : 'http'}://${ONE_M2M_HOST}:${ONE_M2M_PORT}/~/in-cse`,
         headers: {
