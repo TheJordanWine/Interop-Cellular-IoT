@@ -99,9 +99,10 @@ function getJSON() {
             window.AE_JSON = data;
             updateChart(window.AE_JSON);
         },
-        error: function error() {
-            // console.log('Not active');
-            alert('not active');
+        error: function(err) {
+            M.toast({
+                html: err.statusText
+            });
         }
     });
 }
