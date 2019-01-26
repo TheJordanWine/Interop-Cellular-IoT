@@ -31,6 +31,9 @@ using namespace std;
   */
 bool isValidIP(char x[]);
 bool isValidCred(char x[]);
+bool isValidInt(char x[]);
+bool isValidName(char x[]);
+bool isValidPath(char x[]);
 
 /**
   * Main function, program entry point.
@@ -64,52 +67,14 @@ int main (int argc, char* argv[]) {
   clock_t last_time = this_time;
 
   /*
-   * Parse command line args
-   */
-  if (argc == 1) {   // Arg count 1 is just the program name.
-    cout << "\nNo command line args passed...\n";
-  }
-  if (argc >= 2) {   // Arg count 2 is the OM2M server in format IP:Port
-    cout << "\nCommand line arg passed for OM2M server: ";
-    cout << argv[1] << endl;
-    // Validate the argument is in IP:Port format.
-    if (isValidIP(argv[1])) {
-      hostName = argv[1];    // Set hostName to command line arg IP:Port
-    }
-    else {
-      cout << "Invalid argument for OM2M IP:Port - " << argv[1]
-      << "\n   Exiting...\n";
-      return 0;
-    }
-  }
-  if (argc >= 3) { // Arg count 3 is the desired run-time in minutes
-        cout << "\nCommand line arg passed for run-time in minutes: ";
-        cout << argv[2] << endl;
-        runtime = atoi(argv[2]);
-        countCalc = 60 * runtime / secondsToDelay + 1;
-  }
-  if (argc >= 4) { // Arg count 4 is the server credentials in the format: username:password
-        cout << "\nCommand line arg passed for login credentials in : ";
-        cout << argv[3] << endl;
-        if (isValidCred(argv[3])) {
-          loginCred = argv[3]; // Set loginCred to command line arg Username:Password
-        }
-        else {
-          cout << "Invalid argument for Login Credentials Username:Password - " << argv[3]
-          << "\n   Exiting...\n";
-          return 0;
-        }
-  }
-
-  /*
    * Parse for command line flags
    */
   for (int i = 1; i <= argc; i++) {
-    if (argv[i][0] == '-'){ // Check 1st character of arg for flag character
+    if (argv[i][0] == '-') { // Check 1st character of arg for flag character
       if (strcmp(argv[i],"-a")) { // aeAppId flag
         cout << "\nCommand line arg passed for AE App Id: ";
         cout << argv[i+1] << endl;
-        if (true) { // Verify proper format TODO
+        if (isValidName(argv[i+1])) { // Verify proper format
           aeAppId = argv[i+1];      // set aeAppId to the next argument
         }
         else {
@@ -121,7 +86,7 @@ int main (int argc, char* argv[]) {
       else if (strcmp(argv[i],"-c")) { // contName flag
         cout << "\nCommand line arg passed for Container Name: ";
         cout << argv[i+1] << endl;
-        if (true) { // Verify proper format TODO
+        if (isValidName(argv[i+1])) { // Verify proper format
           contName = argv[i+1];       // set contName to the next argument
         }
         else {
@@ -133,7 +98,7 @@ int main (int argc, char* argv[]) {
       else if (strcmp(argv[i],"-d")) { // secondsToDelay flag
         cout << "\nCommand line arg passed for delay in seconds: ";
         cout << argv[i+1] << endl;
-        if (true) { // Verify proper format TODO
+        if (isValidInt(argv[i+1])) { // Verify proper format TODO
           secondsToDelay = atoi(argv[i+1]);    // set runtime to the next argument
         }
         else {
@@ -169,11 +134,11 @@ int main (int argc, char* argv[]) {
       else if (strcmp(argv[i],"-n")) { // aeName flag
         cout << "\nCommand line arg passed for the AE Resource Name: ";
         cout << argv[i+1] << endl;
-        if (true) { // Verify proper format TODO
+        if (isValidName(argv[i+1])) { // Verify proper format
           aeName = argv[i+1];       // set aeName to the next argument
         }
         else {
-          cout << "Invalid argument for AE Resource Name in minutes - " << argv[i+1]
+          cout << "Invalid argument for AE Resource Name - " << argv[i+1]
           << "\n   Exiting...\n";
           return 0;
         }
@@ -181,7 +146,7 @@ int main (int argc, char* argv[]) {
       else if (strcmp(argv[i],"-r")) { // cseRootAddr flag
         cout << "\nCommand line arg passed for the SP-Relative address: ";
         cout << argv[i+1] << endl;
-        if (true) {   // Verify proper format TODO
+        if (isValidPath(argv[i+1])) {   // Verify proper format
           cseRootAddr = argv[i+1];      // set cseRootAddr to the next argument
         }
         else {
@@ -193,7 +158,7 @@ int main (int argc, char* argv[]) {
       else if (strcmp(argv[i],"-t")) { // runtime flag
         cout << "\nCommand line arg passed for run-time in minutes: ";
         cout << argv[i+1] << endl;
-        if (true) { // Verify proper format
+        if (isValidInt(argv[i+1])) { // Verify proper format
           runtime = atoi(argv[i+1]);    // set runtime to the next argument
         }
         else {
@@ -201,6 +166,11 @@ int main (int argc, char* argv[]) {
           << "\n   Exiting...\n";
           return 0;
         }
+      }
+      else { // invalid flag
+        cout << "Invalid flag  - " << argv[i]
+        << "\n   Exiting...\n";
+        return 0;
       }
     }
   }
@@ -429,3 +399,57 @@ bool isValidIP(char x[]) {
     }
 
   } // End of function isValidCred.
+
+
+  /**
+    * This function checks to ensure that the provided char
+    * array is in an integer format.
+    *
+    * @param The input char array to validate.
+    * @return Boolean indicating whether input is valid or not.
+    */
+  bool isValidInt(char x[]) {
+    // Iterate through the input char array.
+    int i = 0;
+    while (x[i] != '\0') {
+      if (!isdigit(x[i])) { // Return false if not valid integer character
+        return false;
+      }
+      i++;
+    }
+    return true; // Argument is an integer
+  }
+
+  /**
+    * This function checks to ensure that the provided char
+    * array is in a name format. This includes alphanumberic characters, '-' and '_'
+    *
+    * @param The input char array to validate.
+    * @return Boolean indicating whether input is valid or not.
+    */
+  bool isValidName(char x[]) {
+    // Iterate through the input char array.
+    int i = 0;
+    while (x[i] != '\0') {
+      if (!isalpha(x[i]) && x[i] != '_' && x[i] != '-' ) { // Return false if not a valid alphanumberic, '-' or '_'  character
+        return false;
+      }
+      i++;
+    }
+    return true; // Argument is an integer
+  }
+
+  /**
+    * This function checks to ensure that the provided char
+    * array is in a file path format beginning with /.
+    *
+    * @param The input char array to validate.
+    * @return Boolean indicating whether input is valid or not.
+    */
+  bool isValidPath(char x[]) {
+    int i = 0;
+    while (x[i] != '\0') { // get last character of path
+      i++
+    }
+      return x[0] == '/' && x[i-1] != '/'; Return true if path begins with / and does not end with /.
+  }
