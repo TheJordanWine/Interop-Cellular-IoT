@@ -47,16 +47,13 @@ int main (int argc, char* argv[]) {
   string aeName = "MY_METER";           // Name of the AE Resource to create.
   string aeAppId = "app1";              // Name of the AE App Id. Mandatory.
   string contName = "DATA";             // Data Container Name.
+  string location = "Home";             // Location of Utility Meter
   ::xml_schema::integer respObjType;    // The response data from server.
   string cseRootAddr = "/in-cse/in-name";            // SP-Relative address.
   std::unique_ptr< ::xml_schema::type > respObj;     // The result code from server.
   UtilityMeter um;                      // Construct our UtilityMeter object.
   int meterValue;                       // Represents Utility Meter Value.
   string meterValueStr;                 // Utility Meter Value as a string.
-  string buff= "type = Utility_Meter\n"           //String for UtilityMeter description.
-    "location = Home\n"
-    "appIDd = MY_METER";
-  um.setMeterDescriptor(buff);          // Set the Descriptor for the UtilityMeter object.
   double secondsPassed;
   double secondsToDelay = 10;           // Seconds between meter-value updates
   int count = 0;                        // Test value counter
@@ -131,6 +128,18 @@ int main (int argc, char* argv[]) {
           return 0;
         }
       }
+      else if (strcmp(argv[i],"-L")) { // location flag * May change naming convention
+        cout << "\nCommand line arg passed for login credentials: ";
+        cout << argv[i+1] << endl;
+        if (isValidName(argv[i+1])) { // Verify proper format
+          location = argv[i+1];       // set loginCred to the next argument
+        }
+        else {
+          cout << "Invalid argument for login credentials - " << argv[i+1]
+          << "\n   Exiting...\n";
+          return 0;
+        }
+      }
       else if (strcmp(argv[i],"-n")) { // aeName flag
         cout << "\nCommand line arg passed for the AE Resource Name: ";
         cout << argv[i+1] << endl;
@@ -174,6 +183,12 @@ int main (int argc, char* argv[]) {
       }
     }
   }
+
+  um.setMeterDescriptor( // Set the Descriptor for the UtilityMeter object.
+    "type = Utility_Meter\n"
+    "location = " + location + "\n"
+    "appIDd = " + aeAppId
+  );
 
   countCalc = 60 * runtime / secondsToDelay + 1; // Calculate count after all arguments have been read
 
