@@ -57,7 +57,7 @@ int main (int argc, char* argv[]) {
   double secondsPassed;
   double secondsToDelay = 10;           // Seconds between meter-value updates
   int count = 0;                        // Test value counter
-  int runtime = 0;                      // Runtime value in minutes
+  int runtime = 2;                      // Runtime value in minutes. Default to 2 minutes
   int countCalc = 13;                   // To be calculated using 60 * runtime / secondsToDelay + 1 , Default to 13 for 2 minutes
   double time_counter = 0;              // Timer for simulated data
   clock_t this_time = clock();
@@ -100,6 +100,114 @@ int main (int argc, char* argv[]) {
           return 0;
         }
   }
+
+  /*
+   * Parse for command line flags
+   */
+  for (int i = 1; i <= argc; i++) {
+    if (argv[i][0] == '-'){ // Check 1st character of arg for flag character
+      if (strcmp(argv[i],"-a")) { // aeAppId flag
+        cout << "\nCommand line arg passed for AE App Id: ";
+        cout << argv[i+1] << endl;
+        if (true) { // Verify proper format TODO
+          aeAppId = argv[i+1];      // set aeAppId to the next argument
+        }
+        else {
+          cout << "Invalid argument for AE App Id - " << argv[i+1]
+          << "\n   Exiting...\n";
+          return 0;
+        }
+      }
+      else if (strcmp(argv[i],"-c")) { // contName flag
+        cout << "\nCommand line arg passed for Container Name: ";
+        cout << argv[i+1] << endl;
+        if (true) { // Verify proper format TODO
+          contName = argv[i+1];       // set contName to the next argument
+        }
+        else {
+          cout << "Invalid argument for Container Name - " << argv[i+1]
+          << "\n   Exiting...\n";
+          return 0;
+        }
+      }
+      else if (strcmp(argv[i],"-d")) { // secondsToDelay flag
+        cout << "\nCommand line arg passed for delay in seconds: ";
+        cout << argv[i+1] << endl;
+        if (true) { // Verify proper format TODO
+          secondsToDelay = atoi(argv[i+1]);    // set runtime to the next argument
+        }
+        else {
+          cout << "Invalid argument for delay in seconds - " << argv[i+1]
+          << "\n   Exiting...\n";
+          return 0;
+        }
+      }
+      else if (strcmp(argv[i],"-h")) { // hostName flag
+        cout << "\nCommand line arg passed for OM2M server: ";
+        cout << argv[i+1] << endl;
+        if (isValidIP(argv[i+1])) { // Verify proper format
+          hostName = argv[i+1];    // set hostName to the next argument
+        }
+        else {
+          cout << "Invalid argument for OM2M server - " << argv[i+1]
+          << "\n   Exiting...\n";
+          return 0;
+        }
+      }
+      else if (strcmp(argv[i],"-l")) { // loginCred flag
+        cout << "\nCommand line arg passed for login credentials: ";
+        cout << argv[i+1] << endl;
+        if (isValidCred(argv[i+1])) { // Verify proper format
+          loginCred = argv[i+1];       // set loginCred to the next argument
+        }
+        else {
+          cout << "Invalid argument for login credentials - " << argv[i+1]
+          << "\n   Exiting...\n";
+          return 0;
+        }
+      }
+      else if (strcmp(argv[i],"-n")) { // aeName flag
+        cout << "\nCommand line arg passed for the AE Resource Name: ";
+        cout << argv[i+1] << endl;
+        if (true) { // Verify proper format TODO
+          aeName = argv[i+1];       // set aeName to the next argument
+        }
+        else {
+          cout << "Invalid argument for AE Resource Name in minutes - " << argv[i+1]
+          << "\n   Exiting...\n";
+          return 0;
+        }
+      }
+      else if (strcmp(argv[i],"-r")) { // cseRootAddr flag
+        cout << "\nCommand line arg passed for the SP-Relative address: ";
+        cout << argv[i+1] << endl;
+        if (true) {   // Verify proper format TODO
+          cseRootAddr = argv[i+1];      // set cseRootAddr to the next argument
+        }
+        else {
+          cout << "Invalid argument for SP-Relative address - " << argv[i+1]
+          << "\n   Exiting...\n";
+          return 0;
+        }
+      }
+      else if (strcmp(argv[i],"-t")) { // runtime flag
+        cout << "\nCommand line arg passed for run-time in minutes: ";
+        cout << argv[i+1] << endl;
+        if (true) { // Verify proper format
+          runtime = atoi(argv[i+1]);    // set runtime to the next argument
+        }
+        else {
+          cout << "Invalid argument for run-time in minutes - " << argv[i+1]
+          << "\n   Exiting...\n";
+          return 0;
+        }
+      }
+    }
+  }
+
+  countCalc = 60 * runtime / secondsToDelay + 1; // Calculate count after all arguments have been read
+
+
   /*
    * First, initialize the OS-IoT library.
    */
