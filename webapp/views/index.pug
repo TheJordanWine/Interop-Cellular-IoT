@@ -8,6 +8,13 @@ html(lang="en")
         nav
             .nav-wrapper
                 a.brand-logo(href='#!') Interop Cellular Dashboard
+                a.sidenav-trigger(href='#', data-target='mobile-demo')
+                    i.material-icons menu
+                ul#mobile-demo.sidenav
+                    li
+                        a(class="modal-trigger" href="#subscription") Subscribe
+                    li
+                        a(href="/logout") Logout
                 ul.right.hide-on-med-and-down
                     li
                         a(class="waves-effect waves-light btn modal-trigger" href="#subscription")
