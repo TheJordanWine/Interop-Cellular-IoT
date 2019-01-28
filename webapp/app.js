@@ -44,22 +44,31 @@ function isAuthenticatedCustomMiddleware(req, res, next) {
     res.redirect('/login');
 }
 
-function subscribeToServer(aeName) {
-    onem2mOptions = {
-        port: ONE_M2M_PORT,
-        host: ONE_M2M_HOST,
-        listenAddress : LISTEN_ADDR,
-        listenPort : LISTEN_PORT,
-        aeName : aeName,
-        https : IS_HTTPS,
-        listenRoute : "/monitor"
+function subscribeToServer(aeName, subscriptionOpts) {
+    var onem2mOptions;
+    if(typeof subscriptionOpts !== 'undefined') {
+        onem2mOptions = subscriptionOpts;
+    }else {
+        onem2mOptions = {
+            port: ONE_M2M_PORT,
+            host: ONE_M2M_HOST,
+            listenAddress : LISTEN_ADDR,
+            listenPort : LISTEN_PORT,
+            aeName : aeName,
+            https : IS_HTTPS,
+            listenRoute : "/monitor"
+        }
     }
+     
+    
     var onem2m = new Onem2m(onem2mOptions);
-    onem2m.createAE()
-    .then( () => { return onem2m.createDataContainer() })
-    .then( () => { return onem2m.deleteSubscription() })
-    .then( () => { return onem2m.sendSubscription() })
-    .catch( (err) => {console.log("Encountered error: " + err.toString())});
+    var PendingSub = onem2m.createAE()
+        .then( () => { return onem2m.createDataContainer() })
+        .then( () => { return onem2m.deleteSubscription() })
+        .then( () => { return onem2m.sendSubscription() })
+        .catch( (err) => {console.log("Encountered error: " + err.toString())});
+    
+    return PendingSub;
 }
 
 
@@ -131,6 +140,69 @@ app.get('/api/get/:ae', isAuthenticatedCustomMiddleware, function(req, res) {
     // res.send("HI");
 });
 /**
+ * Manual subscription from webapp
+ */
+app.post('/api/subscribe', function(req, res) {
+    /**
+     * Posted data
+     */
+    let isHttps = req.body.ishttps,
+        om2mhost = req.body.om2mhost,
+        om2mport = req.body.om2mport,
+        listenaddr = req.body.listenaddr,
+        listenport = req.body.listenport;
+
+    var options = {
+        url: `${isHttps ? 'https' : 'http'}://${om2mhost}:${om2mport}/~/in-cse/?rcn=5`,
+        headers: {
+            'X-M2M-Origin': 'admin:admin',
+            'Accept': 'application/json'
+        }
+    };
+    request(options, function(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            try {
+                var CSEBase = JSON.parse(body)["m2m:cb"],
+                    childrenResources = CSEBase.ch,
+                    applicationEntityResources = childrenResources.filter(ae => ae.ty === 2).map(ae => ae.rn);
+                
+                AE_NAMES = applicationEntityResources;
+                AE_SUBSCRIPTIONS = [];
+                AE_NAMES.forEach((aeName) => {
+                    AE_SUBSCRIPTIONS.push(subscribeToServer(aeName, {
+                        port: om2mport,
+                        host: om2mhost,
+                        listenAddress : listenaddr,
+                        listenPort : listenport,
+                        aeName : aeName,
+                        https : !!isHttps ? true : false,
+                        listenRoute : "/monitor"
+                    }));
+                });
+                Promise.all(AE_SUBSCRIPTIONS).then(function(values) {
+                    res.json({
+                        message: 'success'
+                    });
+                });
+            }catch(e) {
+                console.log(e);
+                res.statusCode = 500;
+                res.json({
+                    message: 'Error unable to grab resources from subscription settings, check logs'
+                });
+                
+            }   
+        }else {
+            console.log('error');
+            res.statusCode = 400;
+            res.json({
+                message: 'Bad request'
+            });
+        }
+    });
+});
+
+/**
  * Simple ping to the IN-CSE server done server side
  */
 app.get('/status', isAuthenticatedCustomMiddleware, function(req, res) {
@@ -199,35 +271,6 @@ app.all('/monitor', function(req,res) {
 app.listen(LISTEN_PORT, function() {
     console.log('Listening on port: ' + LISTEN_PORT);
     console.log('Head over to ' + LISTEN_ADDR + ':' + LISTEN_PORT);
-    var options = {
-        url: `${IS_HTTPS ? 'https' : 'http'}://${ONE_M2M_HOST}:${ONE_M2M_PORT}/~/in-cse/?rcn=5`,
-        headers: {
-            'X-M2M-Origin': 'admin:admin',
-            'Accept': 'application/json'
-        }
-    };
-    request(options, function(error, response, body) {
-        if (!error && response.statusCode == 200) {
-            try {
-                var CSEBase = JSON.parse(body)["m2m:cb"],
-                    childrenResources = CSEBase.ch,
-                    applicationEntityResources = childrenResources.filter(ae => ae.ty === 2).map(ae => ae.rn);
-                
-                AE_NAMES = applicationEntityResources;
-            }catch(e) {
-                console.log(e);
-                AE_NAMES = ["MY_METER"];
-            }
-            AE_NAMES.forEach((aeName) => {
-                subscribeToServer(aeName);
-            });
-            
-        }
-        else {
-            console.log(error);
-        }
-    });
-
 });
 
 

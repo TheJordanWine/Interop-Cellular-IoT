@@ -107,6 +107,21 @@ function getJSON() {
     });
 }
 
+function subscribe() {
+    $.ajax({
+        type: "post",
+        url: '/api/subscribe',
+        data: jQuery('form').serialize(),
+        contentType: "application/x-www-form-urlencoded",
+        success: function (responseData, textStatus, jqXHR) {
+            location.reload();
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            alert(errorThrown);
+        }
+    })
+}
+
 var ctx = "myChart";
 
 var data = {
