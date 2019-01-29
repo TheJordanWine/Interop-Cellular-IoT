@@ -34,5 +34,8 @@ html(lang="en")
                             span.card-title=ae
                         .card-action
                             a(class="waves-effect waves-light btn orange darken-2 monitor-data" href=`/data?ae=${ae}`) Monitor Data
+                            a(class="waves-effect waves-light btn red" onclick=`deleteResource('${ae}')`)
+                                i.material-icons.left delete
+                                | Delete
                             a(class="waves-effect waves-light btn disabled ping-data" href=`/ping?ae=${ae}`) Ping for data
         include templates/jsscripts.pug

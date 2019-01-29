@@ -137,8 +137,9 @@ app.get('/api/get/:ae', isAuthenticatedCustomMiddleware, function(req, res) {
         res.send('null');
         res.end();
     }
-    // res.send("HI");
 });
+
+
 /**
  * Manual subscription from webapp
  */
@@ -203,6 +204,51 @@ app.post('/api/subscribe', function(req, res) {
 });
 
 /**
+ * Manually delete resource
+ */
+
+ app.post('/api/delete', function(req, res) {
+    let isHttps = req.body.ishttps,
+        om2mhost = req.body.om2mhost,
+        om2mport = req.body.om2mport,
+        resourceName = req.body.resourceName;
+    console.log(isHttps);
+
+    var options = {
+        method: 'DELETE',
+        url: `${isHttps == 'true' ? 'https' : 'http'}://${om2mhost}:${om2mport}/~/in-cse/in-name/${resourceName}`,
+        headers: {
+            'X-M2M-Origin': 'admin:admin'
+        }
+    };
+    request(options, function(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            var tempAE_NAMES = [];
+            AE_NAMES.forEach(rn => {
+                if(rn != resourceName) {
+                    tempAE_NAMES.push(rn);
+                }
+            });
+            AE_NAMES = tempAE_NAMES;
+            res.statusCode = 200;
+            res.json({
+                message: 'Deleted successfully'
+            });
+        }
+        else {
+            console.log(body);
+            res.statusCode = 500;
+            res.json({
+                message: 'Unable to complete request'
+            });
+            console.log(error);
+        }
+    });
+    // DELETE http://127.0.0.1:8080/~/in-cse/in-name/MY_TEST
+    // X-M2M-Origin: admin:admin 
+ });
+
+/**
  * Simple ping to the IN-CSE server done server side
  */
 app.get('/status', isAuthenticatedCustomMiddleware, function(req, res) {
@@ -249,11 +295,11 @@ app.post('/monitor', function(req, res) {
                 var AEName = req.body['m2m:sgn'].sur[0].match(/(?<=\/)(.*)(?=\/)/)[1].split('/')[2];
                 saveDataToJSON(AEName, creationData.toUTCString(), content);
 
-                incomingTemp = JSON.parse(content).temp;
+                incomingTemp = JSON.parse(content).kWH;
             }
 
         });
-        console.log("Got temperature of: " + incomingTemp);
+        console.log("Got voltage of: " + incomingTemp);
     }
     res.status(200).send("thanks!");
 });
