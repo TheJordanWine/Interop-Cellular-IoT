@@ -66,9 +66,9 @@ int main (int argc, char* argv[]) {
   /*
    * Parse for command line flags
    */
-  for (int i = 1; i <= argc; i++) {
+  for (int i = 1; i < argc; i++) {
     if (argv[i][0] == '-') { // Check 1st character of arg for flag character
-      if (strcmp(argv[i],"-a")) { // aeAppId flag
+      if (strcmp(argv[i],"-a") == 0) { // aeAppId flag
         cout << "\nCommand line arg passed for AE App Id: ";
         cout << argv[i+1] << endl;
         if (isValidName(argv[i+1])) { // Verify proper format
@@ -80,7 +80,7 @@ int main (int argc, char* argv[]) {
           return 0;
         }
       }
-      else if (strcmp(argv[i],"-c")) { // contName flag
+      else if (strcmp(argv[i],"-c") == 0) { // contName flag
         cout << "\nCommand line arg passed for Container Name: ";
         cout << argv[i+1] << endl;
         if (isValidName(argv[i+1])) { // Verify proper format
@@ -92,7 +92,7 @@ int main (int argc, char* argv[]) {
           return 0;
         }
       }
-      else if (strcmp(argv[i],"-d")) { // secondsToDelay flag
+      else if (strcmp(argv[i],"-d") == 0) { // secondsToDelay flag
         cout << "\nCommand line arg passed for delay in seconds: ";
         cout << argv[i+1] << endl;
         if (isValidInt(argv[i+1])) { // Verify proper format TODO
@@ -104,7 +104,7 @@ int main (int argc, char* argv[]) {
           return 0;
         }
       }
-      else if (strcmp(argv[i],"-h")) { // hostName flag
+      else if (strcmp(argv[i],"-h") == 0) { // hostName flag
         cout << "\nCommand line arg passed for OM2M server: ";
         cout << argv[i+1] << endl;
         if (isValidIP(argv[i+1])) { // Verify proper format
@@ -116,7 +116,7 @@ int main (int argc, char* argv[]) {
           return 0;
         }
       }
-      else if (strcmp(argv[i],"-l")) { // loginCred flag
+      else if (strcmp(argv[i],"-l") == 0) { // loginCred flag
         cout << "\nCommand line arg passed for login credentials: ";
         cout << argv[i+1] << endl;
         if (isValidCred(argv[i+1])) { // Verify proper format
@@ -128,19 +128,19 @@ int main (int argc, char* argv[]) {
           return 0;
         }
       }
-      else if (strcmp(argv[i],"-L")) { // location flag * May change naming convention
-        cout << "\nCommand line arg passed for login credentials: ";
+      else if (strcmp(argv[i],"-L") == 0) { // location flag * May change naming convention
+        cout << "\nCommand line arg passed for location : ";
         cout << argv[i+1] << endl;
         if (isValidName(argv[i+1])) { // Verify proper format
           location = argv[i+1];       // set loginCred to the next argument
         }
         else {
-          cout << "Invalid argument for login credentials - " << argv[i+1]
+          cout << "Invalid argument for location - " << argv[i+1]
           << "\n   Exiting...\n";
           return 0;
         }
       }
-      else if (strcmp(argv[i],"-n")) { // aeName flag
+      else if (strcmp(argv[i],"-n") == 0) { // aeName flag
         cout << "\nCommand line arg passed for the AE Resource Name: ";
         cout << argv[i+1] << endl;
         if (isValidName(argv[i+1])) { // Verify proper format
@@ -152,7 +152,7 @@ int main (int argc, char* argv[]) {
           return 0;
         }
       }
-      else if (strcmp(argv[i],"-r")) { // cseRootAddr flag
+      else if (strcmp(argv[i],"-r") == 0) { // cseRootAddr flag
         cout << "\nCommand line arg passed for the SP-Relative address: ";
         cout << argv[i+1] << endl;
         if (isValidPath(argv[i+1])) {   // Verify proper format
@@ -164,7 +164,7 @@ int main (int argc, char* argv[]) {
           return 0;
         }
       }
-      else if (strcmp(argv[i],"-t")) { // runtime flag
+      else if (strcmp(argv[i],"-t") == 0) { // runtime flag
         cout << "\nCommand line arg passed for run-time in minutes: ";
         cout << argv[i+1] << endl;
         if (isValidInt(argv[i+1])) { // Verify proper format
@@ -464,7 +464,7 @@ bool isValidIP(char x[]) {
   bool isValidPath(char x[]) {
     int i = 0;
     while (x[i] != '\0') { // get last character of path
-      i++
+      i++;
     }
-      return x[0] == '/' && x[i-1] != '/'; Return true if path begins with / and does not end with /.
+      return x[0] == '/' && x[i-1] != '/'; // Return true if path begins with / and does not end with /.
   }
