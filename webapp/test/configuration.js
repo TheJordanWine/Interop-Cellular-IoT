@@ -46,17 +46,9 @@ exports.config = {
     // Sauce Labs platform configurator - a great tool to configure your capabilities:
     // https://docs.saucelabs.com/reference/platforms-configurator
     //
-    capabilities: [
-        {
-            browserName: 'firefox'
-        },
-        {
-            browserName: 'chrome'
-        },
-        {
-            browserName: 'internet explorer'
-        }
-    ],
+    capabilities: [{
+        browserName: 'chrome'
+    }],
     //
     // ===================
     // Test Configurations
@@ -64,7 +56,7 @@ exports.config = {
     // Define all options that are relevant for the WebdriverIO instance here
     //
     // Level of logging verbosity: trace | debug | info | warn | error
-    logLevel: 'info',
+    logLevel: 'error',
     //
     // Warns when a deprecated command is used
     deprecationWarnings: true,
@@ -93,7 +85,7 @@ exports.config = {
     // Services take over a specific job you don't want to take care of. They enhance
     // your test setup with almost no effort. Unlike plugins, they don't add new
     // commands. Instead, they hook themselves up into the test process.
-    services: ['selenium-standalone','chromedriver','iedriver'],
+    services: ['selenium-standalone','chromedriver'],
     //
     // Framework you want to run your specs with.
     // The following are supported: Mocha, Jasmine, and Cucumber
@@ -106,14 +98,14 @@ exports.config = {
     // Test reporter for stdout.
     // The only one supported by default is 'dot'
     // see also: https://webdriver.io/docs/dot-reporter.html
-    reporters: ['dot'],
+    reporters: ['spec'],
     
     //
     // Options to be passed to Mocha.
     // See the full list at http://mochajs.org/
     mochaOpts: {
         ui: 'bdd',
-        timeout: 99999
+        timeout: 600000
     },
     //
     // =====
