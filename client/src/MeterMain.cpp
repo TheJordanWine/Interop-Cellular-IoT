@@ -19,7 +19,9 @@
 #include <algorithm>
 #include <iostream>
 #include <string>
+#include <string.h>
 #include <sstream>
+#include <fstream>
 #include <ctime>
 #include "onem2m.hxx"
 #include "UtilityMeter.h"
@@ -29,39 +31,62 @@ using namespace std;
 /**
   * Function declarations.
   */
-bool isValidIP(char x[]);
-bool isValidCred(char x[]);
-bool isValidInt(char x[]);
-bool isValidName(char x[]);
-bool isValidPath(char x[]);
+bool isValidIP(const char x[]);
+bool isValidCred(const char x[]);
+bool isValidInt(const char x[]);
+bool isValidName(const char x[]);
+bool isValidPath(const char x[]);
+bool writeConfig();
+bool readConfig();
+
+// Global Function Variables
+
+string hostName;
+string loginCred;
+string aeName;
+string aeAppId;
+string contName;
+string location;
+string cseRootAddr;
+double secondsToDelay;
+int runtime;
 
 /**
   * Main function, program entry point.
   */
 int main (int argc, char* argv[]) {
 
-  // Global Function Variables
+  // Local Function Variables
   long result;                          // HTTP Result code.
-  string hostName = "127.0.0.1:8080";   // The IP:Port of OM2M server.
-  string loginCred = "admin:admin";     // The OM2M Server login credentials.
-  string aeName = "MY_METER";           // Name of the AE Resource to create.
-  string aeAppId = "app1";              // Name of the AE App Id. Mandatory.
-  string contName = "DATA";             // Data Container Name.
-  string location = "Home";             // Location of Utility Meter
+  hostName = "127.0.0.1:8080";   // The IP:Port of OM2M server.
+  loginCred = "admin:admin";     // The OM2M Server login credentials.
+  aeName = "MY_METER";           // Name of the AE Resource to create.
+  aeAppId = "app1";              // Name of the AE App Id. Mandatory.
+  contName = "DATA";             // Data Container Name.
+  location = "Home";             // Location of Utility Meter
+  bool saveConfig = false;
   ::xml_schema::integer respObjType;    // The response data from server.
-  string cseRootAddr = "/in-cse/in-name";            // SP-Relative address.
+  cseRootAddr = "/in-cse/in-name";            // SP-Relative address.
   std::unique_ptr< ::xml_schema::type > respObj;     // The result code from server.
   UtilityMeter um;                      // Construct our UtilityMeter object.
   int meterValue;                       // Represents Utility Meter Value.
   string meterValueStr;                 // Utility Meter Value as a string.
   double secondsPassed;
-  double secondsToDelay = 10;           // Seconds between meter-value updates
+  secondsToDelay = 10;           // Seconds between meter-value updates
   int count = 0;                        // Test value counter
-  int runtime = 2;                      // Runtime value in minutes. Default to 2 minutes
+  runtime = 2;                      // Runtime value in minutes. Default to 2 minutes
   int countCalc = 13;                   // To be calculated using 60 * runtime / secondsToDelay + 1 , Default to 13 for 2 minutes
   double time_counter = 0;              // Timer for simulated data
   clock_t this_time = clock();
   clock_t last_time = this_time;
+
+  // Read Configuration file
+  if (readConfig()) {
+    cout << "Configuration loaded\n";
+  }
+  else {
+    cout << "Configuration failed to load\n";
+  }
 
   /*
    * Parse for command line flags
@@ -176,6 +201,10 @@ int main (int argc, char* argv[]) {
           return 0;
         }
       }
+      else if (strcmp(argv[i],"-s") == 0) { // save configuration flag
+        cout << "\nConfiguration will be saved: ";
+        saveConfig = true;
+      }
       else { // invalid flag
         cout << "Invalid flag  - " << argv[i]
         << "\n   Exiting...\n";
@@ -190,7 +219,18 @@ int main (int argc, char* argv[]) {
     "appIDd = " + aeAppId
   );
 
-  countCalc = 60 * runtime / secondsToDelay + 1; // Calculate count after all arguments have been read
+  // Calculate count after all arguments have been read
+  countCalc = 60 * runtime / secondsToDelay + 1;
+
+  // Save configuration if save flag is preset
+  if(saveConfig){
+    if(writeConfig()){
+      cout << "Configuration successfully saved\n";
+    }
+    else {
+      cout << "Configuration failed to save\n";
+    }
+  }
 
 
   /*
@@ -334,7 +374,7 @@ int main (int argc, char* argv[]) {
   * @param The input char array to validate.
   * @return Boolean indicating whether input is valid or not.
   */
-bool isValidIP(char x[]) {
+bool isValidIP(const char x[]) {
 
   // Initialize the result boolean to true.
   bool result = true;
@@ -383,7 +423,7 @@ bool isValidIP(char x[]) {
   * @param The input char array to validate.
   * @return Boolean indicating whether input is valid or not.
   */
-  bool isValidCred(char x[]) {
+  bool isValidCred(const char x[]) {
 
     int c1 = 0;     // Count number of ":" characters.
 
@@ -423,7 +463,7 @@ bool isValidIP(char x[]) {
     * @param The input char array to validate.
     * @return Boolean indicating whether input is valid or not.
     */
-  bool isValidInt(char x[]) {
+  bool isValidInt(const char x[]) {
     // Iterate through the input char array.
     int i = 0;
     while (x[i] != '\0') {
@@ -433,7 +473,7 @@ bool isValidIP(char x[]) {
       i++;
     }
     return true; // Argument is an integer
-  }
+  } // End of function isValidInt.
 
   /**
     * This function checks to ensure that the provided char
@@ -442,17 +482,17 @@ bool isValidIP(char x[]) {
     * @param The input char array to validate.
     * @return Boolean indicating whether input is valid or not.
     */
-  bool isValidName(char x[]) {
+  bool isValidName( const char x[]) {
     // Iterate through the input char array.
     int i = 0;
     while (x[i] != '\0') {
-      if (!isalpha(x[i]) && x[i] != '_' && x[i] != '-' ) { // Return false if not a valid alphanumberic, '-' or '_'  character
+      if ( isalnum(x[i]) == 0  && x[i] != '_' && x[i] != '-' ) { // Return false if not a valid alphanumberic, '-' or '_'  character
         return false;
       }
       i++;
     }
     return true; // Argument is an integer
-  }
+  } // End of function isValidName.
 
   /**
     * This function checks to ensure that the provided char
@@ -461,10 +501,144 @@ bool isValidIP(char x[]) {
     * @param The input char array to validate.
     * @return Boolean indicating whether input is valid or not.
     */
-  bool isValidPath(char x[]) {
+  bool isValidPath( const char x[] ) {
     int i = 0;
     while (x[i] != '\0') { // get last character of path
       i++;
     }
       return x[0] == '/' && x[i-1] != '/'; // Return true if path begins with / and does not end with /.
-  }
+  } // End of function isValidPath.
+
+  /**
+    * This function reads the configuration file to load the last
+    * saved configuration.
+    *
+    * @return Boolean indicating whether loading of values was successful.
+    */
+  bool readConfig(){
+    string line;
+    string key;
+    string value;
+    int i;
+    int colonLocation;
+    ifstream configFile ("settings.config"); // Open configuration file
+    if ( configFile.is_open() ) { // File successfully opened
+      while ( getline (configFile,line) ){ // Get each line of file
+        i=0;
+        while (line[i] != ':') { // Parse characters of line for ':'
+          i++;
+        }
+        key = line.substr(0,i); // Get characters before ':' character
+        cout << "Reading 'key, value' pair: " << key;
+        colonLocation = i; // Save location of colon in line
+        while (line[i] != '\0') { // parse key
+          i++;
+        }
+
+        value = line.substr(colonLocation + 1, i); // Get characters  after ':' character
+        cout << ", " << value << "\n";
+
+        // check key against options
+        if (strcmp(key.c_str(),"aeAppId") == 0) { // aeAppId
+          if (isValidName(value.c_str())) { // check for valid name
+            aeAppId = value;
+          }
+          else {
+            cout << "Invalid value for aeAppId: " << value << "\n";
+            return false;
+          }
+        }
+        else if (strcmp(key.c_str(),"contName") == 0) { // contName
+          if (isValidName(value.c_str())) { // check for valid name
+            contName = value;
+          }
+          else {
+            cout << "Invalid value for contName: " << value << "\n";
+            return false;
+          }
+        }
+        else if (strcmp(key.c_str(),"secondsToDelay") == 0) { // secondsToDelay
+          if (isValidInt(value.c_str())) { // Verify proper format
+            secondsToDelay = atoi(value.c_str());
+          }
+          else {
+            cout << "Invalid value for secondsToDelay: " << value << "\n";
+            return false;
+          }
+        }
+        else if (strcmp(key.c_str(),"hostName") == 0) { // hostName
+          if (isValidIP(value.c_str())) { // Verify proper format
+            hostName = value;
+          }
+          else {
+            cout << "Invalid value for hostName: " << value << "\n";
+            return false;
+          }
+        }
+        else if (strcmp(key.c_str(),"loginCred") == 0) { // loginCred
+          if (isValidCred(value.c_str())) { // Verify proper format
+            loginCred = value;
+          }
+          else {
+            cout << "Invalid value for loginCred: " << value << "\n";
+            return false;
+          }
+        }
+        else if (strcmp(key.c_str(),"location") == 0) { // location
+          if (isValidName(value.c_str())) { // check for valid name
+            location = value;
+          }
+          else {
+            cout << "Invalid value for location: " << value << "\n";
+            return false;
+          }
+        }
+        else if (strcmp(key.c_str(),"aeName") == 0) { // aeName
+          if (isValidName(value.c_str())) { // check for valid name
+            aeName = value;
+          }
+          else {
+            cout << "Invalid value for aeName: " << value << "\n";
+            return false;
+          }
+        }
+        else if (strcmp(key.c_str(),"cseRootAddr") == 0) { // cseRootAddr
+          if (isValidPath(value.c_str())) {   // Verify proper format
+            cseRootAddr = value;
+          }
+          else {
+            cout << "Invalid value for cseRootAddr: " << value << "\n";
+            return false;
+          }
+        }
+        else if (strcmp(key.c_str(),"runtime") == 0) { // runtime
+          if (isValidInt(value.c_str())) { // Verify proper format
+            runtime = atoi(value.c_str());
+          }
+          else {
+            cout << "Invalid value for runtime: " << value << "\n";
+            return false;
+          }
+        }
+        else { // Bad key
+          cout << "Unable to locate key: " << key << "\n";
+          return false;
+        }
+      }
+      configFile.close(); // Close configuration file
+      return true; // return true as nothing failed
+    }
+    else {
+      return false;
+    }
+  } // End of function readConfig.
+
+  /**
+    * This function writes to the configuration file to save the
+    * current configuration.
+    *
+    * @return Boolean indicating whether loading of values was successful.
+    */
+  bool writeConfig(){ // TODO
+
+  } // End of function writeConfig.
