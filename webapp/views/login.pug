@@ -1,0 +1,101 @@
+doctype html
+html(lang="en")
+    head
+        include templates/cssframeworks.pug
+        include templates/meta.pug
+        style(type="text/css").
+            marquee {
+                font-size: 20;
+            }
+            body {
+                background: -webkit-linear-gradient(#F4F4F4, #313232);
+                background:    -moz-linear-gradient(#F4F4F4, #313232);
+                background:         linear-gradient(#F4F4F4, #313232);
+            }
+
+            .material-icons.active {
+                color: #EF3E35 !important;
+            }
+
+            input[type=text] {
+                border-bottom: 1px solid #EEEEEE !important;
+            }
+
+            input[type=password] {
+                border-bottom: 1px solid #EEEEEE !important;
+            }
+
+            .input-field label.active {
+                color: #EF3E35 !important;
+            }
+
+            input[type=text]:focus:not([readonly]) {
+                border-bottom: none !important;
+                box-shadow: 0 1px 0 0 #EF3E35 !important;
+            }
+
+            input[type=password]:focus:not([readonly]) {
+                border-bottom: none !important;
+                box-shadow: 0 1px 0 0 #EF3E35 !important;
+            }
+
+            input[type=text].valid,
+            input[type=password].valid {
+                border-bottom: none !important;
+                box-shadow: 0 1px 0 0 #EF3E35 !important;
+            }
+
+            input:-webkit-autofill {
+                background-color: rgba(255, 255, 255, 0.0) !important;
+            }
+
+            textarea.materialize-textarea:focus:not([readonly]) {
+                border-bottom: 1px solid #EF3E35 !important;
+                box-shadow: 0 1px 0 0 #EF3E35 !important;
+            }
+
+            .ol-checkbox[type="checkbox"]:checked + label:before {
+                border-top: 2px solid transparent;
+                border-left: 2px solid transparent;
+                border-right: 2px solid #EF3E35;
+                border-bottom: 2px solid #EF3E35;
+            }
+            div#footer {
+                position: fixed;
+                top: 70%;
+            }
+            #footer {
+                width:45%;
+                height:10%;
+                margin-top:20px;
+                padding-top: 5%;
+                padding-bottom: 10%;
+                margin-left: 13%;
+            }
+    body
+        .container
+            .valign-wrapper(style='height:100vh')
+                .valign(style='width: 100%')
+                    .row
+                        .col.s12.m8.offset-m2.l4.offset-l4
+                            #cardDiv.card.z-depth-4
+                                .card-title.red.white-text
+                                    .valign-wrapper.center(style='height:75px;')
+                                        .valign(style='width:100%') Interop Cellular Dashboard
+                                .card-content
+                                    form(action='/login', method='post')
+                                        .row
+                                            .input-field.col.s12
+                                                i.material-icons.prefix account_box
+                                                input#username.validate(type='text', name='username')
+                                                label(for='username') Username
+                                        .row
+                                            .input-field.col.s12
+                                                i.material-icons.prefix lock
+                                                input#password.validate(name='password', type='password')
+                                                label(for='password') Password
+                                        .card-action.right-align
+                                            button.waves-effect.waves-light.btn.red(type='submit', name='action', style='width: 100%')
+                                                | Login
+
+        include templates/jsscripts.pug

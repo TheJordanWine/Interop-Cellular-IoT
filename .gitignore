@@ -40,3 +40,4 @@ server/IN-CSE/database/
 server/IN-CSE/configuration/*.log
 webapp/MY_METER/
 webapp/MY_METER_data/
+webapp/test/*env.sh
