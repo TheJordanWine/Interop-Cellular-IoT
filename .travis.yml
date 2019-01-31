@@ -1,3 +1,5 @@
 language: node_js
 
 install: ./webapp/install-dependencies.sh
+
+script: ./webapp/test/run-tests.sh
