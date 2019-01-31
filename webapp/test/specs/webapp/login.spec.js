@@ -2,9 +2,11 @@ const assert = require('assert');
 
 var host = process.env.wdio__webhost || '127.0.0.1';
 var port = process.env.wdio__webport || '3000';
+var isHttps = process.env.wdio__ishttps || 'false';
+
 describe('Testing the login page', () => {
     it('Should redirect you to login page when not logged in', () => {
-        browser.url(`http://${host}:${port}`);
+        browser.url(`${isHttps == 'true'?'https':'http'}://${host}:${port}`);
         var currentPath = browser.execute(() => {
             return location.pathname;
         });

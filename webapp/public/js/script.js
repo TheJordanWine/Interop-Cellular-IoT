@@ -127,21 +127,22 @@ function subscribe() {
     });
 }
 function deleteResource(resourceName) {
-    var userConfirm = confirm('Are you sure you want to delete the resource?');
-    if(userConfirm) {
-        $.ajax({
-            type: "post",
-            url: '/api/delete',
-            data: `resourceName=${resourceName}&ishttps=${localStorage.getItem('ishttps')}&om2mhost=${localStorage.getItem('om2mhost')}&om2mport=${localStorage.getItem('om2mport')}`,
-            contentType: "application/x-www-form-urlencoded",
-            success: function (responseData, textStatus, jqXHR) {
-                location.reload();
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                alert(errorThrown);
-            }
-        });
-    }
+    // var userConfirm = confirm('Are you sure you want to delete the resource?');
+    // if(userConfirm) {
+        
+    // }
+    $.ajax({
+        type: "post",
+        url: '/api/delete',
+        data: `resourceName=${resourceName}&ishttps=${localStorage.getItem('ishttps')}&om2mhost=${localStorage.getItem('om2mhost')}&om2mport=${localStorage.getItem('om2mport')}`,
+        contentType: "application/x-www-form-urlencoded",
+        success: function (responseData, textStatus, jqXHR) {
+            location.reload();
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            alert(errorThrown);
+        }
+    });
 }
 
 var ctx = "myChart";
