@@ -79,3 +79,8 @@ echo "Testing File Path Verification: must begin with / "
 ./main -r /file/path   &
 sleep 1
 kill $!
+
+echo "Testing Loading of Configuration from settings.config"
+./main &
+sleep 1
+kill $!
