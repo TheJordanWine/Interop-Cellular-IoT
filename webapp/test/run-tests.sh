@@ -15,8 +15,16 @@ if ls webapp >/dev/null; then
     export wdio__ishttps='false'
     " > webapp/test/env.sh
 
+    # First start the OM2M server
+    cd server/IN-CSE
+    bash start.sh &
+    serverPid=$!
+
+    # Next start the webapp
     # Navigate to webapp root dir
     cd webapp
+    npm start &
+    webAppPid=$1
 
     # We'll skip installing because we assume Travis has already installed
     # npm install
@@ -24,6 +32,12 @@ if ls webapp >/dev/null; then
     # Run tests
     npm test
 
+
+    # Stop the server
+    kill $serverPid
+
+    # Stop the webapp
+    kill $webAppPid
 
     # Remove env.sh to avoid conflicts
     rm -rf env.sh
