@@ -8,9 +8,9 @@ set -ev
 if ls webapp >/dev/null; then
     # Set up environmental variables for testing
     echo "
-    export wdio__om2mhost='127.0.0.1'
+    export wdio__om2mhost='localhost'
     export wdio__om2mport='8080'
-    export wdio__webhost='127.0.0.1'
+    export wdio__webhost='localhost'
     export wdio__webport='3000'
     export wdio__ishttps='false'
     " > webapp/test/env.sh
