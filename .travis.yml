@@ -11,6 +11,6 @@ matrix:
         chrome: stable
       before_install:
         -  # start your web application and listen on `localhost`
-        - google-chrome-stable --no-sandbox --headless --disable-gpu --remote-debugging-port=9222 http://localhost &
+        - google-chrome-stable --no-sandbox --headless --disable-gpu --disable-dev-shm-usage --remote-debugging-port=9222 http://localhost &
       install: ./webapp/install-dependencies.sh
       script: ./webapp/test/run-tests.sh
