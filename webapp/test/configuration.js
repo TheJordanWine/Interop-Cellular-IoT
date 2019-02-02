@@ -27,7 +27,13 @@ exports.config = {
       browserName: "chrome",
 
       chromeOptions: {
-        args: ["headless", "disable-gpu", "no-sandbox", "disable-dev-shm-usage"]
+        args: [
+          "headless",
+          "disable-gpu",
+          "no-sandbox",
+          "disable-dev-shm-usage"
+        ],
+        binary: "/usr/bin/google-chrome-stable"
       }
     }
   ],
