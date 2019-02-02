@@ -16,9 +16,11 @@ if ls webapp >/dev/null; then
     " > webapp/test/env.sh
 
     # First start the OM2M server
+    echo "Starting OM2M server"
     cd server/IN-CSE
     bash start.sh &
     serverPid=$!
+    ps $serverPid && echo "Server running on pid: $serverPid"
 
     # Next start the webapp
     # Navigate to webapp root dir

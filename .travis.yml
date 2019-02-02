@@ -1,7 +1,10 @@
-language: node_js
-node_js:
-  - "7"
+matrix:
+  include:
+    - language: java
+    jdk: oraclejdk8
 
-install: ./webapp/install-dependencies.sh
-
-script: ./webapp/test/run-tests.sh
+    - language: node_js
+    node_js:
+      - "7"
+    install: ./webapp/install-dependencies.sh
+    script: ./webapp/test/run-tests.sh
