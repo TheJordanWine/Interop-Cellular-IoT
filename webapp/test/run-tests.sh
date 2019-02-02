@@ -22,7 +22,7 @@ if ls webapp >/dev/null; then
 
     # Next start the webapp
     # Navigate to webapp root dir
-    cd webapp
+    cd ../../webapp
     npm start &
     webAppPid=$1
 
