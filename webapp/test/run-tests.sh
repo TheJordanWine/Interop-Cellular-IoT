@@ -32,14 +32,9 @@ if ls webapp >/dev/null; then
     # npm install
 
     # Start Chrome
-    which google-chrome-stable
-    which google-chrome
-    ln -s /usr/bin/google-chrome-stable /usr/bin/google-chrome
     google-chrome --no-sandbox --headless --disable-gpu --disable-dev-shm-usage --remote-debugging-port=9222 http://localhost &
 
     # Run tests
-    echo "chcking for chrome"
-    ps -ef |grep google-chrome
     ln -s /usr/bin/google-chrome-stable /usr/bin/google-chrome
     npm test
 
