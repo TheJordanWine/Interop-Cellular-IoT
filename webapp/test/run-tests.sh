@@ -33,6 +33,7 @@ if ls webapp >/dev/null; then
 
     # Start Chrome
     which google-chrome-stable
+    which google-chrome
     google-chrome-stable --no-sandbox --headless --disable-gpu --disable-dev-shm-usage --remote-debugging-port=9222 http://localhost &
 
     # Run tests
