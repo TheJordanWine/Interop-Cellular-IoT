@@ -37,6 +37,8 @@ if ls webapp >/dev/null; then
     google-chrome-stable --no-sandbox --headless --disable-gpu --disable-dev-shm-usage --remote-debugging-port=9222 http://localhost &
 
     # Run tests
+    echo "chcking for chrome"
+    ps -ef |grep google-chrome
     npm test
 
 
