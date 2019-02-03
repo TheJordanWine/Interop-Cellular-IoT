@@ -30,6 +30,10 @@ RUN unzip OM2M-1.0.0.zip
 # Make start.sh executable
 RUN chmod a+x IN-CSE/start.sh 
 
+# Copy the IN-CSE configuration file to the container
+COPY IN-CSE/configuration/config.ini /IN-CSE/configuration/config.ini
+COPY server-keystore.jks /server-keystore.jks
+
 WORKDIR /IN-CSE
 ENTRYPOINT ["sh"]
 CMD ["start.sh"]

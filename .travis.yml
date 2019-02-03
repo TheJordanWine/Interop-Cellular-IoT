@@ -1,0 +1,15 @@
+matrix:
+  include:
+    - language: java
+      jdk: oraclejdk8
+      install: true
+      script: true
+
+    - language: node_js
+      node_js: 8.9
+      env:
+        - CHROME_BIN="/usr/bin/google-chrome-stable"
+      addons:
+        chrome: stable
+      install: ./webapp/install-dependencies.sh
+      script: ./webapp/test/run-tests.sh
