@@ -6,7 +6,8 @@ html(lang="en")
         title Data Page
         style(type="text/css").
             *, button {
-                margin: 5px;
+                margin-top: 5px;
+                margin-bottom: 5px;
             }
             .btn-info {
                 display: inline;
@@ -21,18 +22,19 @@ html(lang="en")
                 .col-12
                     h2= 'Data View for ' + pugAE
             .row    
-                .col-1-xs
-                    a(class="btn btn-success" href="/" )
+                .col-1
+                    a(class="waves-effect waves-light btn red" href="/" )
                             i.material-icons arrow_back
-                .col-1-xs 
-                    button#resume(class="btn btn-info")
+                .col-1 
+                    button#resume(class="waves-effect waves-light btn")
                         i.material-icons play_arrow
             .row
-                .col-1-xs
+                .col-1
                     label Enter graph range (5-100):
             .row
-                .col-1-xs
-                    input#range(type="range" min="5" max="100")
+                .col-1
+                    p.range-field
+                        input#range(type="range" min="5" max="100")
             canvas#myChart(width="400" height="400")
 
     include templates/jsscripts.pug

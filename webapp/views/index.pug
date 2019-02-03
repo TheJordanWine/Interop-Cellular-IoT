@@ -3,22 +3,39 @@ html(lang="en")
     head
         include templates/cssframeworks.pug
         include templates/meta.pug
-        style(type="text/css").
-            * {
-                margin: 5px;
-            }
-            .btn-primary {
-                color: white!important;
-            }
-
     body
         -var pugAENames = AENames
+        nav
+            .nav-wrapper
+                a.brand-logo(href='#!') Interop Cellular Dashboard
+                a.sidenav-trigger(href='#', data-target='mobile-demo')
+                    i.material-icons menu
+                ul#mobile-demo.sidenav
+                    li
+                        a(class="modal-trigger" href="#subscription") Subscribe
+                    li
+                        a(href="/logout") Logout
+                ul.right.hide-on-med-and-down
+                    li
+                        a(class="waves-effect waves-light btn modal-trigger" href="#subscription")
+                            i.material-icons.left settings
+                            | Subscribe
+                        a(class="waves-effect waves-light btn logout" href="/logout")
+                            i.material-icons.left power_settings_new
+                            | Logout
         h2 Welcome
         p Click on any of the Application Entity Buttons to see their respective data
-        p#status IN-CSE Server Status
-            span.badge.badge-secondary Checking...
         br
         each ae in pugAENames
-            a(class="btn btn-primary" href=`/data?ae=${ae}`)= ae
-            br
+            .row
+                .col.s12.m6
+                    .card.blue-grey.darken-1
+                        .card-content.white-text
+                            span.card-title=ae
+                        .card-action
+                            a(class="waves-effect waves-light btn orange darken-2 monitor-data" href=`/data?ae=${ae}`) Monitor Data
+                            a(class="waves-effect waves-light btn red" onclick=`deleteResource('${ae}')`)
+                                i.material-icons.left delete
+                                | Delete
+                            a(class="waves-effect waves-light btn disabled ping-data" href=`/ping?ae=${ae}`) Ping for data
         include templates/jsscripts.pug

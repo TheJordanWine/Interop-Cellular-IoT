@@ -1,3 +1,13 @@
+var request = require('request');
+var fs = require('fs');
+var path = require('path');
+var rimraf = require("rimraf");
+var host = process.env.wdio__webhost || '127.0.0.1';
+var port = process.env.wdio__webport || '3000';
+var om2mhost = process.env.wdio__om2mhost || '127.0.0.1';
+var om2mport = process.env.wdio__om2mport || '8080';
+var isHttps = process.env.wdio__ishttps || 'false';
+
 exports.config = {
     //
     // ====================
@@ -40,23 +50,15 @@ exports.config = {
     // and 30 processes will get spawned. The property handles how many capabilities
     // from the same test should run tests.
     //
-    maxInstances: 10,
+    maxInstances: 3,
     //
     // If you have trouble getting all important capabilities together, check out the
     // Sauce Labs platform configurator - a great tool to configure your capabilities:
     // https://docs.saucelabs.com/reference/platforms-configurator
     //
-    capabilities: [
-        {
-            browserName: 'firefox'
-        },
-        {
-            browserName: 'chrome'
-        },
-        {
-            browserName: 'internet explorer'
-        }
-    ],
+    capabilities: [{
+        browserName: 'chrome'
+    }],
     //
     // ===================
     // Test Configurations
@@ -64,7 +66,7 @@ exports.config = {
     // Define all options that are relevant for the WebdriverIO instance here
     //
     // Level of logging verbosity: trace | debug | info | warn | error
-    logLevel: 'info',
+    logLevel: 'error',
     //
     // Warns when a deprecated command is used
     deprecationWarnings: true,
@@ -93,7 +95,7 @@ exports.config = {
     // Services take over a specific job you don't want to take care of. They enhance
     // your test setup with almost no effort. Unlike plugins, they don't add new
     // commands. Instead, they hook themselves up into the test process.
-    services: ['selenium-standalone','chromedriver','iedriver'],
+    services: ['selenium-standalone','chromedriver'],
     //
     // Framework you want to run your specs with.
     // The following are supported: Mocha, Jasmine, and Cucumber
@@ -106,14 +108,14 @@ exports.config = {
     // Test reporter for stdout.
     // The only one supported by default is 'dot'
     // see also: https://webdriver.io/docs/dot-reporter.html
-    reporters: ['dot'],
+    reporters: ['spec'],
     
     //
     // Options to be passed to Mocha.
     // See the full list at http://mochajs.org/
     mochaOpts: {
         ui: 'bdd',
-        timeout: 99999
+        timeout: 600000
     },
     //
     // =====
@@ -137,8 +139,34 @@ exports.config = {
      * @param {Array.<Object>} capabilities list of capabilities details
      * @param {Array.<String>} specs List of spec file paths that are to be run
      */
-    // beforeSession: function (config, capabilities, specs) {
-    // },
+    beforeSession: function (config, capabilities, specs) {
+        var mySensorDir = path.resolve(__dirname, '../MY_SENSOR');
+        if (fs.existsSync(mySensorDir)) {
+            rimraf.sync(mySensorDir)
+        }
+        request.post(`${isHttps == 'true' ? 'https' : 'http'}://${om2mhost}:${om2mport}/~/in-cse`, {
+            headers: {
+                'content-type': 'application/xml;ty=2',
+                'x-m2m-origin': 'admin:admin'
+            },
+            body: '<m2m:ae xmlns:m2m="http://www.onem2m.org/xml/protocols" rn="MY_SENSOR" ><api>app-sensor</api><lbl>Type/sensor Category/temperature Location/home</lbl><rr>false</rr></m2m:ae>'
+        }, function (err, resp, body) {
+            if (err) {
+                throw new Error('Unable to create a resource. Please check a OM2M server is configured correctly');
+            }
+            request.post(`${isHttps == 'true' ? 'https' : 'http'}://${om2mhost}:${om2mport}/~/in-cse/in-name/MY_SENSOR`, {
+                headers: {
+                    'content-type': 'application/xml;ty=3',
+                    'x-m2m-origin': 'admin:admin'
+                },
+                body: '<m2m:cnt xmlns:m2m="http://www.onem2m.org/xml/protocols" rn="DATA"></m2m:cnt>'
+            }, function (err, resp, body) {
+                if (err) {
+                    throw new Error('Unable to create data container. ');
+                } 
+            });
+        });
+    },
     /**
      * Gets executed before test execution begins. At this point you can access to all global
      * variables like `browser`. It is the perfect place to define custom commands.

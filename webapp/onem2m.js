@@ -27,13 +27,13 @@ module.exports = class Onem2m {
     this.options = options;
 
     // Set defaults for required options
-    this.options.host = "127.0.0.1" || options.host;
-    this.options.port = 8080 || options.port;
-    this.options.aeName = "MY_SENSOR" || options.aeName;
-    this.options.listenAddress = "127.0.0.1" || options.listenAddress;
-    this.options.listenPort = 3000 || options.listenPort;
-    this.options.listenRoute = "/monitor" || options.listenRoute;
-    this.options.credentials = "admin:admin" || options.credentials;
+    this.options.host = options.host || "127.0.0.1" ;
+    this.options.port = options.port || 8080;
+    this.options.aeName = options.aeName || "MY_METER";
+    this.options.listenAddress = options.listenAddress || "127.0.0.1" ;
+    this.options.listenPort = options.listenPort || 3000;
+    this.options.listenRoute = options.listenRoute || "/monitor";
+    this.options.credentials = options.credentials || "admin:admin";
   }
 
   /**
