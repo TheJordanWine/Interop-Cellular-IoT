@@ -261,6 +261,8 @@ int main (int argc, char* argv[]) {
 
   /*
    * Create the main MY_METER AE resource object and push to OM2M server.
+   * This will be used by the client to send meter values to and to receive
+   * commands/instructions from.
    */
   cout << "Creating MY_METER AE resource object...\n";
   auto aeMyMeter = onem2m::AE();
@@ -291,7 +293,7 @@ int main (int argc, char* argv[]) {
   cout << "\nContainer creation result code: " << result << "\n";
 
   /*
-   * Populate the descriptor container with an actual discription
+   * Populate the descriptor container with an actual description
    */
   cout << "\nCreating Descriptor Content Instance...\n";
   auto descInst = ::onem2m::contentInstance();
@@ -303,12 +305,37 @@ int main (int argc, char* argv[]) {
   /*
    * Create a Container in our AE. This container will store the meter value.
    */
-  cout << "\nCreating Container...\n";
+  cout << "\nCreating DATA Container...\n";
   auto cnt = ::onem2m::container();
   cnt.resourceName(contName);
   respObj = ::onem2m::createResource(cseRootAddr+"/"+aeName,
     "5555", cnt, result, respObjType);
   cout << "\nContainer creation result code: " << result << "\n";
+
+  /*
+   * Create a new receiver Container in our AE. The client will subscribe to this
+   * container for instructions from the webapp.
+   */
+  cout << "\nCreating receiver PING_METER Container...\n";
+  auto cntRcv = ::onem2m::container();
+  cntRcv.resourceName("PING_METER");
+  respObj = ::onem2m::createResource(cseRootAddr+"/"+aeName,
+    "5555", cntRcv, result, respObjType);
+  cout << "\nContainer creation result code: " << result << "\n";
+
+  /*
+   * Create a subscription to the OM2M server's PING_METER Container
+   * that is under the MY_METER AE.
+   */
+  cout << "\nSubscribing to PING_METER container on OM2M server...\n";
+  auto ss = ::onem2m::subscription();
+  auto uri = ::onem2m::listOfURIs();
+  ss.resourceName("SUB_CPP_CLIENT");   // The name of the subscription
+  uri.push_back(cseRootAddr+"/"+aeName);
+  ss.notificationURI(uri);
+  respObj = ::onem2m::createResource(cseRootAddr+"/"+aeName+"/"+"PING_METER",
+    "5555", ss, result, respObjType);
+  cout << "\nSubscription result code: " << result << "\n";
 
   /*
    * Write simulated utility meter value data to Content Instance in the Container
