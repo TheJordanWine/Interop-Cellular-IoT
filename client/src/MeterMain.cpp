@@ -224,7 +224,7 @@ int main (int argc, char* argv[]) {
 
   // Save configuration if save flag is preset
   if(saveConfig){
-    if(writeConfig()){
+    if( writeConfig() ){
       cout << "Configuration successfully saved\n";
     }
     else {
@@ -521,7 +521,7 @@ bool isValidIP(const char x[]) {
     string value;
     int i;
     int colonLocation;
-    ifstream configFile ("settings.config"); // Open configuration file
+    ifstream configFile ("settings.config"); // Open configuration file for reading
     if ( configFile.is_open() ) { // File successfully opened
       while ( getline (configFile,line) ){ // Get each line of file
         i=0;
@@ -639,6 +639,23 @@ bool isValidIP(const char x[]) {
     *
     * @return Boolean indicating whether loading of values was successful.
     */
-  bool writeConfig(){ // TODO
+  bool writeConfig(){
+      ofstream configFile ( "settings.config" ); // Open configuration for writing
+      if ( configFile.is_open() ) { // Check if file is open, then input values
+        configFile << "aeAppId:" << aeAppId << "\n";
+        configFile << "contName:" << contName << "\n";
+        configFile << "secondsToDelay:" << secondsToDelay << "\n";
+        configFile << "hostName:" << hostName << "\n";
+        configFile << "loginCred:" << loginCred << "\n";
+        configFile << "location:" << location << "\n";
+        configFile << "aeName:" << aeName << "\n";
+        configFile << "cseRootAddr:" << cseRootAddr << "\n";
+        configFile << "runtime:" << runtime << "\n";
+        configFile.close(); // close file
+        return true;
+      }
+      else {
+        return false;
+      }
 
   } // End of function writeConfig.
