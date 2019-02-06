@@ -38,6 +38,10 @@ bool isValidName(const char x[]);
 bool isValidPath(const char x[]);
 bool writeConfig();
 bool readConfig();
+onem2m::onem2mResponseStatusCode callbackNotification(
+  string h,
+  string &from,
+  onem2m::notification *n);
 
 // Global Function Variables
 
@@ -247,6 +251,13 @@ int main (int argc, char* argv[]) {
   onem2m::setHostName(hostName);    // OM2M server address.
   onem2m::setFrom(loginCred);       // Credentials.
   cout << "Done!\n";
+
+  /*
+   * Use the OS-IoT HTTP server implementation to start a HTTP
+   * server instance running locally on this client (127.0.0.1)
+   * and port number 8082. Use a callback routine callbackNotification.
+   */
+  onem2m::startHttpServer({""}, 8082, &callbackNotification);
 
   /*
    * Create the main MY_METER AE resource object and push to OM2M server.
@@ -642,3 +653,17 @@ bool isValidIP(const char x[]) {
   bool writeConfig(){ // TODO
 
   } // End of function writeConfig.
+
+
+/**
+  * This function is the callback routine for onem2m::startHttpServer.
+  * It is called when a notification is received and runs as a
+  * separate thread from the main.
+  */
+onem2m::onem2mResponseStatusCode callbackNotification(
+  string h,
+  string &from,
+  onem2m::notification* n)
+{
+  return onem2m::rcACCEPTED;
+}
