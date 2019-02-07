@@ -11,6 +11,7 @@ var dbName = "cellulariot";
 // Configure the credentials for DEFAULT authentication with the mongo DB
 var user = encodeURIComponent("myUserAdmin");
 var password = encodeURIComponent("abc123");
+var authDb = "admin";
 var authMechanism = "DEFAULT";
 
 // Connection URL
@@ -20,7 +21,7 @@ var mongoUrl = f(
     ":" +
     mongoPort +
     "/" +
-    dbName +
+    authDb +
     "?authMechanism=%s",
   user,
   password,
@@ -33,7 +34,8 @@ var mongoUrl = f(
 MongoClient.connect(mongoUrl, { useNewUrlParser: true }, (err, db) => {
   if (err) {
     console.log(err.message);
-    return console.log("Error: could not connect to mongodb");
+    console.log("Error: could not connect to mongodb");
+    return console.log("try running setupDatabase.sh");
   }
   console.log("database created");
 
