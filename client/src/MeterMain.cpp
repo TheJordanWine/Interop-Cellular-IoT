@@ -268,7 +268,9 @@ int main (int argc, char* argv[]) {
   auto aeMyMeter = onem2m::AE();
   aeMyMeter.resourceName(aeName);
   aeMyMeter.App_ID(aeAppId);
-  aeMyMeter.requestReachability(false); // requestReachability is mandatory for AE.
+  aeMyMeter.requestReachability(true); // requestReachability is mandatory for AE.
+  auto pl = onem2m::poaList(onem2m::poaList_base(1, "http://127.0.0.1:8082"));
+  aeMyMeter.pointOfAccess(pl);
   respObj = onem2m::createResource(cseRootAddr, "5555", aeMyMeter,
     result, respObjType);
   cout << "Result code is:  " << result << "\n";
