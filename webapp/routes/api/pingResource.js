@@ -7,7 +7,7 @@ module.exports = function (app, isAuthenticatedCustomMiddleware, serverOpt) {
         /**
          * Will trigger bidirectional call to Client
          */
-        request.post(`${isHttps == "true" ? "https" : "http"}://${om2mhost}:${om2mport}/~/in-cse/in-name/MY_SENSOR/PING_METER`, {
+        request.post(`http://127.0.0.1:8080/~/in-cse/in-name/MY_METER/PING_METER`, {
             headers: {
                 "content-type": "application/json;ty=4",
                 "x-m2m-origin": "admin:admin"
