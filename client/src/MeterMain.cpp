@@ -23,6 +23,8 @@
 #include <sstream>
 #include <fstream>
 #include <ctime>
+#include <termios.h>
+#include <unistd.h>
 #include "onem2m.hxx"
 #include "UtilityMeter.h"
 
@@ -38,6 +40,8 @@ bool isValidName(const char x[]);
 bool isValidPath(const char x[]);
 bool writeConfig();
 bool readConfig();
+int getch();
+string getpass(const char *prompt, bool show_asterisk);
 
 // Global Function Variables
 
@@ -183,8 +187,7 @@ int main (int argc, char* argv[]) {
         }
       }
 	else if (strcmp(argv[i],"-p") == 0) { // password flag
-        cout << "\nPlease enter password: ";
-        cin >> password;
+        password = getpass("Please enter password: ", true);
 	if (true) { // Verify proper format TODO
            promptPass = true;
         }
@@ -253,7 +256,7 @@ int main (int argc, char* argv[]) {
 
   // Build login string if password was prompted
   if (promptPass) {
-     loginCred = username + ":" + password; 
+     loginCred = username + ":" + password;
   }
   // Save configuration if save flag is preset
   if(saveConfig){
@@ -692,3 +695,55 @@ bool isValidIP(const char x[]) {
       }
 
   } // End of function writeConfig.
+
+  /**
+    * This function gets a character from the user while masking input.
+    * Used with getpass()
+    * Depends on termios package
+    * @return character as an integer
+    */
+  int getch() {
+    int ch;
+    struct termios t_old, t_new;
+    tcgetattr(STDIN_FILENO, &t_old);
+    t_new = t_old;
+    t_new.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &t_new);
+    ch = getchar();
+    tcsetattr(STDIN_FILENO, TCSANOW, &t_old);
+    return ch;
+} // End of function getch
+
+/**
+  * This function gets a password from the user while hiding input.
+  * Uses with getchar()
+  * Depends on termios package
+  * @param The prompt to be displayed to user.
+  * @param Whether asterisks should be displayed in place of password
+  * @return password as a string
+  */
+string getpass(const char *prompt, bool show_asterisk) {
+  const char BACKSPACE=127; // integer value of backspace character
+  const char RETURN=10; // integer value of return character
+  string password;
+  unsigned char ch=0;
+  cout <<prompt<<endl; // Output password prompt
+  while((ch=getch())!=RETURN) { // Get input until return character
+       if(ch==BACKSPACE) { // remove last character if backspace received
+            if(password.length()!=0) {
+              if(show_asterisk) {
+                 cout <<"\b \b";
+               }
+                 password.resize(password.length()-1);
+              }
+         }
+       else {
+             password+=ch;
+             if(show_asterisk) { // Display asterisk instead of input character
+                 cout <<'*';
+               }
+         }
+    }
+  cout << password << endl;
+  return password;
+} // End of function getpass
