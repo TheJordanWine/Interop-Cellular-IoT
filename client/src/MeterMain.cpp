@@ -43,6 +43,8 @@ bool readConfig();
 
 string hostName;
 string loginCred;
+string username;
+string password;
 string aeName;
 string aeAppId;
 string contName;
@@ -60,11 +62,14 @@ int main (int argc, char* argv[]) {
   long result;                          // HTTP Result code.
   hostName = "127.0.0.1:8080";   // The IP:Port of OM2M server.
   loginCred = "admin:admin";     // The OM2M Server login credentials.
+  username = "admin";
+  password = "admin";
   aeName = "MY_METER";           // Name of the AE Resource to create.
   aeAppId = "app1";              // Name of the AE App Id. Mandatory.
   contName = "DATA";             // Data Container Name.
   location = "Home";             // Location of Utility Meter
   bool saveConfig = false;
+  bool promptPass = false;
   ::xml_schema::integer respObjType;    // The response data from server.
   cseRootAddr = "/in-cse/in-name";            // SP-Relative address.
   std::unique_ptr< ::xml_schema::type > respObj;     // The result code from server.
@@ -177,6 +182,18 @@ int main (int argc, char* argv[]) {
           return 0;
         }
       }
+	else if (strcmp(argv[i],"-p") == 0) { // password flag
+        cout << "\nPlease enter password: ";
+        cin >> password;
+	if (true) { // Verify proper format TODO
+           promptPass = true;
+        }
+        else {
+          cout << "Invalid argument for password"
+          << "\n   Exiting...\n";
+          return 0;
+        }
+      }
       else if (strcmp(argv[i],"-r") == 0) { // cseRootAddr flag
         cout << "\nCommand line arg passed for the SP-Relative address: ";
         cout << argv[i+1] << endl;
@@ -197,6 +214,18 @@ int main (int argc, char* argv[]) {
         }
         else {
           cout << "Invalid argument for run-time in minutes - " << argv[i+1]
+          << "\n   Exiting...\n";
+          return 0;
+        }
+      }
+        else if (strcmp(argv[i],"-u") == 0) { // username flag
+        cout << "\nCommand line arg passed for the username: ";
+        cout << argv[i+1] << endl;
+        if (isValidName(argv[i+1])) { // Verify proper format
+          username = argv[i+1];       // set aeName to the next argument
+        }
+        else {
+          cout << "Invalid argument for username - " << argv[i+1]
           << "\n   Exiting...\n";
           return 0;
         }
@@ -222,6 +251,10 @@ int main (int argc, char* argv[]) {
   // Calculate count after all arguments have been read
   countCalc = 60 * runtime / secondsToDelay + 1;
 
+  // Build login string if password was prompted
+  if (promptPass) {
+     loginCred = username + ":" + password; 
+  }
   // Save configuration if save flag is preset
   if(saveConfig){
     if( writeConfig() ){
