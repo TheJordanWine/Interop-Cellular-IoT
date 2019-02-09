@@ -37,6 +37,7 @@ bool isValidIP(const char x[]);
 bool isValidCred(const char x[]);
 bool isValidInt(const char x[]);
 bool isValidName(const char x[]);
+bool isValidPass(const char x[]);
 bool isValidPath(const char x[]);
 bool writeConfig();
 bool readConfig();
@@ -188,7 +189,7 @@ int main (int argc, char* argv[]) {
       }
 	else if (strcmp(argv[i],"-p") == 0) { // password flag
         password = getpass("Please enter password: ", true);
-	if (true) { // Verify proper format TODO
+	if ( isValidPass(password.c_str()) ) { // Verify proper format TODO
            promptPass = true;
         }
         else {
@@ -530,6 +531,21 @@ bool isValidIP(const char x[]) {
     return true; // Argument is an integer
   } // End of function isValidName.
 
+  bool isValidPass( const char x[] ) {
+    // Iterate through the input char array.
+    int i = 0;
+    while (x[i]!= '\0') {
+      if (isgraph( x[i] ) == 0) { // return false if character is invalid
+        return false;
+      }
+      i++;
+    }
+    if (i == 0) {
+      return false;
+    }
+    return true;
+  }
+
   /**
     * This function checks to ensure that the provided char
     * array is in a file path format beginning with /.
@@ -744,6 +760,6 @@ string getpass(const char *prompt, bool show_asterisk) {
                }
          }
     }
-  cout << password << endl;
+  cout << endl;
   return password;
 } // End of function getpass
