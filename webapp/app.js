@@ -158,6 +158,8 @@ require('./routes/api/getResource')(app, isAuthenticatedCustomMiddleware, server
 
 require('./routes/api/pingResource')(app, isAuthenticatedCustomMiddleware, serverOptions);
 
+require('./routes/api/downloadResource')(app, isAuthenticatedCustomMiddleware, serverOptions);
+
 require('./routes/api/postDelete')(app, serverOptions);
 
 require('./routes/api/postSubscribe')(app,subscribeToServer,serverOptions);

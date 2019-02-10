@@ -37,6 +37,7 @@ html(lang="en")
                                 a(class="waves-effect waves-light btn orange darken-2 monitor-data" href=`/data?ae=${ae}`) Monitor Data
                                 a(class="waves-effect waves-light btn red" onclick=`deleteResource('${ae}')`) Delete
                                 a(class="waves-effect waves-light btn ping-data green", onclick=`pingResource(event, "${ae}")` href=`/ping?ae=${ae}`) Ping for data
+                                a(class="waves-effect waves-light btn ping-data orange", href=`/api/download/${ae}`) Download .csv
         include templates/jsscripts.pug
         include templates/footer.pug
         script(src="/js/pingResource.js")
