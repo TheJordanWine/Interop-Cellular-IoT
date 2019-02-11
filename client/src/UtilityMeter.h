@@ -16,6 +16,7 @@
 #define UtilityMeter_H
 
 #include <string>
+#include "RandomMeterValue.h"
 
 class UtilityMeter {
 
@@ -43,6 +44,7 @@ class UtilityMeter {
     int meterValue;
     bool powerStatus;
     std::string descriptor;
+    RandomMeterValue rmv;
 
 };
 

@@ -31,7 +31,6 @@ UtilityMeter::UtilityMeter() {
   powerStatus = true;
   meterValue = 0;
   descriptor = "";
-  srand(time(NULL));         // Invoke srand() only once, for random values.
 }
 
 
@@ -158,11 +157,14 @@ void UtilityMeter::setMeterDescriptor(string inputValue){
  */
 int UtilityMeter::getRandomValue() {
 
+  rmv.getRandomValue(100);
   // The desired maximum value for the random number.
+  /*\
   int desiredMaximum = 100;
 
   int result = rand() % desiredMaximum + 1;
   return result;
+  */
 }
 
 /**
