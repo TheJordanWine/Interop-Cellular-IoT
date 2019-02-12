@@ -50,10 +50,14 @@ string loginCred;
 string aeName;
 string aeAppId;
 string contName;
-string location;
 string cseRootAddr;
+string location;
 double secondsToDelay;
 int runtime;
+UtilityMeter um;       // Construct our UtilityMeter object.
+::xml_schema::integer respObjType;    // The response data from server.
+std::unique_ptr< ::xml_schema::type > respObj;  // The result code from server.
+
 
 /**
   * Main function, program entry point.
@@ -69,10 +73,7 @@ int main (int argc, char* argv[]) {
   contName = "DATA";             // Data Container Name.
   location = "Home";             // Location of Utility Meter
   bool saveConfig = false;
-  ::xml_schema::integer respObjType;    // The response data from server.
-  cseRootAddr = "/in-cse/in-name";            // SP-Relative address.
-  std::unique_ptr< ::xml_schema::type > respObj;     // The result code from server.
-  UtilityMeter um;                      // Construct our UtilityMeter object.
+  cseRootAddr = "/in-cse/in-name";      // SP-Relative address.
   int meterValue;                       // Represents Utility Meter Value.
   string meterValueStr;                 // Utility Meter Value as a string.
   double secondsPassed;
@@ -257,7 +258,7 @@ int main (int argc, char* argv[]) {
    * server instance running locally on this client (127.0.0.1)
    * and port number 8082. Use a callback routine callbackNotification.
    */
-  onem2m::startHttpServer({""}, 8082, &callbackNotification);
+  onem2m::startHttpServer(vector<string>(), 8082, &callbackNotification);
 
   /*
    * Create the main MY_METER AE resource object and push to OM2M server.
@@ -268,7 +269,9 @@ int main (int argc, char* argv[]) {
   auto aeMyMeter = onem2m::AE();
   aeMyMeter.resourceName(aeName);
   aeMyMeter.App_ID(aeAppId);
-  aeMyMeter.requestReachability(false); // requestReachability is mandatory for AE.
+  aeMyMeter.requestReachability(true); // requestReachability is mandatory for AE.
+  auto pl = onem2m::poaList(onem2m::poaList_base(1, "http://127.0.0.1:8082"));
+  aeMyMeter.pointOfAccess(pl);
   respObj = onem2m::createResource(cseRootAddr, "5555", aeMyMeter,
     result, respObjType);
   cout << "Result code is:  " << result << "\n";
@@ -333,8 +336,9 @@ int main (int argc, char* argv[]) {
   ss.resourceName("SUB_CPP_CLIENT");   // The name of the subscription
   uri.push_back(cseRootAddr+"/"+aeName);
   ss.notificationURI(uri);
+  ss.notificationContentType(1);  // Receive updates on any resource change.
   respObj = ::onem2m::createResource(cseRootAddr+"/"+aeName+"/"+"PING_METER",
-    "5555", ss, result, respObjType);
+    "5600", ss, result, respObjType);
   cout << "\nSubscription result code: " << result << "\n";
 
   /*
@@ -688,9 +692,46 @@ bool isValidIP(const char x[]) {
   * separate thread from the main.
   */
 onem2m::onem2mResponseStatusCode callbackNotification(
-  string h,
-  string &from,
-  onem2m::notification* n)
+  string h,                  // The OM2M 'to' attribute.
+  string &from,              // The OM2M 'from' attribute.
+  onem2m::notification* n)   // The OM2M notification object contents pointer.
 {
-  return onem2m::rcACCEPTED;
-}
+  // Function Variables
+  int meterReading;
+  string meterReadingStr;
+  long result;
+  int stringCompareResult;   // For comparing strings. 0 means equal.
+
+  // Write to console
+  cout << "\nCallback executed - Notification from: " << onem2m::getFrom() << endl;
+
+  // Process verificationRequest and decide to accept it here.
+  if (n->verificationRequest().present()) {
+    cout << "   Processing verification request..." << endl;
+
+    // TODO: Check "From" field to validate if desired.
+
+    return onem2m::rcOK;
+  } // End of verificationRequest processing.
+
+  cout << "Sending meter value to OM2M server...\n";
+  // Get the current meter value of the UtilityMeter object.
+  meterReading = um.getMeterValue();
+
+  // Convert the meter reading to string.
+  meterReadingStr = "{\"kWH\": " + to_string(meterReading) + "}";
+
+  // Create the content instance to write the meter value to
+  auto ci = ::onem2m::contentInstance();
+  ci.contentInfo("application/text");      // Text data.
+  ci.content(meterReadingStr);             // Write meter value.
+
+  // Post the meter value to the DATA container on OM2M server.
+  respObj = ::onem2m::createResource(cseRootAddr+"/"+aeName+"/"+"DATA",
+    "6000", ci, result, respObjType);
+  cout << "   Result = " << result << "\n";
+
+  // Return HTTP OK
+  return onem2m::rcOK;
+
+} // End of callbackNotification function

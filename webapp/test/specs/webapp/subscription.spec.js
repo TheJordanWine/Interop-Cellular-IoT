@@ -29,14 +29,19 @@ describe("Testing subscription functionality", () => {
   });
   it("Should display a resource on the page after sending subscription", () => {
     browser.maximizeWindow();
-    var subscribeModalLink = $("a.waves-effect.waves-light.btn.modal-trigger"),
-      om2mhost_input = $("#om2mhost"),
+    var om2mhost_input = $("#om2mhost"),
       om2mport_input = $("#om2mport"),
       webapphost_input = $("#webapphost"),
-      webappport_input = $("#webappport");
-    om2mishttps = $("input[name=ishttps]");
+      webappport_input = $("#webappport"),
+      om2mishttps = $("input[name=ishttps]");
 
-    subscribeModalLink.click();
+
+    browser.execute(()=>{
+      var subscribeModalLink = document.querySelector("a.waves-effect.waves-light.btn.modal-trigger");
+      if(!!subscribeModalLink) {
+        subscribeModalLink.click();
+      }
+    });
 
     if (isHttps == "true") {
       om2mishttps.click();
@@ -47,9 +52,12 @@ describe("Testing subscription functionality", () => {
     webapphost_input.setValue(host);
     webappport_input.setValue(port);
 
-    var subscribeButton = $(".modal-close.waves-effect.waves-green.btn-flat");
-
-    subscribeButton.click();
+    browser.execute(()=>{
+      var subscribeButton = document.querySelector(".modal-close.waves-effect.waves-green.btn-flat");
+      if(!!subscribeButton) {
+        subscribeButton.click();
+      }
+    });
 
     browser.waitUntil(
       () => {
@@ -62,8 +70,8 @@ describe("Testing subscription functionality", () => {
         });
         return isMy_Sensor;
       },
-      5000,
-      "Expected MY_SENSOR to show up on page after 5s"
+      8000,
+      "Expected MY_SENSOR to show up on page after 8s"
     );
   });
   it("Should redirect you to monitoring data page", () => {

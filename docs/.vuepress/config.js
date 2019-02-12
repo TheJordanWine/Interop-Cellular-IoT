@@ -39,7 +39,8 @@ module.exports = {
                 ['', 'Introduction'], // Introduction points to README.md
                 ['client.md', 'Client'],
                 ['server.md', 'Server'],
-                ['webapp.md', 'WebApp']
+                ['webapp.md', 'WebApp'],
+                ['testing.md', 'Testing']
             ]
         }
     }

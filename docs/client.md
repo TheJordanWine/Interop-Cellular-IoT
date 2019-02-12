@@ -25,6 +25,7 @@ http://localhost:8080/in-cse
 -- in-name
     -- MY_METER
          -- DATA           <--- where data will be sent
+         -- PING_METER     <--- where to post to receive Bi-Directional calls from webapp
          -- DESCRIPTOR     <--- describes the data
             .cin870875431  
 ```
