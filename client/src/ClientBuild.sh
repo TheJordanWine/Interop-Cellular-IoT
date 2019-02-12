@@ -1,3 +1,4 @@
+#!/bin/bash
 #
 # ClientBuild.sh
 #
@@ -31,6 +32,27 @@
 #
 # @version 1.0
 #
+
+
+#
+# Install dependencies
+# g++ libxerces-c-dev libcurl4-openssl-dev libssl1.0-dev make git
+#
+echo ""
+echo "Installing Linux package dependencies..."
+aptIsInstalled=`which apt-get | wc -l`  # Check if "apt-get" is installed.
+insIsInstalled=`which install | wc -l`  # Check if "install" is installed.
+if [ $aptIsInstalled > 0 ] && [ $insIsInstalled > 0 ] ; then
+  echo "   The apt-get and install packages exist."
+  echo "   Now installing Linux package dependencies via apt-get install..."
+  apt-get install -qq g++ libxerces-c-dev libcurl4-openssl-dev libssl1.0-dev make git
+  echo ""
+  echo "   Dependencies were installed."
+else
+  echo "   Could not install Linux package dependencies"
+  echo "   The apt-get and install binaries do not exist..."
+  echo ""
+fi
 
 
 #

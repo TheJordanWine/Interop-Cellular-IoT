@@ -27,7 +27,7 @@ sudo apt-get install docker -y
 sudo docker build -t ser401group6/om2m:1.0.0 -t ser401group6/om2m:latest .
 
 # Step 3 - Run the container containing the OM2M server
-sudo docker run --restart unless-stopped -h om2m -dit -p 8080:8080 --name om2m ser401group6/om2m:latest
+sudo docker run --restart unless-stopped -h om2m -dit -p 8080:8080 -p 8443:8443 --name om2m ser401group6/om2m:latest
 
 
 
