@@ -2,3 +2,48 @@
 meta(charset="UTF-8")
 meta(name="viewport" content="width=device-width, initial-scale=1.0")
 meta(http-equiv="X-UA-Compatible", content="ie=edge")
+title Interop Cellular IoT
+#subscription.modal
+    .modal-content
+        h4 OM2M Subscription
+        form
+            .row
+                label HTTPS
+                .switch
+                    label
+                        | Off
+                        input(type='checkbox')
+                        span.lever
+                        |       On
+
+            .row
+                .col.s12
+                    | OM2M Host
+                    .input-field
+                        input#om2mhost(type='text')
+                        label Address
+            .row
+                .col.s12
+                    | OM2M Port
+                    .input-field
+                        input#om2mhost(type='text')
+                        label Port
+            .row
+                .col.s12
+                    | WebApp Host
+                    .input-field
+                        input#webapphost(type='text')
+                        label Address
+            .row
+                .col.s12
+                    | WebApp Port
+                    .input-field
+                        input#webappport(type='text')
+                        label Port
+    .modal-footer
+        a.modal-close.waves-effect.waves-green.btn-flat(href='#!') Subscribe
+style(type="text/css").
+    .monitor-data, .ping-data {
+        margin-left: 5px;
+        margin-right: 5px;
+    }

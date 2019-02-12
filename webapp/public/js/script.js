@@ -10,13 +10,13 @@ if (!!statusButton) {
         method: "GET",
         url: "/status",
         success: function success(data) {
-            setTimeout(function () {
-                if (data == 'true') {
-                    statusButton.innerHTML = 'IN-CSE Server Status<span class="badge badge-success">Running</span>';
-                } else {
-                    statusButton.innerHTML = 'IN-CSE Server Status<span class="badge badge-danger">Not Running</span>';
-                }
-            }, 2000);
+            // setTimeout(function () {
+            //     if (data == 'true') {
+            //         statusButton.innerHTML = 'IN-CSE Server Status<span class="badge badge-success">Running</span>';
+            //     } else {
+            //         statusButton.innerHTML = 'IN-CSE Server Status<span class="badge badge-danger">Not Running</span>';
+            //     }
+            // }, 2000);
         }
     });
 }
@@ -99,9 +99,10 @@ function getJSON() {
             window.AE_JSON = data;
             updateChart(window.AE_JSON);
         },
-        error: function error() {
-            // console.log('Not active');
-            alert('not active');
+        error: function(err) {
+            M.toast({
+                html: err.statusText
+            });
         }
     });
 }
@@ -139,3 +140,7 @@ var myLineChart = Chart.Line(ctx, {
     data: data,
     options: option
 });
+
+if(typeof M !== 'undefined') {
+    M.AutoInit();
+}
