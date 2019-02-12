@@ -35,10 +35,11 @@ describe("Testing subscription functionality", () => {
       webappport_input = $("#webappport"),
       om2mishttps = $("input[name=ishttps]");
 
-
-    browser.execute(()=>{
-      var subscribeModalLink = document.querySelector("a.waves-effect.waves-light.btn.modal-trigger");
-      if(!!subscribeModalLink) {
+    browser.execute(() => {
+      var subscribeModalLink = document.querySelector(
+        "a.waves-effect.waves-light.btn.modal-trigger"
+      );
+      if (!!subscribeModalLink) {
         subscribeModalLink.click();
       }
     });
@@ -52,9 +53,11 @@ describe("Testing subscription functionality", () => {
     webapphost_input.setValue(host);
     webappport_input.setValue(port);
 
-    browser.execute(()=>{
-      var subscribeButton = document.querySelector(".modal-close.waves-effect.waves-green.btn-flat");
-      if(!!subscribeButton) {
+    browser.execute(() => {
+      var subscribeButton = document.querySelector(
+        ".modal-close.waves-effect.waves-green.btn-flat"
+      );
+      if (!!subscribeButton) {
         subscribeButton.click();
       }
     });
@@ -111,7 +114,7 @@ describe("Testing subscription functionality", () => {
     );
     browser.pause(2000);
     recordButton.click();
-    browser.pause(5000);
+    browser.pause(8000);
     var ShouldBeOver9000 = browser.execute(() => {
       return window.AE_JSON[0].data;
     });
