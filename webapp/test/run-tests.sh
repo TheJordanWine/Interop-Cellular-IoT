@@ -30,7 +30,7 @@ if ls webapp >/dev/null; then
     # Navigate to webapp root dir
     cd ../../webapp
     npm start &
-    webAppPid=$1
+    webAppPid=$!
 
     # We'll skip installing because we assume Travis has already installed
     # npm install
@@ -43,7 +43,7 @@ if ls webapp >/dev/null; then
 
 
     # Stop the server
-    kill $serverPid
+    kill $serverPid || echo 
 
     # Stop the webapp
     kill $webAppPid
