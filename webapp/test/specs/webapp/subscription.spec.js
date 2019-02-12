@@ -113,14 +113,10 @@ describe("Testing subscription functionality", () => {
       }
     );
     browser.pause(2000);
-    recordButton.click();
-    browser.pause(12000);
-    /*
     browser.execute(() => {
-      getJSON();
+      window.getJSON();
     });
-    */
-    //browser.pause(8000);
+    browser.pause(5000);
     var ShouldBeOver9000 = browser.execute(() => {
       return window.AE_JSON[0].data;
     });
