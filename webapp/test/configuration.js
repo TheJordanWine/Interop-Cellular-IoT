@@ -164,7 +164,7 @@ exports.config = {
         "content-type": "application/json"
       },
       body: JSON.stringify({
-        text: `Travis build starting... [${TRAVIS_BUILD_ID}]: <${process.env.TRAVIS_BUILD_WEB_URL}|view here>`,
+        text: `Travis build starting... [${process.env.TRAVIS_BUILD_ID}]: <${process.env.TRAVIS_BUILD_WEB_URL}|view here>`,
         username: "TravisBot",
         color: "#D00000",
         fields: [{
@@ -300,32 +300,31 @@ exports.config = {
    * @param {<Object>} results object containing test results
    */
   onComplete: function (exitCode, config, capabilities, results) {
-    if (process.env.TRAVIS_BUILD_ID && process.env.TRAVIS_BUILD_WEB_URL)
-      if (results.finished == results.passed) {
-        console.log('passed!');
-        request.post('https://hooks.slack.com/services/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', {
-          headers: {
-            "content-type": "application/json"
-          },
-          body: JSON.stringify({
-            text: `Travis build finished. [${TRAVIS_BUILD_ID}]: <${process.env.TRAVIS_BUILD_WEB_URL}|view here>`,
-            username: "TravisBot",
-            color: "#D00000",
-            fields: [{
-              "title": `Results`,
-              "value": `All tests are passed!`,
-              "short": false
-            }]
-          })
-        });
-      }
-    else if (results.failed > 0) {
+
+    if (results.finished == results.passed) {
+      console.log('passed!');
       request.post('https://hooks.slack.com/services/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', {
         headers: {
           "content-type": "application/json"
         },
         body: JSON.stringify({
-          text: `Travis build finished. [${TRAVIS_BUILD_ID}]: <${process.env.TRAVIS_BUILD_WEB_URL}|view here>`,
+          text: `Travis build finished. [${process.env.TRAVIS_BUILD_ID}]: <${process.env.TRAVIS_BUILD_WEB_URL}|view here>`,
+          username: "TravisBot",
+          color: "#D00000",
+          fields: [{
+            "title": `Results`,
+            "value": `All tests are passed!`,
+            "short": false
+          }]
+        })
+      });
+    } else if (results.failed > 0) {
+      request.post('https://hooks.slack.com/services/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', {
+        headers: {
+          "content-type": "application/json"
+        },
+        body: JSON.stringify({
+          text: `Travis build finished. [${process.env.TRAVIS_BUILD_ID}]: <${process.env.TRAVIS_BUILD_WEB_URL}|view here>`,
           username: "TravisBot",
           color: "#D00000",
           fields: [{
