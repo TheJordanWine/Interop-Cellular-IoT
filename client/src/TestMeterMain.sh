@@ -87,7 +87,7 @@ kill $!
 
 echo "Testing password obfuscation with *"
 ./main -p <<< "password"  &
-sleep 2
+sleep 1
 kill $!
 
 echo "Testing saving client configurations"
@@ -96,5 +96,14 @@ sleep 1
 kill $!
 
 ./main &
+sleep 1
+kill $!
+
+echo "Testing password format"
+./main <<< "pass word" &
+sleep 1
+kill $!
+
+./main <<< "p@5sw^&%rd"&
 sleep 1
 kill $!
