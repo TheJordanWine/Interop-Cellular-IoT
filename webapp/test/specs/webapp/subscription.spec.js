@@ -108,8 +108,9 @@ describe("Testing subscription functionality", () => {
       },
       function(err, resp, body) {
         if (err) {
-          throw new Error("Unable to post data. ");
+          // throw new Error("Unable to post data. ");
         }
+        console.log('POST sent', new Date());
       }
     );
     browser.pause(2000);
@@ -117,6 +118,8 @@ describe("Testing subscription functionality", () => {
       window.getJSON();
     });
     browser.pause(5000);
+
+    console.log('AE_JSON requsted', new Date());
     var ShouldBeOver9000 = browser.execute(() => {
       return window.AE_JSON[0].data;
     });
