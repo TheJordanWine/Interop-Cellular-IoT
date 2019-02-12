@@ -84,3 +84,8 @@ echo "Testing Loading of Configuration from settings.config"
 ./main &
 sleep 1
 kill $!
+
+echo "Testing password obfuscation with *"
+./main -p <<< "password"  &
+sleep 2
+kill $!
