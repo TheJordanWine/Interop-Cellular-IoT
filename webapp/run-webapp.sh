@@ -108,7 +108,7 @@ main() {
     sudo npm install
 
     # Start server    
-    nodemon app.js
+    npm start &
     return 0
 }
 
