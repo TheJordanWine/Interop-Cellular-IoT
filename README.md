@@ -1,5 +1,7 @@
 # Interop-Cellular-IoT
 
+![Build Status](https://travis-ci.org/TheJordanWine/Interop-Cellular-IoT.svg?branch=dev)
+
 ## Project Description
 
 ## Product Road Map
