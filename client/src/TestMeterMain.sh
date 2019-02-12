@@ -89,3 +89,12 @@ echo "Testing password obfuscation with *"
 ./main -p <<< "password"  &
 sleep 2
 kill $!
+
+echo "Testing saving client configurations"
+./main -a supercool -s &
+sleep 1
+kill $!
+
+./main &
+sleep 1
+kill $!
