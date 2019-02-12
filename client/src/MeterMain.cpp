@@ -345,7 +345,7 @@ int main (int argc, char* argv[]) {
   cout << "\nCreating Content Instance...\n";
   auto contInst = ::onem2m::contentInstance();
   contInst.contentInfo("application/text");      // Text data.
-  meterValue = um.getRandomValue();              // Get a simulated value from meter.
+  meterValue = um.updateMeterValueRand();        // Get a simulated value from meter.
   meterValueStr = "{\"kWH\": " + to_string(meterValue) + "}";   // Convert int to Str.
   contInst.content(meterValueStr);               // Write simulated value.
   respObj = ::onem2m::createResource(cseRootAddr+"/"+aeName+"/"+contName,
@@ -377,8 +377,7 @@ int main (int argc, char* argv[]) {
         {
             time_counter -= (double)(secondsToDelay * CLOCKS_PER_SEC);
 
-            um.updateMeterValueRand(); //update meterValue with random number.
-            meterValue = um.getMeterValue();
+            meterValue = um.updateMeterValueRand(); //update meterValue with random number.
             cout << "meter-value: " << meterValue << endl;
             // create a new contentInstance
             contInst = ::onem2m::contentInstance();

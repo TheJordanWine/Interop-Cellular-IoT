@@ -24,7 +24,7 @@ class RandomMeterValue {
   private:
 
     // Private Variables
-    int runningValue;
+    static int runningValue;
     int maxRandomValue;
     clock_t this_time;
     clock_t last_time;

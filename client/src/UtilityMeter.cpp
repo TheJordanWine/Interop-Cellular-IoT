@@ -142,37 +142,12 @@ void UtilityMeter::setMeterDescriptor(string inputValue){
 
 
 /**
- * This function gets a random integer value between 0 and 1000.
- * The random value returned is used to simulate data from a
- * Utility Meter.
- *
- * This function makes use of the existing rand() function which
- * generates a number form 0 to at least 32767. In order to achieve
- * generating a number from 0 to 1000, we have to take the modulus
- * of the resulting random number; the modulus value would be the
- * desired maximum. Then add 1 to the result.
- *
- * @return result The random value between 0 and 1000 that simulates
- * a Utility Meter value.
- */
-int UtilityMeter::getRandomValue() {
-
-  rmv.getRandomValue(100);
-  // The desired maximum value for the random number.
-  /*\
-  int desiredMaximum = 100;
-
-  int result = rand() % desiredMaximum + 1;
-  return result;
-  */
-}
-
-/**
  * This function adds a random integer value retrieved from the 
- * getRandomValue() function to the current meterValue. The purpose
+ * getRunningValue() function to the current meterValue. The purpose
  * of this is to simulate power consumption that is being tracked by
  * the utility meter.
  */
 int UtilityMeter::updateMeterValueRand(){
-  meterValue = (meterValue + getRandomValue());
+  meterValue = rmv.getRunningValue();
+  return getMeterValue();
 }
