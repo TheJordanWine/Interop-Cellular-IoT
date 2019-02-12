@@ -10,7 +10,7 @@ var isHttps = process.env.wdio__ishttps || "false";
 
 var isHeadless = process.env.wdio__headless || 'true',
   browserOpts = {};
-if(isHeadless == 'true') {
+if (isHeadless == 'true') {
   browserOpts = {
     maxInstances: 5,
     browserName: "chrome",
@@ -18,7 +18,7 @@ if(isHeadless == 'true') {
       args: ["--headless", "--disable-gpu", "window-size=1920,1080"]
     }
   };
-}else {
+} else {
   browserOpts = {
     maxInstances: 5,
     browserName: "chrome",
@@ -158,7 +158,22 @@ exports.config = {
    * @param {Array.<Object>} capabilities list of capabilities details
    * @param {Array.<String>} specs List of spec file paths that are to be run
    */
-  beforeSession: function(config, capabilities, specs) {
+  beforeSession: function (config, capabilities, specs) {
+    request.post('https://hooks.slack.com/services/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', {
+      headers: {
+        "content-type": "application/json"
+      },
+      body: JSON.stringify({
+        text: `Travis build starting... [${TRAVIS_BUILD_ID}]: <${process.env.TRAVIS_BUILD_WEB_URL}|view here>`,
+        username: "TravisBot",
+        color: "#D00000",
+        fields: [{
+          "title": `Commit: ${process.env.TRAVIS_COMMIT}`,
+          "value": `${process.env.TRAVIS_COMMIT_MESSAGE}\n`,
+          "short": false
+        }]
+      })
+    });
     var mySensorDir = path.resolve(__dirname, "../MY_SENSOR");
     if (fs.existsSync(mySensorDir)) {
       rimraf.sync(mySensorDir);
@@ -166,16 +181,14 @@ exports.config = {
     request.post(
       `${
         isHttps == "true" ? "https" : "http"
-      }://${om2mhost}:${om2mport}/~/in-cse`,
-      {
+      }://${om2mhost}:${om2mport}/~/in-cse`, {
         headers: {
           "content-type": "application/xml;ty=2",
           "x-m2m-origin": "admin:admin"
         },
-        body:
-          '<m2m:ae xmlns:m2m="http://www.onem2m.org/xml/protocols" rn="MY_SENSOR" ><api>app-sensor</api><lbl>Type/sensor Category/temperature Location/home</lbl><rr>false</rr></m2m:ae>'
+        body: '<m2m:ae xmlns:m2m="http://www.onem2m.org/xml/protocols" rn="MY_SENSOR" ><api>app-sensor</api><lbl>Type/sensor Category/temperature Location/home</lbl><rr>false</rr></m2m:ae>'
       },
-      function(err, resp, body) {
+      function (err, resp, body) {
         if (err) {
           throw new Error(
             "Unable to create a resource. Please check a OM2M server is configured correctly"
@@ -184,16 +197,14 @@ exports.config = {
         request.post(
           `${
             isHttps == "true" ? "https" : "http"
-          }://${om2mhost}:${om2mport}/~/in-cse/in-name/MY_SENSOR`,
-          {
+          }://${om2mhost}:${om2mport}/~/in-cse/in-name/MY_SENSOR`, {
             headers: {
               "content-type": "application/xml;ty=3",
               "x-m2m-origin": "admin:admin"
             },
-            body:
-              '<m2m:cnt xmlns:m2m="http://www.onem2m.org/xml/protocols" rn="DATA"></m2m:cnt>'
+            body: '<m2m:cnt xmlns:m2m="http://www.onem2m.org/xml/protocols" rn="DATA"></m2m:cnt>'
           },
-          function(err, resp, body) {
+          function (err, resp, body) {
             if (err) {
               throw new Error("Unable to create data container. ");
             }
@@ -201,7 +212,7 @@ exports.config = {
         );
       }
     );
-  }
+  },
   /**
    * Gets executed before test execution begins. At this point you can access to all global
    * variables like `browser`. It is the perfect place to define custom commands.
@@ -288,8 +299,44 @@ exports.config = {
    * @param {Array.<Object>} capabilities list of capabilities details
    * @param {<Object>} results object containing test results
    */
-  // onComplete: function(exitCode, config, capabilities, results) {
-  // },
+  onComplete: function (exitCode, config, capabilities, results) {
+    if (process.env.TRAVIS_BUILD_ID && process.env.TRAVIS_BUILD_WEB_URL)
+      if (results.finished == results.passed) {
+        console.log('passed!');
+        request.post('https://hooks.slack.com/services/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', {
+          headers: {
+            "content-type": "application/json"
+          },
+          body: JSON.stringify({
+            text: `Travis build finished. [${TRAVIS_BUILD_ID}]: <${process.env.TRAVIS_BUILD_WEB_URL}|view here>`,
+            username: "TravisBot",
+            color: "#D00000",
+            fields: [{
+              "title": `Results`,
+              "value": `All tests are passed!`,
+              "short": false
+            }]
+          })
+        });
+      }
+    else if (results.failed > 0) {
+      request.post('https://hooks.slack.com/services/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', {
+        headers: {
+          "content-type": "application/json"
+        },
+        body: JSON.stringify({
+          text: `Travis build finished. [${TRAVIS_BUILD_ID}]: <${process.env.TRAVIS_BUILD_WEB_URL}|view here>`,
+          username: "TravisBot",
+          color: "#D00000",
+          fields: [{
+            "title": `Results`,
+            "value": `${results.failed} test(s) failed`,
+            "short": false
+          }]
+        })
+      });
+    }
+  },
   /**
    * Gets executed when a refresh happens.
    * @param {String} oldSessionId session ID of the old session
