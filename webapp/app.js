@@ -23,6 +23,16 @@ var request = require('request');
 var session = require('express-session');
 var bodyParser = require('body-parser');
 const Onem2m = require("./onem2m");
+var User = require('./modals/modal');
+var mongoose = require('mongoose');
+
+mongoose.connect('mongodb://localhost:27017/admin');
+var db = mongoose.connection;
+//handle mongo error
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function () {
+  console.log('we are connected!');
+});
 
 
 let serverOptions = {
@@ -163,6 +173,26 @@ require('./routes/api/postSubscribe')(app,subscribeToServer,serverOptions);
 require('./routes/api/status')(app, isAuthenticatedCustomMiddleware, serverOptions);
 
 require('./routes/api/monitor')(app, saveDataToJSON);
+
+app.post('/testaccount', function (req, res) {
+    if (req.body.username &&
+        req.body.password) {
+        var userData = {
+            username: req.body.username,
+            password: req.body.password,
+        }
+        //use schema.create to insert data into the db
+        User.create(userData, function (err, user) {
+            if (err) {
+                res.json(err);
+            } else {
+                res.json({
+                    message: "created.."
+                })
+            }
+        });
+    }
+});
 
 
 
