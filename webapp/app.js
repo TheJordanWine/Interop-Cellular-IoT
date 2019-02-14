@@ -23,16 +23,13 @@ var request = require('request');
 var session = require('express-session');
 var bodyParser = require('body-parser');
 const Onem2m = require("./onem2m");
-var User = require('./modals/modal');
-var mongoose = require('mongoose');
 
-mongoose.connect('mongodb://localhost:27017/admin');
-var db = mongoose.connection;
-//handle mongo error
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function () {
-  console.log('we are connected!');
-});
+
+var mongoose = require('mongoose');
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy
+var User = require('./modals/User');
+
 
 
 let serverOptions = {
@@ -146,7 +143,8 @@ var app = express();
     }));
     app.use(bodyParser.urlencoded({extended: true }));
     app.use(xmlparser());
-
+    app.use(passport.initialize())
+    app.use(passport.session())
 
 
 /**
@@ -154,7 +152,7 @@ var app = express();
  */
 require('./routes/index')(app, isAuthenticatedCustomMiddleware,serverOptions);
 
-require('./routes/login')(app);
+require('./routes/login')(app,passport,LocalStrategy, User);
 
 require('./routes/logout')(app);
 
