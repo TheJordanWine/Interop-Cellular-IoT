@@ -3,6 +3,7 @@
 # exit immediately after a failure and be verbose
 set -ev
 
+curl --request POST --url http://localhost:3000/register --header 'content-type: application/x-www-form-urlencoded' --data 'username=admin&password=admin'
 # We assume these are being run from the repository root directory
 # This tricks Travis into failing if we're not.
 if ls webapp >/dev/null; then
