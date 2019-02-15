@@ -31,6 +31,10 @@ if ls webapp >/dev/null; then
     cd ../../webapp
     npm start &
     webAppPid=$!
+    
+    sleep 5
+    
+    curl --request POST --url http://localhost:3000/register --header 'content-type: application/x-www-form-urlencoded' --data 'username=admin&password=admin'
 
     # We'll skip installing because we assume Travis has already installed
     # npm install

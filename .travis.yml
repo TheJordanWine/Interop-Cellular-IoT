@@ -6,6 +6,10 @@ matrix:
       script: true
 
     - language: node_js
+      services:
+        - mongodb
+      before_script:
+        - mongo nodeauth --eval 'db.createUser({user:"admin",pwd:"admin",roles:["readWrite"]});'
       node_js: 11.0.0
       env:
         - CHROME_BIN="/usr/bin/google-chrome-stable"
