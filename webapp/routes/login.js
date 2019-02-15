@@ -59,7 +59,7 @@ module.exports = function (app,passport,LocalStrategy, User) {
         res.redirect('/')
     });
     app.post('/login', passport.authenticate('local', {
-        failureRedirect: '/login?error'
+        failureRedirect: '/login?wrong_login'
     }), function (req, res) {
         req.session.isAuth = true;
         res.redirect('/');
