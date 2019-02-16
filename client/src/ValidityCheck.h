@@ -24,6 +24,7 @@ class ValidityCheck {
     bool isValidInt(const char x[]);
     bool isValidName(const char x[]);
     bool isValidPath(const char x[]);
+    bool isValidPass(const char x[]);
 
   private:
 

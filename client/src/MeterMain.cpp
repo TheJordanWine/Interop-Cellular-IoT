@@ -36,8 +36,6 @@ using namespace std;
   * Function declarations.
   */
 
-int getch();
-string getpass(const char *prompt, bool show_asterisk);
 string string_to_crypt(const char x[]);
 string crypt_to_string(const char x[]);
 bool writeConfig();
@@ -49,7 +47,6 @@ onem2m::onem2mResponseStatusCode callbackNotification(
 
 // Global Function Variables
 string hostName;
-string loginCred;
 string username;
 string password;
 string aeName;
@@ -98,7 +95,9 @@ int main (int argc, char* argv[]) {
   }
   // Set values
   hostName = a.getHostName();     // The IP:Port of OM2M server.
-  loginCred = a.getLoginCred();   // The OM2M Server login credentials.
+  username = a.getUsername();     // The OM2M Server username.
+  if (!a.getPassword().empty())   // Only get password if password flag was used
+    password = a.getPassword();   // The OM2M Server password.
   aeName = a.getAeName();         // Name of the AE Resource to create.
   aeAppId = a.getAeAppId();       // Name of the AE App Id. Mandatory.
   contName = a.getContName();     // Data Container Name.
@@ -118,10 +117,6 @@ int main (int argc, char* argv[]) {
   // Calculate count after all arguments have been read
   countCalc = 60 * runtime / secondsToDelay + 1;
 
-  // Build login string if password was prompted
-  if (promptPass) {
-     loginCred = username + ":" + password;
-  }
   // Save configuration if save flag is preset
   if(saveConfig){
     if( writeConfig() ){
@@ -367,7 +362,7 @@ int main (int argc, char* argv[]) {
           }
         }
         else if (strcmp(key.c_str(),"username") == 0) { // username
-          if (isValidName(value.c_str())) { // Verify proper format
+          if (vc.isValidName(value.c_str())) { // Verify proper format
             username = value;
           }
           else {
@@ -376,7 +371,7 @@ int main (int argc, char* argv[]) {
           }
         }
         else if (strcmp(key.c_str(),"password") == 0) { // password
-          if (isValidPass(value.c_str())) { // Verify proper format
+          if (vc.isValidPass(value.c_str())) { // Verify proper format
             password = crypt_to_string(value.c_str());
           }
           else {
@@ -460,58 +455,6 @@ int main (int argc, char* argv[]) {
       }
 
   } // End of function writeConfig.
-
-  /**
-    * This function gets a character from the user while masking input.
-    * Used with getpass()
-    * Depends on termios package
-    * @return character as an integer
-    */
-  int getch() {
-    int ch;
-    struct termios t_old, t_new;
-    tcgetattr(STDIN_FILENO, &t_old);
-    t_new = t_old;
-    t_new.c_lflag &= ~(ICANON | ECHO);
-    tcsetattr(STDIN_FILENO, TCSANOW, &t_new);
-    ch = getchar();
-    tcsetattr(STDIN_FILENO, TCSANOW, &t_old);
-    return ch;
-} // End of function getch
-
-/**
-  * This function gets a password from the user while hiding input.
-  * Uses with getchar()
-  * Depends on termios package
-  * @param The prompt to be displayed to user.
-  * @param Whether asterisks should be displayed in place of password
-  * @return password as a string
-  */
-string getpass(const char *prompt, bool show_asterisk) {
-  const char BACKSPACE=127; // integer value of backspace character
-  const char RETURN=10; // integer value of return character
-  string password;
-  unsigned char ch=0;
-  cout <<prompt<<endl; // Output password prompt
-  while((ch=getch())!=RETURN) { // Get input until return character
-       if(ch==BACKSPACE) { // remove last character if backspace received
-            if(password.length()!=0) {
-              if(show_asterisk) {
-                 cout <<"\b \b";
-               }
-                 password.resize(password.length()-1);
-              }
-         }
-       else {
-             password+=ch;
-             if(show_asterisk) { // Display asterisk instead of input character
-                 cout <<'*';
-               }
-         }
-    }
-  cout << endl;
-  return password;
-} // End of function getpass
 
 
 /**
@@ -613,4 +556,3 @@ onem2m::onem2mResponseStatusCode callbackNotification(
   return onem2m::rcOK;
 
 } // End of callbackNotification function
-

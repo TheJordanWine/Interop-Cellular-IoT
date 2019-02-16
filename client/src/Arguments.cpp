@@ -12,7 +12,11 @@
 //Imports
 #include <iostream>
 #include <cstdlib>
+#include <stdio.h>
 #include <string>
+#include <string.h>
+#include <termios.h>
+#include <unistd.h>
 #include "Arguments.h"
 using namespace std;
 
@@ -52,7 +56,8 @@ Arguments::Arguments(char ** argv, int argc) {
 void Arguments::setDefaults() {
   successful = true;
   hostName = "127.0.0.1:8080";   // The IP:Port of OM2M server.
-  loginCred = "admin:admin";     // The OM2M Server login credentials.
+  username = "admin";            // The OM2M Server Username
+  password = "admin";            // The OM2M Server Password
   aeName = "MY_METER";           // Name of the AE Resource to create.
   aeAppId = "app1";              // Name of the AE App Id. Mandatory.
   contName = "DATA";             // Data Container Name.
@@ -127,20 +132,7 @@ void Arguments::parseFlags(char ** argv, int argc) {
           return;
         }
       }
-      else if (strcmp(argv[i],"-l") == 0) { // loginCred flag
-        cout << "\nCommand line arg passed for login credentials: ";
-        cout << argv[i+1] << endl;
-        if (vc.isValidCred(argv[i+1])) { // Verify proper format
-          loginCred = argv[i+1];       // set loginCred to the next argument
-        }
-        else {
-          cout << "Invalid argument for login credentials - " << argv[i+1]
-          << "\n   Exiting...\n";
-          successful = false;
-          return;
-        }
-      }
-      else if (strcmp(argv[i],"-L") == 0) { // location flag * May change naming convention
+      else if (strcmp(argv[i],"-l") == 0) { // location flag
         cout << "\nCommand line arg passed for location : ";
         cout << argv[i+1] << endl;
         if (vc.isValidName(argv[i+1])) { // Verify proper format
@@ -163,6 +155,17 @@ void Arguments::parseFlags(char ** argv, int argc) {
           cout << "Invalid argument for AE Resource Name - " << argv[i+1]
           << "\n   Exiting...\n";
           successful = false;
+          return;
+        }
+      }
+      else if (strcmp(argv[i],"-p") == 0) { // password flag
+        password = getpass("Please enter password: ", true);
+	       if ( vc.isValidPass(password.c_str()) ) { // Verify proper format
+           passFlag = true;
+        }
+        else {
+          cout << "Invalid argument for password"
+          << "\n   Exiting...\n";
           return;
         }
       }
@@ -218,8 +221,14 @@ bool Arguments::getSuccessful() {
 string Arguments::getHostName() {
   return hostName;
 }
-string Arguments::getLoginCred() {
-  return loginCred;
+string Arguments::getUsername() {
+  return username;
+}
+string Arguments::getPassword() {
+  if (passFlag == true)
+    return password;
+  else
+    return "";
 }
 string Arguments::getAeName() {
   return aeName;
@@ -245,3 +254,55 @@ int Arguments::getRuntime() {
 bool Arguments::getSaveConfig() {
   return saveConfig;
 }
+
+/**
+  * This function gets a character from the user while masking input.
+  * Used with getpass()
+  * Depends on termios and unistd package
+  * @return character as an integer
+  */
+int Arguments::getch() {
+  int ch;
+  struct termios t_old, t_new;
+  tcgetattr(STDIN_FILENO, &t_old);
+  t_new = t_old;
+  t_new.c_lflag &= ~(ICANON | ECHO);
+  tcsetattr(STDIN_FILENO, TCSANOW, &t_new);
+  ch = getchar();
+  tcsetattr(STDIN_FILENO, TCSANOW, &t_old);
+  return ch;
+} // End of function getch
+
+/**
+  * This function gets a password from the user while hiding input.
+  * Uses with getchar()
+  * Depends on termios package
+  * @param The prompt to be displayed to user.
+  * @param Whether asterisks should be displayed in place of password
+  * @return password as a string
+  */
+string Arguments::getpass(const char *prompt, bool show_asterisk) {
+  const char BACKSPACE=127; // integer value of backspace character
+  const char RETURN=10; // integer value of return character
+  string password;
+  unsigned char ch=0;
+  cout <<prompt<<endl; // Output password prompt
+  while((ch=getch())!=RETURN) { // Get input until return character
+       if(ch==BACKSPACE) { // remove last character if backspace received
+            if(password.length()!=0) {
+              if(show_asterisk) {
+                 cout <<"\b \b";
+               }
+                 password.resize(password.length()-1);
+              }
+         }
+       else {
+             password+=ch;
+             if(show_asterisk) { // Display asterisk instead of input character
+                 cout <<'*';
+               }
+         }
+    }
+  cout << endl;
+  return password;
+} // End of function getpass

@@ -32,7 +32,8 @@ class Arguments {
 
     bool getSuccessful();
     string getHostName();
-    string getLoginCred();
+    string getUsername();
+    string getPassword();
     string getAeName();
     string getAeAppId();
     string getContName();
@@ -46,8 +47,10 @@ class Arguments {
 
     ValidityCheck vc;     // Functions for validity checking on parameters.
     bool successful;      // If parsing was successful.
+    bool passFlag;
     string hostName;
-    string loginCred;
+    string username;
+    string password;
     string aeName;
     string aeAppId;
     string contName;
@@ -59,6 +62,8 @@ class Arguments {
 
     void parseFlags(char ** argv, int argc);
     void setDefaults();
+    int getch();
+    string getpass(const char *prompt, bool show_asterisk);
 
 };
 

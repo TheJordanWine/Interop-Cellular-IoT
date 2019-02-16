@@ -181,3 +181,25 @@ bool ValidityCheck::isValidPath( const char x[] ) {
     }
       return x[0] == '/' && x[i-1] != '/'; // Return true if path begins with / and does not end with /.
 } // End of function isValidPath.
+
+/**
+  * This function checks to ensure that the provided char
+  * array contains graphical characters.
+  *
+  * @param The input char array to validate.
+  * @return Boolean indicating whether input is valid or not.
+  */
+bool ValidityCheck::isValidPass( const char x[] ) {
+    // Iterate through the input char array.
+    int i = 0;
+    while (x[i]!= '\0') {
+      if (isgraph( x[i] ) == 0) { // return false if character is invalid
+        return false;
+      }
+      i++;
+    }
+    if (i == 0) {
+      return false;
+    }
+    return true;
+  }
