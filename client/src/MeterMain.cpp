@@ -43,6 +43,8 @@ bool writeConfig();
 bool readConfig();
 int getch();
 string getpass(const char *prompt, bool show_asterisk);
+string string_to_hex(const char x[]);
+string hex_to_string(const char x[]);
 
 // Global Function Variables
 
@@ -66,9 +68,8 @@ int main (int argc, char* argv[]) {
   // Local Function Variables
   long result;                          // HTTP Result code.
   hostName = "127.0.0.1:8080";   // The IP:Port of OM2M server.
-  loginCred = "admin:admin";     // The OM2M Server login credentials.
-  username = "admin";
-  password = "admin";
+  username = "admin";            // The OM2M Server username
+  password = "admin";            // The OM2M Server password
   aeName = "MY_METER";           // Name of the AE Resource to create.
   aeAppId = "app1";              // Name of the AE App Id. Mandatory.
   contName = "DATA";             // Data Container Name.
@@ -151,19 +152,7 @@ int main (int argc, char* argv[]) {
           return 0;
         }
       }
-      else if (strcmp(argv[i],"-l") == 0) { // loginCred flag
-        cout << "\nCommand line arg passed for login credentials: ";
-        cout << argv[i+1] << endl;
-        if (isValidCred(argv[i+1])) { // Verify proper format
-          loginCred = argv[i+1];       // set loginCred to the next argument
-        }
-        else {
-          cout << "Invalid argument for login credentials - " << argv[i+1]
-          << "\n   Exiting...\n";
-          return 0;
-        }
-      }
-      else if (strcmp(argv[i],"-L") == 0) { // location flag * May change naming convention
+      else if (strcmp(argv[i],"-l") == 0) { // location flag * May change naming convention
         cout << "\nCommand line arg passed for location : ";
         cout << argv[i+1] << endl;
         if (isValidName(argv[i+1])) { // Verify proper format
@@ -282,7 +271,7 @@ int main (int argc, char* argv[]) {
    */
   cout << "Updating pre-set parameters...";
   onem2m::setHostName(hostName);    // OM2M server address.
-  onem2m::setFrom(loginCred);       // Credentials.
+  onem2m::setFrom(username + ":" + password);       // Credentials.
   cout << "Done!\n";
 
   /*
@@ -627,12 +616,21 @@ bool isValidIP(const char x[]) {
             return false;
           }
         }
-        else if (strcmp(key.c_str(),"loginCred") == 0) { // loginCred
-          if (isValidCred(value.c_str())) { // Verify proper format
-            loginCred = value;
+        else if (strcmp(key.c_str(),"username") == 0) { // loginCred
+          if (isValidName(value.c_str())) { // Verify proper format
+            username = value;
           }
           else {
-            cout << "Invalid value for loginCred: " << value << "\n";
+            cout << "Invalid value for username: " << value << "\n";
+            return false;
+          }
+        }
+        else if (strcmp(key.c_str(),"password") == 0) { // loginCred
+          if (isValidName(value.c_str())) { // Verify proper format
+            password = hex_to_string(value.c_str());
+          }
+          else {
+            cout << "Invalid value for password: " << value << "\n";
             return false;
           }
         }
@@ -698,7 +696,8 @@ bool isValidIP(const char x[]) {
         configFile << "contName:" << contName << "\n";
         configFile << "secondsToDelay:" << secondsToDelay << "\n";
         configFile << "hostName:" << hostName << "\n";
-        configFile << "loginCred:" << loginCred << "\n";
+        configFile << "username:" << username << "\n";
+        configFile << "password:" << string_to_hex(password.c_str()) << "\n";
         configFile << "location:" << location << "\n";
         configFile << "aeName:" << aeName << "\n";
         configFile << "cseRootAddr:" << cseRootAddr << "\n";
@@ -763,3 +762,44 @@ string getpass(const char *prompt, bool show_asterisk) {
   cout << endl;
   return password;
 } // End of function getpass
+
+
+/**
+  * This function gets a plain text string and converts it into hexadecimal.
+  * Each individual character is converted into two hex characters
+  * @param plain text string
+  * @return string as hexadecimal
+  */
+string string_to_hex(const char x[]) {
+  string hexString = "";
+  stringstream sstream;
+  int charVal;
+  int i = 0;
+  while (x[i] != '\0') {
+    charVal = (int)x[i];
+    sstream << hex << charVal;
+    i++;
+  }
+  return sstream.str();
+} // End of function string_to_hex
+
+/**
+  * This function gets a hexadecimal string and converts it into plain text.
+  * Each individual character is converted into two hex characters
+  * @param hexadecimal string of even length
+  * @return string as plain text
+  */
+string hex_to_string(const char x[]) {
+  string hexString = "";
+  char hex[2];
+  int hexInt;
+  int i = 0;
+  while (x[i] != '\0') {
+    hex[0] = x[ i ];
+    hex[1] = x[ i+1 ];
+    hexInt = stoi(hex,nullptr,16);
+    hexString = hexString + (char)hexInt;
+    i += 2;
+  }
+  return hexString;
+}
