@@ -100,10 +100,10 @@ sleep 1
 kill $!
 
 echo "Testing password format"
-./main <<< "pass word" &
+./main -p <<< "pass word" &
 sleep 1
 kill $!
 
-./main <<< "p@5sw^&%rd"&
+./main -p <<< "p@5sw^&%rd"&
 sleep 1
 kill $!
