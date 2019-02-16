@@ -43,8 +43,8 @@ bool writeConfig();
 bool readConfig();
 int getch();
 string getpass(const char *prompt, bool show_asterisk);
-string string_to_hex(const char x[]);
-string hex_to_string(const char x[]);
+string string_to_crypt(const char x[]);
+string crypt_to_string(const char x[]);
 
 // Global Function Variables
 
@@ -626,8 +626,8 @@ bool isValidIP(const char x[]) {
           }
         }
         else if (strcmp(key.c_str(),"password") == 0) { // loginCred
-          if (isValidName(value.c_str())) { // Verify proper format
-            password = hex_to_string(value.c_str());
+          if (isValidPass(value.c_str())) { // Verify proper format
+            password = crypt_to_string(value.c_str());
           }
           else {
             cout << "Invalid value for password: " << value << "\n";
@@ -697,7 +697,7 @@ bool isValidIP(const char x[]) {
         configFile << "secondsToDelay:" << secondsToDelay << "\n";
         configFile << "hostName:" << hostName << "\n";
         configFile << "username:" << username << "\n";
-        configFile << "password:" << string_to_hex(password.c_str()) << "\n";
+        configFile << "password:" << string_to_crypt(password.c_str()) << "\n";
         configFile << "location:" << location << "\n";
         configFile << "aeName:" << aeName << "\n";
         configFile << "cseRootAddr:" << cseRootAddr << "\n";
@@ -770,18 +770,23 @@ string getpass(const char *prompt, bool show_asterisk) {
   * @param plain text string
   * @return string as hexadecimal
   */
-string string_to_hex(const char x[]) {
-  string hexString = "";
-  stringstream sstream;
-  int charVal;
-  int i = 0;
-  while (x[i] != '\0') {
-    charVal = (int)x[i];
-    sstream << hex << charVal;
-    i++;
-  }
-  return sstream.str();
-} // End of function string_to_hex
+  string string_to_crypt(const char x[]) {
+    string hexString;
+    stringstream sstream;
+    int i = 0;
+    int hexLength;
+    while (x[i] != '\0') {
+      sstream << hex << (int)x[i] + i + 1;
+      i++;
+    }
+    hexString = sstream.str();
+    hexLength = hexString.length();
+    for (int j = 0; j < hexLength; j++) {
+      hexString[j] = (int)hexString[j] + 20-j;
+    }
+    cout << endl;
+    return hexString;
+  } // End of function string_to_crypt
 
 /**
   * This function gets a hexadecimal string and converts it into plain text.
@@ -789,17 +794,22 @@ string string_to_hex(const char x[]) {
   * @param hexadecimal string of even length
   * @return string as plain text
   */
-string hex_to_string(const char x[]) {
-  string hexString = "";
-  char hex[2];
-  int hexInt;
-  int i = 0;
-  while (x[i] != '\0') {
-    hex[0] = x[ i ];
-    hex[1] = x[ i+1 ];
-    hexInt = stoi(hex,nullptr,16);
-    hexString = hexString + (char)hexInt;
-    i += 2;
-  }
-  return hexString;
-}
+  string crypt_to_string(const char x[]) {
+    string plainString = "";
+    char hex[2];
+    char hexCharArr[64];
+    int i = 0;
+    int j = 0;
+    while (x[j] != '\0') {
+      hexCharArr[j] =  (char)((int)x[j] - 20 + j);
+      j++;
+    }
+    hexCharArr[j] = '\0';
+    while (x[i] != '\0') {
+      hex[0] = hexCharArr[ i ];
+      hex[1] = hexCharArr[ i+1 ];
+      plainString = plainString + (char)(stoi(hex,nullptr,16) - i/2 - 1);
+      i += 2;
+    }
+    return plainString;
+  } // End of function crypt_to_string
