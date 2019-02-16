@@ -23,6 +23,8 @@
 #include <sstream>
 #include <fstream>
 #include <ctime>
+#include <termios.h>
+#include <unistd.h>
 #include "onem2m.hxx"
 #include "UtilityMeter.h"
 #include "ValidityCheck.h"
@@ -33,6 +35,11 @@ using namespace std;
 /**
   * Function declarations.
   */
+
+int getch();
+string getpass(const char *prompt, bool show_asterisk);
+string string_to_crypt(const char x[]);
+string crypt_to_string(const char x[]);
 bool writeConfig();
 bool readConfig();
 onem2m::onem2mResponseStatusCode callbackNotification(
@@ -43,6 +50,8 @@ onem2m::onem2mResponseStatusCode callbackNotification(
 // Global Function Variables
 string hostName;
 string loginCred;
+string username;
+string password;
 string aeName;
 string aeAppId;
 string contName;
@@ -63,8 +72,6 @@ std::unique_ptr< ::xml_schema::type > respObj;  // The result code from server.
   * Main function, program entry point.
   */
 int main (int argc, char* argv[]) {
-
-  // Local Function Variables
   long result;                   // HTTP Result code.
   int meterValue;                // Represents Utility Meter Value.
   string meterValueStr;          // Utility Meter Value as a string.
@@ -111,9 +118,13 @@ int main (int argc, char* argv[]) {
   // Calculate count after all arguments have been read
   countCalc = 60 * runtime / secondsToDelay + 1;
 
+  // Build login string if password was prompted
+  if (promptPass) {
+     loginCred = username + ":" + password;
+  }
   // Save configuration if save flag is preset
   if(saveConfig){
-    if(writeConfig()){
+    if( writeConfig() ){
       cout << "Configuration successfully saved\n";
     }
     else {
@@ -133,7 +144,7 @@ int main (int argc, char* argv[]) {
    */
   cout << "Updating pre-set parameters...";
   onem2m::setHostName(hostName);    // OM2M server address.
-  onem2m::setFrom(loginCred);       // Credentials.
+  onem2m::setFrom(username + ":" + password);       // Credentials.
   cout << "Done!\n";
 
   /*
@@ -295,13 +306,13 @@ int main (int argc, char* argv[]) {
   *
   * @return Boolean indicating whether loading of values was successful.
   */
-bool readConfig(){
+  bool readConfig(){
     string line;
     string key;
     string value;
     int i;
     int colonLocation;
-    ifstream configFile ("settings.config"); // Open configuration file
+    ifstream configFile ("settings.config"); // Open configuration file for reading
     if ( configFile.is_open() ) { // File successfully opened
       while ( getline (configFile,line) ){ // Get each line of file
         i=0;
@@ -355,12 +366,21 @@ bool readConfig(){
             return false;
           }
         }
-        else if (strcmp(key.c_str(),"loginCred") == 0) { // loginCred
-          if (vc.isValidCred(value.c_str())) { // Verify proper format
-            loginCred = value;
+        else if (strcmp(key.c_str(),"username") == 0) { // username
+          if (isValidName(value.c_str())) { // Verify proper format
+            username = value;
           }
           else {
-            cout << "Invalid value for loginCred: " << value << "\n";
+            cout << "Invalid value for username: " << value << "\n";
+            return false;
+          }
+        }
+        else if (strcmp(key.c_str(),"password") == 0) { // password
+          if (isValidPass(value.c_str())) { // Verify proper format
+            password = crypt_to_string(value.c_str());
+          }
+          else {
+            cout << "Invalid value for password: " << value << "\n";
             return false;
           }
         }
@@ -413,21 +433,136 @@ bool readConfig(){
     }
 } // End of function readConfig.
 
+  /**
+    * This function writes to the configuration file to save the
+    * current configuration.
+    *
+    * @return Boolean indicating whether loading of values was successful.
+    */
+  bool writeConfig(){
+      ofstream configFile ( "settings.config" ); // Open configuration for writing
+      if ( configFile.is_open() ) { // Check if file is open, then input values
+        configFile << "aeAppId:" << aeAppId << "\n";
+        configFile << "contName:" << contName << "\n";
+        configFile << "secondsToDelay:" << secondsToDelay << "\n";
+        configFile << "hostName:" << hostName << "\n";
+        configFile << "username:" << username << "\n";
+        configFile << "password:" << string_to_crypt(password.c_str()) << "\n";
+        configFile << "location:" << location << "\n";
+        configFile << "aeName:" << aeName << "\n";
+        configFile << "cseRootAddr:" << cseRootAddr << "\n";
+        configFile << "runtime:" << runtime << "\n";
+        configFile.close(); // close file
+        return true;
+      }
+      else {
+        return false;
+      }
 
+  } // End of function writeConfig.
+
+  /**
+    * This function gets a character from the user while masking input.
+    * Used with getpass()
+    * Depends on termios package
+    * @return character as an integer
+    */
+  int getch() {
+    int ch;
+    struct termios t_old, t_new;
+    tcgetattr(STDIN_FILENO, &t_old);
+    t_new = t_old;
+    t_new.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &t_new);
+    ch = getchar();
+    tcsetattr(STDIN_FILENO, TCSANOW, &t_old);
+    return ch;
+} // End of function getch
+
+/**
+  * This function gets a password from the user while hiding input.
+  * Uses with getchar()
+  * Depends on termios package
+  * @param The prompt to be displayed to user.
+  * @param Whether asterisks should be displayed in place of password
+  * @return password as a string
+  */
+string getpass(const char *prompt, bool show_asterisk) {
+  const char BACKSPACE=127; // integer value of backspace character
+  const char RETURN=10; // integer value of return character
+  string password;
+  unsigned char ch=0;
+  cout <<prompt<<endl; // Output password prompt
+  while((ch=getch())!=RETURN) { // Get input until return character
+       if(ch==BACKSPACE) { // remove last character if backspace received
+            if(password.length()!=0) {
+              if(show_asterisk) {
+                 cout <<"\b \b";
+               }
+                 password.resize(password.length()-1);
+              }
+         }
+       else {
+             password+=ch;
+             if(show_asterisk) { // Display asterisk instead of input character
+                 cout <<'*';
+               }
+         }
+    }
+  cout << endl;
+  return password;
+} // End of function getpass
 
 
 /**
-  * This function writes to the configuration file to save the
-  * current configuration.
-  *
-  * @return Boolean indicating whether loading of values was successful.
+  * This function gets a plain text string and converts it into hexadecimal.
+  * Each individual character is converted into two hex characters
+  * @param plain text string
+  * @return string as hexadecimal
   */
-bool writeConfig(){ // TODO
+  string string_to_crypt(const char x[]) {
+    string hexString;
+    stringstream sstream;
+    int i = 0;
+    int hexLength;
+    while (x[i] != '\0') {
+      sstream << hex << (int)x[i] + i + 1;
+      i++;
+    }
+    hexString = sstream.str();
+    hexLength = hexString.length();
+    for (int j = 0; j < hexLength; j++) {
+      hexString[j] = (int)hexString[j] + 20-j;
+    }
+    cout << endl;
+    return hexString;
+  } // End of function string_to_crypt
 
-} // End of function writeConfig.
-
-
-
+/**
+  * This function gets a hexadecimal string and converts it into plain text.
+  * Each individual character is converted into two hex characters
+  * @param hexadecimal string of even length
+  * @return string as plain text
+  */
+  string crypt_to_string(const char x[]) {
+    string plainString = "";
+    char hex[2];
+    char hexCharArr[64];
+    int i = 0;
+    int j = 0;
+    while (x[j] != '\0') {
+      hexCharArr[j] =  (char)((int)x[j] - 20 + j);
+      j++;
+    }
+    hexCharArr[j] = '\0';
+    while (x[i] != '\0') {
+      hex[0] = hexCharArr[ i ];
+      hex[1] = hexCharArr[ i+1 ];
+      plainString = plainString + (char)(stoi(hex,nullptr,16) - i/2 - 1);
+      i += 2;
+    }
+    return plainString;
+  } // End of function crypt_to_string
 
 /**
   * This function is the callback routine for onem2m::startHttpServer.
@@ -478,3 +613,4 @@ onem2m::onem2mResponseStatusCode callbackNotification(
   return onem2m::rcOK;
 
 } // End of callbackNotification function
+
