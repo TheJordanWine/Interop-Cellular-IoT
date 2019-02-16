@@ -23,19 +23,21 @@ html(lang="en")
                         a(class="waves-effect waves-light btn logout" href="/logout")
                             i.material-icons.left power_settings_new
                             | Logout
-        h2 Welcome
-        p Click on any of the Application Entity Buttons to see their respective data
-        br
-        each ae in pugAENames
-            .row
-                .col.s12.m6
-                    .card.blue-grey.darken-1
-                        .card-content.white-text
-                            span.card-title=ae
-                        .card-action
-                            a(class="waves-effect waves-light btn orange darken-2 monitor-data" href=`/data?ae=${ae}`) Monitor Data
-                            a(class="waves-effect waves-light btn red" onclick=`deleteResource('${ae}')`)
-                                i.material-icons.left delete
-                                | Delete
-                            a(class="waves-effect waves-light btn disabled ping-data" href=`/ping?ae=${ae}`) Ping for data
+        main 
+            h2 Welcome
+            p Click on any of the Application Entity Buttons to see their respective data
+            br
+            each ae in pugAENames
+                .row
+                    .col.s12.m6
+                        .card.blue-grey.darken-1
+                            .card-content.white-text
+                                span.card-title=ae
+                            .card-action
+                                a(class="waves-effect waves-light btn orange darken-2 monitor-data" href=`/data?ae=${ae}`) Monitor Data
+                                a(class="waves-effect waves-light btn red" onclick=`deleteResource('${ae}')`) Delete
+                                a(class="waves-effect waves-light btn ping-data green", onclick=`pingResource(event, "${ae}")` href=`/ping?ae=${ae}`) Ping for data
+                                a(class="waves-effect waves-light btn ping-data orange", href=`/api/download/${ae}`) Download .csv
         include templates/jsscripts.pug
+        include templates/footer.pug
+        script(src="/js/pingResource.js")

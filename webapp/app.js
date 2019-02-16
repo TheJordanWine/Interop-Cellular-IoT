@@ -25,6 +25,13 @@ var bodyParser = require('body-parser');
 const Onem2m = require("./onem2m");
 
 
+var mongoose = require('mongoose');
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy
+var User = require('./modals/User');
+
+
+
 let serverOptions = {
     // Listen for client data on the following IP:PORT
     LISTEN_PORT: process.env.npm_config_port || 3000,
@@ -136,7 +143,8 @@ var app = express();
     }));
     app.use(bodyParser.urlencoded({extended: true }));
     app.use(xmlparser());
-
+    app.use(passport.initialize())
+    app.use(passport.session())
 
 
 /**
@@ -144,7 +152,7 @@ var app = express();
  */
 require('./routes/index')(app, isAuthenticatedCustomMiddleware,serverOptions);
 
-require('./routes/login')(app);
+require('./routes/login')(app,passport,LocalStrategy, User);
 
 require('./routes/logout')(app);
 
@@ -156,6 +164,10 @@ require('./routes/data')(app,isAuthenticatedCustomMiddleware);
  */
 require('./routes/api/getResource')(app, isAuthenticatedCustomMiddleware, serverOptions);
 
+require('./routes/api/pingResource')(app, isAuthenticatedCustomMiddleware, serverOptions);
+
+require('./routes/api/downloadResource')(app, isAuthenticatedCustomMiddleware, serverOptions);
+
 require('./routes/api/postDelete')(app, serverOptions);
 
 require('./routes/api/postSubscribe')(app,subscribeToServer,serverOptions);
@@ -163,6 +175,26 @@ require('./routes/api/postSubscribe')(app,subscribeToServer,serverOptions);
 require('./routes/api/status')(app, isAuthenticatedCustomMiddleware, serverOptions);
 
 require('./routes/api/monitor')(app, saveDataToJSON);
+
+app.post('/testaccount', function (req, res) {
+    if (req.body.username &&
+        req.body.password) {
+        var userData = {
+            username: req.body.username,
+            password: req.body.password,
+        }
+        //use schema.create to insert data into the db
+        User.create(userData, function (err, user) {
+            if (err) {
+                res.json(err);
+            } else {
+                res.json({
+                    message: "created.."
+                })
+            }
+        });
+    }
+});
 
 
 

@@ -81,9 +81,9 @@ html(lang="en")
                             #cardDiv.card.z-depth-4
                                 .card-title.red.white-text
                                     .valign-wrapper.center(style='height:75px;')
-                                        .valign(style='width:100%') Interop Cellular Dashboard Login
+                                        .valign(style='width:100%') Interop Cellular Dashboard Register
                                 .card-content
-                                    form(action='/login', method='post')
+                                    form(action='/register', method='post')
                                         .row
                                             .input-field.col.s12
                                                 i.material-icons.prefix account_box
@@ -96,9 +96,9 @@ html(lang="en")
                                                 label(for='password') Password
                                         .row
                                             .input-field.col.s12
-                                                a(href="/register") Register
+                                                a(href="/login") Login
                                         .card-action.right-align
                                             button.waves-effect.waves-light.btn.red(type='submit', name='action', style='width: 100%')
-                                                | Login
+                                                | Register
 
         include templates/jsscripts.pug

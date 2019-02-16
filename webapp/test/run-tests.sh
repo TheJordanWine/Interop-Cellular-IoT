@@ -22,11 +22,19 @@ if ls webapp >/dev/null; then
     serverPid=$!
     ps $serverPid && echo "Server running on pid: $serverPid"
 
+    # sleep a bit to let to OM2M server start
+    echo "Waiting for OM2M to finish initializing"
+    sleep 5
+
     # Next start the webapp
     # Navigate to webapp root dir
     cd ../../webapp
     npm start &
-    webAppPid=$1
+    webAppPid=$!
+    
+    sleep 5
+    
+    curl --request POST --url http://localhost:3000/register --header 'content-type: application/x-www-form-urlencoded' --data 'username=admin&password=admin'
 
     # We'll skip installing because we assume Travis has already installed
     # npm install
@@ -39,7 +47,7 @@ if ls webapp >/dev/null; then
 
 
     # Stop the server
-    kill $serverPid
+    kill $serverPid || echo 
 
     # Stop the webapp
     kill $webAppPid
