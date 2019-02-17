@@ -84,3 +84,26 @@ echo "Testing Loading of Configuration from settings.config"
 ./main &
 sleep 1
 kill $!
+
+echo "Testing password obfuscation with *"
+./main -p <<< "password"  &
+sleep 1
+kill $!
+
+echo "Testing saving client configurations"
+./main -a supercool -s &
+sleep 1
+kill $!
+
+./main &
+sleep 1
+kill $!
+
+echo "Testing password format"
+./main -p <<< "pass word" &
+sleep 1
+kill $!
+
+./main -p <<< "p@5sw^&%rd"&
+sleep 1
+kill $!

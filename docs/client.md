@@ -25,6 +25,7 @@ http://localhost:8080/in-cse
 -- in-name
     -- MY_METER
          -- DATA           <--- where data will be sent
+         -- PING_METER     <--- where to post to receive Bi-Directional calls from webapp
          -- DESCRIPTOR     <--- describes the data
             .cin870875431  
 ```
@@ -105,8 +106,29 @@ http://localhost:8080/in-cse
 
 ## How to run
 
-*The following syntax shows how to run the executable binary file named "main":
+*The following syntax shows how to run the executable binary file named "main" with default parameters:
 
 ```bash
   ./main
+```
+
+*The default parameters are shown below along with optional command-line arguments to change such default values:
+
+```
+-h <hostName> = "127.0.0.1:8080"      # The IP:Port of OM2M server.
+-l <loginCred> = "admin:admin"        # The OM2M Server login credentials.
+-n <aeName> = "MY_METER"              # Name of the AE Resource to create.
+-a <aeAppId> = "app1"                 # Name of the AE App Id.
+-c <contName> = "DATA"                # Data Container Name.
+-L <location> = "Home"                # Location of Utility Meter.
+-s <saveConfig> = false               # Save config settings to file.
+-r <cseRootAddr> = "/in-cse/in-name"  # SP-Relative address.
+-d <secondsToDelay> = 10              # Seconds between meter-value updates.
+-r <runtime> = 2                      # Run application for 2 minutes.
+```
+
+*The following syntax shows how to run the application with some flags set.
+
+```bash
+./main -h 192.168.1.100:8080 -l lab:lab123 -n MY_METER -d 30 -r 5 -s
 ```
