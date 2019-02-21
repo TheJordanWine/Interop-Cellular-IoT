@@ -27,7 +27,9 @@ void getResource();
 void createMyMeter();
 void createDescriptorContainer();
 void createDataContainer();
-/**
+void sendData();
+
+  /**
    * Main function, program entry point.
    */
 int main(int argc, char *argv[])
@@ -43,6 +45,9 @@ int main(int argc, char *argv[])
 
     //Creates a data container for MY_METER
     createDataContainer();
+    
+    //Send data to MY_METER's container 
+    sendData();
     
     return 0;
 }
@@ -133,6 +138,30 @@ void createDataContainer()
     curl_easy_setopt(hnd, CURLOPT_HTTPHEADER, headers);
 
     curl_easy_setopt(hnd, CURLOPT_POSTFIELDS, "<m2m:cnt xmlns:m2m=\"http://www.onem2m.org/xml/protocols\" rn=\"DATA\"></m2m:cnt>");
+
+    CURLcode ret = curl_easy_perform(hnd);
+    if (ret != CURLE_OK)
+    {
+        fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(ret));
+    }
+
+    /* always cleanup */
+    curl_easy_cleanup(hnd);
+}
+
+void sendData()
+{
+    CURL *hnd = curl_easy_init();
+
+    curl_easy_setopt(hnd, CURLOPT_CUSTOMREQUEST, "POST");
+    curl_easy_setopt(hnd, CURLOPT_URL, "http://127.0.0.1:8080/~/in-cse/in-name/MY_METER/DATA");
+
+    struct curl_slist *headers = NULL;
+    headers = curl_slist_append(headers, "x-m2m-origin: admin:admin");
+    headers = curl_slist_append(headers, "content-type: application/json;ty=4");
+    curl_easy_setopt(hnd, CURLOPT_HTTPHEADER, headers);
+
+    curl_easy_setopt(hnd, CURLOPT_POSTFIELDS, "{\"m2m:cin\": {\"cnf\": \"application/text\",\"con\": \"{\\\"kWH\\\": \\\"9001\\\"}\"}}");
 
     CURLcode ret = curl_easy_perform(hnd);
     if (ret != CURLE_OK)
