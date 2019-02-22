@@ -17,3 +17,9 @@ matrix:
         chrome: stable
       install: ./webapp/install-dependencies.sh
       script: ./webapp/test/run-tests.sh
+
+    - language: cpp
+      compiler: gcc
+      script:
+        - ./client/src/ClientBuild.sh
+        - ./client/src/TestMeterMain.sh
