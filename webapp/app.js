@@ -27,8 +27,9 @@ const Onem2m = require("./onem2m");
 
 var mongoose = require('mongoose');
 var passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy
+var LocalStrategy = require('passport-local').Strategy;
 var User = require('./modals/User');
+var om2mData = require('./modals/Data');
 
 
 
@@ -174,7 +175,14 @@ require('./routes/api/postSubscribe')(app,subscribeToServer,serverOptions);
 
 require('./routes/api/status')(app, isAuthenticatedCustomMiddleware, serverOptions);
 
-require('./routes/api/monitor')(app, saveDataToJSON);
+require('./routes/api/monitor')(app, saveDataToJSON, om2mData);
+var test = new om2mData({
+    date: new Date().toLocaleDateString(),
+    data: 'this is a test'
+});
+test.save(function() {
+    console.log('it should save ? ');
+})
 
 app.post('/testaccount', function (req, res) {
     if (req.body.username &&

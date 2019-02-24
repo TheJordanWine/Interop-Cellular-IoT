@@ -1,7 +1,7 @@
-const mongoose = require('mongoose')
-const bcrypt = require('bcryptjs')
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
-mongoose.connect('mongodb://localhost/nodeauth')
+mongoose.connect('mongodb://localhost/nodeauth');
 
 
 //User Schema
