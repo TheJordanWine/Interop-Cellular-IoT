@@ -116,15 +116,15 @@ http://localhost:8080/in-cse
 
 ```
 -h <hostName> = "127.0.0.1:8080"      # The IP:Port of OM2M server.
--l <loginCred> = "admin:admin"        # The OM2M Server login credentials.
 -n <aeName> = "MY_METER"              # Name of the AE Resource to create.
 -a <aeAppId> = "app1"                 # Name of the AE App Id.
 -c <contName> = "DATA"                # Data Container Name.
--L <location> = "Home"                # Location of Utility Meter.
+-l <location> = "Home"                # Location of Utility Meter.
 -s <saveConfig> = false               # Save config settings to file.
 -r <cseRootAddr> = "/in-cse/in-name"  # SP-Relative address.
 -d <secondsToDelay> = 10              # Seconds between meter-value updates.
--r <runtime> = 2                      # Run application for 2 minutes.
+-t <runtime> = 2                      # Run application for 2 minutes.
+-p                                    # Prompt the user for the password. 
 ```
 
 *The following syntax shows how to run the application with some flags set.
