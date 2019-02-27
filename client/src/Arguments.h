@@ -62,6 +62,7 @@ class Arguments {
 
     void parseFlags(char ** argv, int argc);
     void setDefaults();
+    void printHelp();
     int getch();
     string getpass(const char *prompt, bool show_asterisk);
 
