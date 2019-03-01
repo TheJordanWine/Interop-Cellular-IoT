@@ -21,6 +21,15 @@ if (!!statusButton) {
   });
 }
 
+var dateChanger = document.getElementById('dateChanger');
+if(!!dateChanger) {
+  dateChanger.addEventListener('change', function() {
+    window.currentDateSelected = dateChanger.value;
+  });
+}
+
+
+
 var intervalJSONGetter = function intervalJSONGetter() {};
 /**
  * Functionaitly to change to play to stop and stop to play
@@ -82,9 +91,13 @@ function updateChart(AE_JSON) {
 }
 
 function getJSON() {
+  var url = "/api/get/" + resourceName;
+  if(typeof window.currentDateSelected !== 'undefined') {
+    url += '?currentDate=' + window.currentDateSelected;
+  } 
   $.ajax({
     method: "GET",
-    url: "/api/get/" + resourceName,
+    url: url,
     success: function success(data) {
       data = data.reverse();
       data = data.slice(0, limitChart);
