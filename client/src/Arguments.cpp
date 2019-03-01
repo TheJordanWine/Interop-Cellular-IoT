@@ -199,6 +199,19 @@ void Arguments::parseFlags(char ** argv, int argc) {
         cout << "\nConfiguration will be saved: ";
         saveConfig = true;
       }
+      else if (strcmp(argv[i],"-u") == 0) { // Username flag
+          cout << "\nCommand line arg passed for Username: ";
+          cout << argv[i+1] << endl;
+          if (vc.isValidName(argv[i+1])) { // Verify proper format
+              username = argv[i+1];    // set username to the next argument
+          }
+          else {
+              cout << "Invalid argument for username - " << argv[i+1]
+              << "\n   Exiting...\n";
+              successful = false;
+              return;
+          }
+      }
       else if (strcmp(argv[i],"-help") == 0) {// Help manual flag
         printHelp();
       }
