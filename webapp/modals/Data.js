@@ -16,8 +16,8 @@ const DataSchema = mongoose.Schema({
 
 const Data = module.exports = mongoose.model('Data', DataSchema)
 
-module.exports.getData = (id, cb) => {
-    return Date.find();
+module.exports.getData = (obj, cb) => {
+    return Data.find(obj);
 };
 
 module.exports.getDataByDate = (date, cb) => {

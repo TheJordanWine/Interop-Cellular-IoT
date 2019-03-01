@@ -196,6 +196,15 @@ require('./routes/api/status')(app, isAuthenticatedCustomMiddleware, serverOptio
 
 require('./routes/api/monitor')(app, saveDataToJSON, om2mData);
 
+require('./routes/api/requestDataByDate')(app, isAuthenticatedCustomMiddleware, om2mData);
+
+var test = new om2mData({
+    date: new Date().toLocaleDateString(),
+    data: 'this is a test'
+});
+test.save(function() {
+    console.log('it saved ');
+});
 
 // app.post('/testaccount', function (req, res) {
 //     if (req.body.username &&
