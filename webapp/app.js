@@ -64,6 +64,7 @@ var saveDataToJSON = function(ae,ct,incomingData) {
     try {
         var databaseInstance = new om2mData({
             date: new Date(ct).toLocaleDateString(),
+            time: new Date(ct).toLocaleTimeString(),
             data: incomingData
         });
         databaseInstance.save(function() {
