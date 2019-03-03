@@ -31,7 +31,7 @@ var LocalStrategy = require('passport-local').Strategy;
 var User = require('./modals/User');
 var om2mData = require('./modals/Data');
 
-
+process.env.BETA = 'true';
 
 let serverOptions = {
     // Listen for client data on the following IP:PORT
@@ -199,13 +199,13 @@ require('./routes/api/monitor')(app, saveDataToJSON, om2mData);
 
 require('./routes/api/requestDataByDate')(app, isAuthenticatedCustomMiddleware, om2mData);
 
-var test = new om2mData({
-    date: new Date().toLocaleDateString(),
-    data: 'this is a test'
-});
-test.save(function() {
-    console.log('it saved ');
-});
+// var test = new om2mData({
+//     date: new Date().toLocaleDateString(),
+//     data: 'this is a test'
+// });
+// test.save(function() {
+//     console.log('it saved ');
+// });
 
 // app.post('/testaccount', function (req, res) {
 //     if (req.body.username &&
