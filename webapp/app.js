@@ -27,10 +27,11 @@ const Onem2m = require("./onem2m");
 
 var mongoose = require('mongoose');
 var passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy
+var LocalStrategy = require('passport-local').Strategy;
 var User = require('./modals/User');
+var om2mData = require('./modals/Data');
 
-
+process.env.BETA = 'true';
 
 let serverOptions = {
     // Listen for client data on the following IP:PORT
@@ -56,6 +57,26 @@ var saveDataToJSON = function(ae,ct,incomingData) {
 
     //Full path to the JSON data file
     var dataFile = path.resolve(__dirname + '/' + dataFolder + '/data.json');
+
+    /**
+     * Save to database
+     */
+    try {
+        var databaseInstance = new om2mData({
+            date: new Date(ct).toLocaleDateString(),
+            time: new Date(ct).toLocaleTimeString(),
+            data: incomingData
+        });
+        databaseInstance.save(function() {
+            console.log('saved succesfully to databse');
+        });
+    }catch(e) {
+        console.log('unable to save to database');
+        console.log(e);
+    }
+    
+
+
 
     //Append the data if file exists
     if(fs.existsSync(dataFile)) {
@@ -174,27 +195,37 @@ require('./routes/api/postSubscribe')(app,subscribeToServer,serverOptions);
 
 require('./routes/api/status')(app, isAuthenticatedCustomMiddleware, serverOptions);
 
-require('./routes/api/monitor')(app, saveDataToJSON);
+require('./routes/api/monitor')(app, saveDataToJSON, om2mData);
 
-app.post('/testaccount', function (req, res) {
-    if (req.body.username &&
-        req.body.password) {
-        var userData = {
-            username: req.body.username,
-            password: req.body.password,
-        }
-        //use schema.create to insert data into the db
-        User.create(userData, function (err, user) {
-            if (err) {
-                res.json(err);
-            } else {
-                res.json({
-                    message: "created.."
-                })
-            }
-        });
-    }
-});
+require('./routes/api/requestDataByDate')(app, isAuthenticatedCustomMiddleware, om2mData);
+
+// var test = new om2mData({
+//     date: new Date().toLocaleDateString(),
+//     data: 'this is a test'
+// });
+// test.save(function() {
+//     console.log('it saved ');
+// });
+
+// app.post('/testaccount', function (req, res) {
+//     if (req.body.username &&
+//         req.body.password) {
+//         var userData = {
+//             username: req.body.username,
+//             password: req.body.password,
+//         }
+//         //use schema.create to insert data into the db
+//         User.create(userData, function (err, user) {
+//             if (err) {
+//                 res.json(err);
+//             } else {
+//                 res.json({
+//                     message: "created.."
+//                 })
+//             }
+//         });
+//     }
+// });
 
 
 

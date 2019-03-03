@@ -19,20 +19,23 @@ html(lang="en")
         -var pugAE = AEName;
         .container(style="max-width: 700px;")
             .row
-                .col-12
+                .col.s12
                     h2= 'Data View for ' + pugAE
             .row    
-                .col-1
+                .col.s1
                     a(class="waves-effect waves-light btn red" href="/" )
                             i.material-icons arrow_back
-                .col-1 
+                .col.s1 
                     button#resume(class="waves-effect waves-light btn")
                         i.material-icons play_arrow
+                .col.s10
+                        button(id="dateChanger" class="waves-effect waves-light btn datepicker blue") 
+                            i.material-icons date_range
             .row
-                .col-1
+                .col.s12
                     label Enter graph range (5-100):
             .row
-                .col-1
+                .col.s12
                     p.range-field
                         input#range(type="range" min="5" max="100")
             canvas#myChart(width="400" height="400")
