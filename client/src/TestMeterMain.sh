@@ -32,13 +32,8 @@ echo "Testing hostname input: 123.123.123.123:1234"
 sleep 1
 kill $!
 
-echo "Testing loginCred input: admin:password "
-./main -l admin:password  &
-sleep 1
-kill $!
-
 echo "Testing location input: Tempe "
-./main -L Tempe   &
+./main -l Tempe   &
 sleep 1
 kill $!
 
@@ -58,7 +53,7 @@ sleep 1
 kill $!
 
 echo "Testing all inputs: "
-./main -a appID -c contName -d 5 -h 123.123.123.123:1234 -l admin:password -L Tempe -n aeName -r /cseRootAddr -t 1 &
+./main -a appID -c contName -d 5 -h 123.123.123.123:1234 -l Tempe -n aeName -r /cseRootAddr -t 1 &
 sleep 1
 kill $!
 

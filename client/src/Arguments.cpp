@@ -199,6 +199,22 @@ void Arguments::parseFlags(char ** argv, int argc) {
         cout << "\nConfiguration will be saved: ";
         saveConfig = true;
       }
+      else if (strcmp(argv[i],"-u") == 0) { // Username flag
+          cout << "\nCommand line arg passed for Username: ";
+          cout << argv[i+1] << endl;
+          if (vc.isValidName(argv[i+1])) { // Verify proper format
+              username = argv[i+1];    // set username to the next argument
+          }
+          else {
+              cout << "Invalid argument for username - " << argv[i+1]
+              << "\n   Exiting...\n";
+              successful = false;
+              return;
+          }
+      }
+      else if (strcmp(argv[i],"-help") == 0) {// Help manual flag
+        printHelp();
+      }
       else { // invalid flag
         cout << "Invalid flag  - " << argv[i]
         << "\n   Exiting...\n";
@@ -306,3 +322,28 @@ string Arguments::getpass(const char *prompt, bool show_asterisk) {
   cout << endl;
   return password;
 } // End of function getpass
+
+/**
+  * This function prints the help manual for the argument flags
+  */
+void Arguments::printHelp() {
+  cout << "When running the client, it will automatically load the values stored in the settings.config file.\n"
+  << "Argument flags can be used to modify any of the client's settings.\n"
+  << "These configuration changes can be saved to the settings.config File.\n"
+  << "Below is a list of all argument flags and their corresponding setting:\n"
+  << "-help\t\t\t:\tPrints this list\n"
+  << "-a <name>\t\t:\tAE App ID\n"
+  << "-c <name>\t\t:\tContainer Name\n"
+  << "-d <seconds>\t\t:\tDelay between communications in seconds\n"
+  << "-h <IPaddress:port>\t:\tHost Name\n"
+  << "-l <location>\t\t:\tLocation\n"
+  << "-n <name>\t\t:\tAE Resource Name\n"
+  << "-p\t\t\t:\tpassword    -   Will prompt for entry\n"
+  << "-r <filepath>\t\t:\tCSE Root address\n"
+  << "-t <minutes>\t\t:\tRuntime in Minutes\n"
+  << "-s\t\t\t:\tSave new configurations to the configuration file\n\n"
+  << "Example:\n"
+  << "./main -a appID -c contName -d 5 -h 123.123.123.123:1234 -l Tempe -n aeName -p -r /cseRootAddr -t 1 -s\n";
+
+
+}
