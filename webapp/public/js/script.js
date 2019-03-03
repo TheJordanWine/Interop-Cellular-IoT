@@ -93,7 +93,7 @@ function updateChart(AE_JSON) {
 function getJSON() {
   var url = "/api/get/" + resourceName;
   if(typeof window.currentDateSelected !== 'undefined') {
-    url += '?currentDate=' + window.currentDateSelected;
+    url += '?currentDate=' + new Date(window.currentDateSelected).toLocaleDateString();
   } 
   $.ajax({
     method: "GET",
