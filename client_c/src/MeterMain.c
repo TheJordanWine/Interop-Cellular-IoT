@@ -16,9 +16,15 @@
  */
 
 // Imports
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include "onem2m_http.h"
+
+// Set parameter values
+const char* from = "FromValue";
+const char* host = "127.0.0.1";
+uint16_t port = 8080;
 
 /**
   * Main function, program entry point.
@@ -30,7 +36,29 @@ int main (int argc, char* argv[]) {
 
   // Start an HTTP session
   onem2m_http_sess_start();
-  
-  // TODO
+
+  // Configure the from value
+  onem2m_set_from( from );
+
+  // Start an HTTP connection
+  onem2m_http_connect( host , port );
+
+  // Create meter resource object
+
+  // Perform oneM2M operations using onem2m_http_retrieve(),
+  // onem2m_http_create(), and onem2m_http_update()
+
+  // Use the callback function provided to process the results of the operation
+
+  // Once the callback has been processed release the HTTP connection
+  if (true) {
+    onem2m_http_disconnect();
+  }
+
+  // HTTP sessions can be kept open for reuse or closed
+  if (false) {
+    onem2m_http_sess_end();
+
+  }
 
 } // End of main function
