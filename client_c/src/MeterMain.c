@@ -57,11 +57,11 @@
 
 // The following keys identify configurations that may be put in the
 // file http_config.json to configure the application behavior
-#define APN_KEY "apn" // Required string
+#define APN_KEY "apn" // Required string . APN is Access Point Name
 #define APN_USERNAME_KEY "apn_username" // Required string
 #define APN_PASSWORD_KEY "apn_password" // Required string
-#define use_https_KEY	"use_https" // Required boolean. Set to true for https or false for http
-#define use_psk_KEY		"use_psk" // Required boolean. Read if use_https is true. Set to true for PSK or false for certificate HTTPS
+#define USE_HTTPS_KEY	"use_https" // Required boolean. Set to true for https or false for http
+#define USE_PSK_KEY		"use_psk" // Required boolean. Read if use_https is true. Set to true for PSK or false for certificate HTTPS
 #define SERVER_ADDRESS_KEY "server_address" // Required string. IP address or DNS name for CSE
 #define SERVER_PORT_KEY "server_port" // Required number. Port number on CSE
 #define SERVER_PATH_KEY "server_path" // Required string. OneM2M address for CSE base
@@ -719,8 +719,8 @@ int run_ae()
 			got_values &= json_object_has_value_of_type(config_object, APN_KEY, JSONString);
 			got_values &= json_object_has_value_of_type(config_object, APN_USERNAME_KEY, JSONString);
 			got_values &= json_object_has_value_of_type(config_object, APN_PASSWORD_KEY, JSONString);
-			got_values &= json_object_has_value_of_type(config_object, use_https_KEY, JSONBoolean);
-			got_values &= json_object_has_value_of_type(config_object, use_psk_KEY, JSONBoolean);
+			got_values &= json_object_has_value_of_type(config_object, USE_HTTPS_KEY, JSONBoolean);
+			got_values &= json_object_has_value_of_type(config_object, USE_PSK_KEY, JSONBoolean);
 			got_values &= json_object_has_value_of_type(config_object, SERVER_ADDRESS_KEY, JSONString);
 			got_values &= json_object_has_value_of_type(config_object, SERVER_PORT_KEY, JSONNumber);
 			got_values &= json_object_has_value_of_type(config_object, SERVER_PATH_KEY, JSONString);
@@ -733,8 +733,8 @@ int run_ae()
 			ATIS_LOG_ERROR("Couldn't read mandatory configuration values. Problem with config file.");
 			break;
 		}
-		config_use_https = json_object_get_boolean(config_object, use_https_KEY);
-		config_use_psk = json_object_get_boolean(config_object, use_psk_KEY);
+		config_use_https = json_object_get_boolean(config_object, USE_HTTPS_KEY);
+		config_use_psk = json_object_get_boolean(config_object, USE_PSK_KEY);
 
 		ATIS_LOG_INFO("Init DSS API");
 		status = qapi_DSS_Init(QAPI_DSS_MODE_GENERAL);
