@@ -1,10 +1,12 @@
 /**
- * Meter Main Application File for C:  MeterMain.c
+ * Meter Main Prototype Application File for C:  MeterMainPrototype.c
  *
- * This file is the main source code file for the client application.
+ * This file is a prototype source code file for the client application.
  * It utilizes the OS-IoT-BG96 C library to communicate using oneM2M
  * standards for a cellular network.  This class represents the Utility
  * Meter reader and stores values related to such.
+ *
+ * This file has been replaced by the current MeterMain.c, and will likely be discarded.
  *
  * Instructions:
  *     See docs/client.md for the instructions on how to compile and execute
