@@ -1,8 +1,8 @@
-# C++ Client
+# C Client
 
 ## Introduction
 
-The `client` folder will represent the device application. This code can be placed in any resource constrained device, the following project was tested on a raspberry pi model 3 with wifi enabled access.
+The `client_c` folder will represent the device application. This code can be placed in any resource constrained device, the following project was tested on a BG96 with LTE Cat M1 cellular enabled access.
 
 
 ## Archeciture Design
