@@ -2,14 +2,14 @@
 
 ## Introduction
 
-The `client_c` folder will represent the device application. This code can be placed in any resource constrained device, the following project was tested on a BG96 with LTE Cat M1 cellular enabled access.
+The `client_c` folder will represent the device application. This code was designed to be placed on a BG96 with LTE Cat M1 cellular enabled access.
 
 
 ## Archeciture Design
 
 The client application will create an application entity (AE) named: `MY_METER`.
 
-As soon as it gets created, the server will register the AE and have the updated view in
+As soon as it is created, the server will register the AE and have the updated view at
 http://localhost:8080/webpage
 
 ```
@@ -18,7 +18,7 @@ http://localhost:8080/in-cse
     -- MY_METER
 ```
 
-The client will also create a `DESCRIPTOR` and `DATA`. These are containers for describing the DATA as well as sending data to.
+The client will also create a `DESCRIPTOR` and `DATA`. These are containers for describing the device as well as sending data to.
 
 ```
 http://localhost:8080/in-cse
@@ -30,7 +30,7 @@ http://localhost:8080/in-cse
             .cin870875431  
 ```
 
-When the client is ready to send data, it will create a `contentInstance` which is an object that contains a content attriubute with the data to be sent. Example content:
+When the client is ready to send data, it will create a `contentInstance` which is an object that contains a content attribute with the data to be sent. Example content:
 
 ```json
 {
@@ -49,86 +49,32 @@ http://localhost:8080/in-cse
             .cin870875431  
 ```
 
+## Prerequisites
+
+For setup and configuration instructions refer to _Getting Started with Quectel BG96 board_ at [IOT Docs]( https://docs.google.com/document/d/1E091LTgkJBjlXAKSNabQt804qBQCf_KshEoIAmmLL7Y/edit "Team 6 Google Drive")
+
+*A Quectel hardware board that contains the BG96 module.
+
+*A Windows environment setup to communicate with the BG96. 
+
 ## How to install
 
-**Option #1 - Build Script**
+*Clone the Interop-Cellular-IoT repository to a machine connected to a BG96.
 
-*Ensure that the pre-requisites are met:
+*Copy MeterMain.bin and oem_app_path.ini files to the BG96:
 
-  - Debian Linux installed.
-  - The ClientBuild.sh script must be in the client/src repository directory.
-  - The "src" sub-folder is required to contain MeterMain.cpp, UtilityMeter.cpp, and UtilityMeter.h.
-  - The g++ compiler installed.
-  - The "lib/xsd/cxx" subfolder must contain the codesynthesis header files.
-  - The "git" program in order to install the OS-IoT library as a sub-module in the sub-folder "lib/atis-os-iot".
-  - The programs:  libxerces-c-dev, libcurl4-openssl-dev, libssl1.0-dev.
-  - Execute with Sudo or root.
-
-*Execute the script with the command:
-
-```bash
-  sudo sh ClientBuild.sh
-```
-
-**Option #2 - Manual Install**
-
-*Clone the Interop-Cellular-IoT repository to the client:
-```bash
-  git clone https://github.com/TheJordanWine/Interop-Cellular-IoT.git
-```
-
-*Copy the Codesynthesis package headers to /usr/local/include:
-```bash
-  Interop-Cellular-IoT$ sudo cp -r client/lib/xsd /usr/local/include
-```
-
-*Dynamically link the OS-IoT library to our project.
-
-```bash
-  Interop-Cellular-IoT$ cd client/lib
-  Interop-Cellular-IoT/client/lib$ . ./importosiot.sh
-  Interop-Cellular-IoT/client/lib$ cd atis-os-iot
-  Interop-Cellular-IoT/client/lib/atis-os-iot$ make libosiotdyn
-  Interop-Cellular-IoT/client/lib/atis-os-iot$ mkdir ../../src/cdt
-  Interop-Cellular-IoT/client/lib/atis-os-iot$ cp libosiot.so ../../src/
-  Interop-Cellular-IoT/client/lib/atis-os-iot$ cp CDT-*.hxx ../../src/
-  Interop-Cellular-IoT/client/lib/atis-os-iot$ cp onem2m.hxx ../../src/
-  Interop-Cellular-IoT/client/lib/atis-os-iot$ cp cdtHeads.hxx ../../src/
-  Interop-Cellular-IoT/client/lib/atis-os-iot$ cp cdt/*.hxx ../../src/cdt/
-  Interop-Cellular-IoT/client/lib/atis-os-iot$ cd ../../../
-```
-
-*Compile the program with g++
-
-```bash
-  Interop-Cellular-IoT/client/src$ g++ -v -o main MeterMain.cpp UtilityMeter.cpp -Wl,-rpath=. -L. -losiot -lssl -lcrypto -lxerces-c -lcurl -lpthread
-```
+    -Files are located in Interop-Cellular-IoT/client_c/src/bin folder. 
+	-For directions on how to copy files to the BG96, refer to the _Copying Files to BG96_ section of _Getting Started with the SDK for BG96_ at [IOT Docs]( https://docs.google.com/document/d/1bdaJGqPfhoHhJmOrMT27-p9aeQxM8OO03uTmEpWH-no/edit#heading=h.uko3ow9rlo32 "Team 6 Google Drive")
 
 ## How to run
 
-*The following syntax shows how to run the executable binary file named "main" with default parameters:
+*Ensure no unnecessary files are on the BG96
 
-```bash
-  ./main
-```
+Any previous .ini files may prevent the client application from running.
 
-*The default parameters are shown below along with optional command-line arguments to change such default values:
+*Start the BG96 by pressing the power button or restart the BG96 using the following AT command:
 
 ```
--h <hostName> = "127.0.0.1:8080"      # The IP:Port of OM2M server.
--n <aeName> = "MY_METER"              # Name of the AE Resource to create.
--a <aeAppId> = "app1"                 # Name of the AE App Id.
--c <contName> = "DATA"                # Data Container Name.
--l <location> = "Home"                # Location of Utility Meter.
--s <saveConfig> = false               # Save config settings to file.
--r <cseRootAddr> = "/in-cse/in-name"  # SP-Relative address.
--d <secondsToDelay> = 10              # Seconds between meter-value updates.
--t <runtime> = 2                      # Run application for 2 minutes.
--p                                    # Prompt the user for the password. 
+  AT+CFUN=1,1
 ```
 
-*The following syntax shows how to run the application with some flags set.
-
-```bash
-./main -h 192.168.1.100:8080 -l lab:lab123 -n MY_METER -d 30 -r 5 -s
-```
