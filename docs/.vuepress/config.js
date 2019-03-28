@@ -37,7 +37,8 @@ module.exports = {
         sidebar: {
             '/': [
                 ['', 'Introduction'], // Introduction points to README.md
-                ['client.md', 'Client'],
+                ['client.md', 'C++ Client'],
+                ['client_c.md', 'C Client'],
                 ['server.md', 'Server'],
                 ['webapp.md', 'WebApp'],
                 ['testing.md', 'Testing']

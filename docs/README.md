@@ -1,7 +1,7 @@
 # Introduction
 
 
-In this project you will find 3 folders, `client`, `server` and `webapp`
+In this project you will find 4 folders, `client`, `client_c`, `server` and `webapp`
 
 
 
