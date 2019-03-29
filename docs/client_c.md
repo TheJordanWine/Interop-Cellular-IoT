@@ -2,14 +2,14 @@
 
 ## Introduction
 
-The `client_c` folder will represent the device application. This code was designed to be placed on a BG96 with LTE Cat M1 cellular enabled access.
+The `client_c` folder will represent the device application. This is the version of the application that is written in C and can be compiled using a Quectel SDK package.  The compiled executable is inteded to be executed on a Quectel board with BG96 chip.  The BG96 module can provide internet access through LTE-M.  This example uses the AT&T network.  
 
 
 ## Archeciture Design
 
-The client application will create an application entity (AE) named: `MY_METER`.
+The C client application will create an application entity (AE) named: `MY_METER`.
 
-As soon as it is created, the server will register the AE and have the updated view at
+As soon as it gets created, the server will register the AE and have the updated view in
 http://localhost:8080/webpage
 
 ```
@@ -18,7 +18,7 @@ http://localhost:8080/in-cse
     -- MY_METER
 ```
 
-The client will also create a `DESCRIPTOR` and `DATA`. These are containers for describing the device as well as sending data to.
+The C client will also create a `DESCRIPTOR` and `DATA`. These are containers for describing the DATA as well as sending data to.
 
 ```
 http://localhost:8080/in-cse
@@ -30,7 +30,7 @@ http://localhost:8080/in-cse
             .cin870875431  
 ```
 
-When the client is ready to send data, it will create a `contentInstance` which is an object that contains a content attribute with the data to be sent. Example content:
+When the client is ready to send data, it will create a `contentInstance` which is an object that contains a content attriubute with the data to be sent. Example content:
 
 ```json
 {
@@ -77,4 +77,3 @@ Any previous .ini files may prevent the client application from running.
 ```
   AT+CFUN=1,1
 ```
-
