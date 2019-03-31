@@ -1,0 +1,16 @@
+{
+  "apn": "AccessPointName",
+  "apn_username": "admin",
+  "apn_password": "admin",
+  "use_https": false,
+  "use_psk": false,
+  "server_address": "127.0.0.1",
+  "server_port": 8080,
+  "server_path": "/in-cse/in-name",
+  "ae_from_id": "app1",
+  "ae_resource_name": "MY_METER",
+  "container_resource_name": "DATA",
+  "app_id": "app1",
+  "dns_pri_v4": "",
+  "dns_sec_v4": "",
+}
