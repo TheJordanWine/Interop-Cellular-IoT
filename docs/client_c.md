@@ -51,11 +51,19 @@ http://localhost:8080/in-cse
 
 ## Prerequisites
 
-For setup and configuration instructions refer to _Getting Started with Quectel BG96 board_ at [IOT Docs]( https://docs.google.com/document/d/1E091LTgkJBjlXAKSNabQt804qBQCf_KshEoIAmmLL7Y/edit "Team 6 Google Drive")
+The following are prerequisites to run custom IoT software utilizing the OS-IoT-BG96 C library on the BG96 hardware using an LTE network.  
 
-*A Quectel hardware board that contains the BG96 module.
+* A Quectel UMTS&LTE Evaluation board obtained from Quectel Wireless Solutions.  
+* A BG96 module for the Evaluation board obtained from Quectel. 
+* An LTE antenna and GPS that connects to the BG96.  
+* A SIM card from a carrier for an LTE network.  
+* 2x USB-to-serial connections for communication with the BG96 hardware. 
+* USB cable for power to the BG96 board. 
+* A windows environment to set up communication with the BG96 board.  
+* The SDK for the BG96 board obtained from Quectel.  
+* Upgraded firmware to 3.0 on the BG96.  
 
-*A Windows environment setup to communicate with the BG96. 
+Note that the SDK package contains several tools for communicating with the BG96 hardware.  The SDK also contains several example C programs and build scripts to compile a custom C IoT application.  
 
 ## How to install
 
