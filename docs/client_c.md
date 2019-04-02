@@ -67,20 +67,32 @@ Note that the SDK package contains several tools for communicating with the BG96
 
 ## How to install
 
-*Clone the Interop-Cellular-IoT repository to a machine connected to a BG96.
+* Clone the Interop-Cellular-IoT repository to a machine connected to a BG96.
 
-*Copy MeterMain.bin and oem_app_path.ini files to the BG96:
+```
+git clone https://github.com/TheJordanWine/Interop-Cellular-IoT.git
+```
 
-    -Files are located in Interop-Cellular-IoT/client_c/src/bin folder. 
-	-For directions on how to copy files to the BG96, refer to the _Copying Files to BG96_ section of _Getting Started with the SDK for BG96_ at [IOT Docs]( https://docs.google.com/document/d/1bdaJGqPfhoHhJmOrMT27-p9aeQxM8OO03uTmEpWH-no/edit#heading=h.uko3ow9rlo32 "Team 6 Google Drive")
+* Compile the client_c source code from the repository.  
+	** Use the SDK obtained from Quectel in the Prerequisites section.  
+
+* Verify that an executable MeterMain.bin and an oem_app_path.ini were generated.  
+
+* Ensure that the oem_app_path.ini contains just a single string: 
+
+```
+/datatx/MeterMain.bin
+```
+
+* Copy the executable MeterMain.bin and oem_app_path.ini files to the BG96.
+	** QEFS Explorer or QFLOG tools obtained from Quectel can assist with file transfers to the BG96.  
 
 ## How to run
 
-*Ensure no unnecessary files are on the BG96
+* Ensure no unnecessary files are on the BG96. 
+	** Any previous .ini files pointed to other applications may prevent the client application from running.
 
-Any previous .ini files may prevent the client application from running.
-
-*Start the BG96 by pressing the power button or restart the BG96 using the following AT command:
+* Restart the BG96 by pressing the power button or restart the BG96 using the following AT command:
 
 ```
   AT+CFUN=1,1
