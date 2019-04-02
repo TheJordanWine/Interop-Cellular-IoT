@@ -560,18 +560,14 @@ qapi_Status_t http_connect_with_retry(const char * host, uint16_t port) {
 	return status;
 }
 
-// This function is not part of the library,
-// but is referenced to avoid re-writing the function.
-void _onem2m_uitoa(unsigned int num, char * str);
-
-// To change this client to report data from a different source you
-// should rewrite this function to retrieve your data from its source.
-//void get_content_string(char * str) {
-//	unsigned int r = rand() %10000;
-//	_onem2m_uitoa(r, str);
-//}
+// Use a random value from 0-10000 for the meter value. 
+// Include JSON formatted text for the kWH meter value. 
 void get_content_string(char * str) {
-	unsigned int r = rand() %10000;
+	
+	// Generate a random int r.  
+	unsigned int r = rand() %10000; 
+	
+	// Include the int r in a JSON format string.  
 	snprintf(str, MAX_CONTENT_LEN, "{\"kWH\": %u}", r);
 }
 
