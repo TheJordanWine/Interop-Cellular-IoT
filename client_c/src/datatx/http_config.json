@@ -12,5 +12,5 @@
   "container_resource_name": "DATA",
   "app_id": "app1",
   "dns_pri_v4": "8.8.8.8",
-  "dns_sec_v4": "8.8.4.4",
+  "dns_sec_v4": "8.8.4.4"
 }
