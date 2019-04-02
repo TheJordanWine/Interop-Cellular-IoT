@@ -373,7 +373,7 @@ static int set_data_call_params(const char * apn, const char * apn_username, con
 
         /* set auth type */
 		param_info.buf_val = NULL;
-        param_info.num_val = QAPI_DSS_AUTH_PREF_PAP_CHAP_BOTH_ALLOWED_E; //PAP and CHAP auth
+        param_info.num_val = 0;   // Don't use PAP/CHAP for auth. 
         ATIS_LOG_INFO("Setting AUTH - %d", param_info.num_val);
         qapi_DSS_Set_Data_Call_Param(dss_h, QAPI_DSS_CALL_INFO_AUTH_PREF_E, &param_info);
 
