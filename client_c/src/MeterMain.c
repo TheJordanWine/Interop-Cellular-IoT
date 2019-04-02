@@ -572,7 +572,7 @@ void _onem2m_uitoa(unsigned int num, char * str);
 //}
 void get_content_string(char * str) {
 	unsigned int r = rand() %10000;
-	snprintf(str, MAX_CONTENT_LEN, "{\"kWH\": %u }", r);
+	snprintf(str, MAX_CONTENT_LEN, "{\"kWH\": %u}", r);
 }
 
 // Send an appropriate HTTP request based on the current state
