@@ -1,7 +1,7 @@
 {
-  "apn": "AccessPointName",
-  "apn_username": "admin",
-  "apn_password": "admin",
+  "apn": "m2m.com.attz",
+  "apn_username": "",
+  "apn_password": "",
   "use_https": false,
   "use_psk": false,
   "server_address": "137.25.182.105",
