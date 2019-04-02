@@ -560,17 +560,16 @@ qapi_Status_t http_connect_with_retry(const char * host, uint16_t port) {
 	return status;
 }
 
-// This function is not part of the library,
-// but is referenced to avoid re-writing the function.
-void _onem2m_uitoa(unsigned int num, char * str);
-
-// To change this client to report data from a different source you
-// should rewrite this function to retrieve your data from its source.
+// Use a random value from 0-10000 for the meter value. 
+// Include JSON formatted text for the kWH meter value. 
 void get_content_string(char * str) {
-	unsigned int r = rand() %10000;
-	_onem2m_uitoa(r, str);
+	
+	// Generate a random int r.  
+	unsigned int r = rand() %10000; 
+	
+	// Include the int r in a JSON format string.  
+	snprintf(str, MAX_CONTENT_LEN, "{\"kWH\": %u}", r);
 }
-
 
 // Send an appropriate HTTP request based on the current state
 qapi_Status_t http_request_using_state() {
@@ -612,6 +611,7 @@ qapi_Status_t http_request_using_state() {
 				return QAPI_ERROR;
 			onem2m_contentInstance_set_contentInfo_string(res, "application/text");
 			get_content_string(content_string);
+			ATIS_LOG_INFO("DEBUG: REPORTING TEXT: %s", content_string);
 			onem2m_contentInstance_set_content_string(res, content_string);
 			status = onem2m_http_create(address, "1234", res, http_cb_buffer);
 			ATIS_LOG_INFO("Create ContentInstance request result = %d", status);
