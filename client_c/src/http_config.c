@@ -42,8 +42,7 @@ char dns_sec_v4[64] = "";
 
 int run() {
   readconfig();
-  buildconfig();
-  return 0;
+  return takeInput();
 }
 
 int buildConfig() {
@@ -104,26 +103,220 @@ int readConfig() {
   }
 
   // Get current configuration values from JSON file and assign
-   strcpy(apn, json_object_get_string(config_object, USE_HTTPS_KEY) );
-   strcpy(apn_username, json_object_get_string(config_object, USE_HTTPS_KEY) );
-   strcpy(apn_password, json_object_get_string(config_object, USE_HTTPS_KEY) );
+   strcpy(apn, json_object_get_string(config_object, APN_KEY) );
+   strcpy(apn_username, json_object_get_string(config_object, APN_USERNAME_KEY) );
+   strcpy(apn_password, json_object_get_string(config_object, APN_PASSWORD_KEY) );
    config_use_https = json_object_get_boolean(config_object, USE_HTTPS_KEY);
    use_psk = json_object_get_boolean(config_object, USE_PSK_KEY);
-   strcpy(server_address, json_object_get_string(config_object, USE_HTTPS_KEY) );
-   strcpy(server_port, json_object_get_string(config_object, USE_HTTPS_KEY) );
-   strcpy(server_path, json_object_get_string(config_object, USE_HTTPS_KEY) );
-   strcpy(ae_from_id, json_object_get_string(config_object, USE_HTTPS_KEY) );
-   strcpy(ae_resource_name, json_object_get_string(config_object, USE_HTTPS_KEY) );
-   strcpy(strcpy(container_resource_name, json_object_get_string(config_object, USE_HTTPS_KEY) );
-   strcpy(app_id, json_object_get_string(config_object, USE_HTTPS_KEY) );
-   strcpy(dns_pri_v4, json_object_get_string(config_object, USE_HTTPS_KEY) );
-   strcpy(dns_sec_v4, json_object_get_string(config_object, USE_HTTPS_KEY) );
+   strcpy(server_address, json_object_get_string(config_object, SERVER_ADDRESS_KEY) );
+   strcpy(server_port, json_object_get_string(config_object, SERVER_PORT_KEY) );
+   strcpy(server_path, json_object_get_string(config_object, SERVER_PATH_KEY) );
+   strcpy(ae_from_id, json_object_get_string(config_object, AE_FROM_ID_KEY) );
+   strcpy(ae_resource_name, json_object_get_string(config_object, AE_RESOURCE_NAME_KEY) );
+   strcpy(strcpy(container_resource_name, json_object_get_string(config_object, CONTAINER_RESOURCE_NAME_KEY) );
+   strcpy(app_id, json_object_get_string(config_object, APP_ID_KEY) );
+   strcpy(dns_pri_v4, json_object_get_string(config_object, DNS_PRI_V4_KEY) );
+   strcpy(dns_sec_v4, json_object_get_string(config_object, DNS_SEC_V4_KEY) );
    return 0;
 
 }
 
-int run() {
-  readconfig();
-  buildconfig();
-  return 0;
+int takeInput(){
+  char menuInput[2];
+  char input[32];
+  while (true) {
+    // Clear Inputs
+    menuInput[0] = 0;
+    menuInput[1] = 0;
+    input[0] = 0
+    printf("\nEnter a command:\n");
+    printf("   1   | Edit %s | Current value: %s\n", APN_KEY, apn);
+    printf("   2   | Edit %s | Current value: %s\n", APN_USERNAME_KEY, apn_username);
+    printf("   3   | Edit %s | Current value: %s\n", APN_PASSWORD_KEY, apn_password);
+    printf("   4   | Edit %s | Current value: %d\n", USE_HTTPS_KEY, use_https);
+    printf("   5   | Edit %s | Current value: %d\n", USE_PSK_KEY, use_psk);
+    printf("   6   | Edit %s | Current value: %s\n", SERVER_ADDRESS_KEY, server_address);
+    printf("   7   | Edit %s | Current value: %d\n", SERVER_PORT_KEY, server_port);
+    printf("   8   | Edit %s | Current value: %s\n", SERVER_PATH_KEY, server_path);
+    printf("   9   | Edit %s | Current value: %s\n", AE_FROM_ID_KEY, ae_from_id);
+    printf("  10   | Edit %s | Current value: %s\n", AE_RESOURCE_NAME_KEY, ae_resource_name);
+    printf("  11   | Edit %s | Current value: %s\n", CONTAINER_RESOURCE_NAME_KEY, container_resource_name);
+    printf("  12   | Edit %s | Current value: %s\n", APP_ID_KEY , app_id);
+    printf("  13   | Edit %s | Current value: %s\n", DNS_PRI_V4_KEY, dns_pri_v4);
+    printf("  14   | Edit %s | Current value: %s\n", DNS_SEC_V4_KEY, dns_sec_v4);
+    printf("s or S | Save Configuration\n");
+    printf("q or Q | Quit (Unsaved configuration will be lost)\n");
+    fgets(menuInput,2,stdin);
+
+    if (menuInput[0] == '0') {
+      if (menuInput[1] == '1') {
+        printf("Enter value for %s: ", APN_KEY)
+        fgets(input,20,stdin);
+        setAPN(&input[0]);
+      }
+      if (menuInput[1] == '2') {
+        printf("Enter value for %s: ", APN_USERNAME_KEY)
+        fgets(input,20,stdin);
+        setUsername(&input[0]);
+      }
+      if (menuInput[1] == '3') {
+        printf("Enter value for %s: ", APN_PASSWORD_KEY)
+        fgets(input,20,stdin);
+        setPassword(&input[0]);
+      }
+      if (menuInput[1] == '4') {
+        printf("Enter value for %s: ", USE_HTTPS_KEY)
+        fgets(input,20,stdin);
+        setUseHTTPS(&input[0]);
+      }
+      if (menuInput[1] == '5') {
+        printf("Enter value for %s: ", USE_PSK_KEY)
+        fgets(input,20,stdin);
+        setUsePSK(&input[0]);
+      }
+      if (menuInput[1] == '6') {
+        printf("Enter value for %s: ", SERVER_ADDRESS_KEY)
+        fgets(input,20,stdin);
+        setAddress(&input[0]);
+      }
+      if (menuInput[1] == '7') {
+        printf("Enter value for %s: ", SERVER_PORT_KEY)
+        fgets(input,20,stdin);
+        setPort(&input[0]);
+      }
+      if (menuInput[1] == '8') {
+        printf("Enter value for %s: ", SERVER_PATH_KEY)
+        fgets(input,20,stdin);
+        setPath(&input[0]);
+      }
+      if (menuInput[1] == '9') {
+        printf("Enter value for %s: ", AE_FROM_ID_KEY)
+        fgets(input,20,stdin);
+        setFrom(&input[0]);
+      }
+
+    }
+
+    else if (menuInput[0] == '1') { // Can be 1 or 1x\
+      if (menuInput[1] == '0') {
+        printf("Enter value for %s: ", AE_RESOURCE_NAME_KEY)
+        fgets(input,20,stdin);
+        setResource(&input[0]);
+      }
+      if (menuInput[1] == '1') {
+        printf("Enter value for %s: ", CONTAINER_RESOURCE_NAME_KEY)
+        fgets(input,20,stdin);
+        setContainer(&input[0]);
+      }
+      if (menuInput[1] == '2') {
+        printf("Enter value for %s: ", APP_ID_KEY)
+        fgets(input,20,stdin);
+        setAppId(&input[0]);
+      }
+      if (menuInput[1] == '3') {
+        printf("Enter value for %s: ", DNS_PRI_V4_KEY)
+        fgets(input,20,stdin);
+        setDnsPriV4(&input[0]);
+      }
+      if (menuInput[1] == '4') {
+        printf("Enter value for %s: ", DNS_SEC_V4_KEY)
+        fgets(input,20,stdin);
+        setDnsSecV4(&input[0]);
+      }
+      else { // Assume 1
+        printf("Enter value for %s: ", APN_KEY)
+        fgets(input,20,stdin);
+        setAPN(&input[0]);
+      }
+    }
+    else if (menuInput[0] == '2') {
+      printf("Enter value for %s: ", )
+      fgets(input,20,stdin);
+      setUsername(&input[0]);
+    }
+    else if (menuInput[0] == '3') {
+      printf("Enter value for %s: ", )
+      fgets(input,20,stdin);
+      setPassword(&input[0]);
+    }
+    else if (menuInput[0] == '4') {
+      printf("Enter value for %s: ", )
+      fgets(input,20,stdin);
+      setUseHTTPS(&input[0]);
+    }
+    else if (menuInput[0] == '5') {
+      printf("Enter value for %s: ", )
+      fgets(input,20,stdin);
+      setUsePSK(&input[0]);
+    }
+    else if (menuInput[0] == '6') {
+      printf("Enter value for %s: ", )
+      fgets(input,20,stdin);
+      setAddress(&input[0]);
+    }
+    else if (menuInput[0] == '7') {
+      printf("Enter value for %s: ", )
+      fgets(input,20,stdin);
+      setPort(&input[0]);
+    }
+    else if (menuInput[0] == '8') {
+      printf("Enter value for %s: ", )
+      fgets(input,20,stdin);
+      setPath(&input[0]);
+    }
+    else if (menuInput[0] == '9') {
+      printf("Enter value for %s: ", )
+      fgets(input,20,stdin);
+      setFrom(&input[0]);
+    }
+    else if (menuInput[0] == 's' || menuInput[0] == 'S') { // Save configuration
+      buildConfig();
+    }
+    else if (menuInput[0] == 'q' || menuInput[0] == 'Q') { // Quit configuration
+      return 0;
+    }
+  }
+}
+
+void setAPN(char* input) {
+  // = input;
+}
+void setUsername(char* input) {
+  // = input;
+}
+void setPassword(char* input) {
+  // = input;
+}
+void setUseHTTPS(char* input) {
+  // = input;
+}
+void setUsePSK(char* input) {
+  // = input;
+}
+void setAddress(char* input) {
+  // = input;
+}
+void setPort(char* input) {
+  // = input;
+}
+void setPath(char* input) {
+  // = input;
+}
+void setFrom(char* input) {
+  // = input;
+}
+void setResource(char* input) {
+  // = input;
+}
+void setContainer(char* input) {
+  // = input;
+}
+void setAppId(char* input) {
+  // = input;
+}
+void setDnsPriV4(char* input) {
+  // = input;
+}
+void setDnsSecV4(char* input) {
+  // = input;
 }
