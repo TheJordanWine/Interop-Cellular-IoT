@@ -10,6 +10,13 @@
   "ae_from_id": "admin:admin",
   "ae_resource_name": "MY_METER",
   "container_resource_name": "DATA",
+  "container_descriptor_name": "DESCRIPTOR",
+  "container_descriptor_value": 
+	{
+	"type":"Utility_Meter",
+	"location":"Home", 
+	"appId":"app1"
+	},
   "app_id": "app1",
   "dns_pri_v4": "8.8.8.8",
   "dns_sec_v4": "8.8.4.4"
