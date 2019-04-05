@@ -178,7 +178,8 @@ TX_BYTE_POOL * byte_pool_p;
 
 onem2m_http_buffer_t http_cb_buffer;
 
-
+// Global variable for keeping track of the Meter Value. Start at 0. 
+int myMeterValue = 0; 
 
 // Power Saving Mode (PSM) storage
 psm_status_msg_type psm_status;
@@ -563,15 +564,20 @@ qapi_Status_t http_connect_with_retry(const char * host, uint16_t port) {
 	return status;
 }
 
-// Use a random value from 0-10000 for the meter value. 
-// Include JSON formatted text for the kWH meter value. 
+// Build the text string to post to the OM2M server. 
+// Use the current reading of global variable myMeterValue.  
 void get_content_string(char * str) {
-	
-	// Generate a random int r.  
-	unsigned int r = rand() %10000; 
-	
-	// Include the int r in a JSON format string.  
-	snprintf(str, MAX_CONTENT_LEN, "{\"kWH\": %u}", r);
+	// Include the myMeterValue in a JSON format string.  
+	snprintf(str, MAX_CONTENT_LEN, "{\"kWH\": %d}", myMeterValue);
+}
+
+// This function is used to increment the global variable myMeterValue.  
+// It adds a random value from 0-20 to the current myMeterValue. 
+void incrementMyMeterValue() {
+	// Generate the random int between 0-20. 
+	int r = rand() %20; 
+	// Add the random value to myMeterValue.  
+	myMeterValue = myMeterValue + r; 
 }
 
 // Send an appropriate HTTP request based on the current state
@@ -859,8 +865,10 @@ int run_ae()
 				if (status == QAPI_OK) {
 					int done_report = 0;
 					do {
-						if (op_state == reporting)
+						if (op_state == reporting) {
 							done_report = 1;
+							incrementMyMeterValue();     // Increment the value of myMeterValue. 
+						}
 						ATIS_LOG_INFO("Doing HTTP request");
 						status = http_request_with_retry();
 						ATIS_LOG_INFO("HTTP Request result =%d",status);
