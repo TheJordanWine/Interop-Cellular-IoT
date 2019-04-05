@@ -279,44 +279,44 @@ int takeInput(){
 }
 
 void setAPN(char* input) {
-  // = input;
+  strcpy(apn,input);
 }
 void setUsername(char* input) {
-  // = input;
+  strcpy(apn_username,input);
 }
 void setPassword(char* input) {
-  // = input;
+  strcpy(apn_password,input);
 }
 void setUseHTTPS(char* input) {
-  // = input;
+  use_https = atoi(input);
 }
 void setUsePSK(char* input) {
-  // = input;
+  use_psk = atoi(input);
 }
 void setAddress(char* input) {
-  // = input;
+  strcpy(server_address,input);
 }
 void setPort(char* input) {
-  // = input;
+    server_port = atoi(input);
 }
 void setPath(char* input) {
-  // = input;
+  strcpy(server_path,input);
 }
 void setFrom(char* input) {
-  // = input;
+  strcpy(ae_from_id,input);
 }
 void setResource(char* input) {
-  // = input;
+  strcpy(ae_resource_name,input);
 }
 void setContainer(char* input) {
-  // = input;
+  strcpy(container_resource_name,input);
 }
 void setAppId(char* input) {
-  // = input;
+  strcpy(app_id,input);
 }
 void setDnsPriV4(char* input) {
-  // = input;
+  strcpy(dns_pri_v4,input);
 }
 void setDnsSecV4(char* input) {
-  // = input;
+  strcpy(dns_sec_v4,input);
 }
