@@ -36,7 +36,7 @@
 #include "qapi_psm.h"
 #include <stdlib.h>
 #include <string.h>
-#include "http_utils.h"
+#include "http_demo_utils.h"
 
 // Configuration file for the application - see list of keys below
 #define HTTP_CONFIG_FILE	"/datatx/http_config.json"
