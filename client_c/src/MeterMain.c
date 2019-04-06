@@ -68,6 +68,7 @@
 #define AE_FROM_ID_KEY "ae_from_id" // Required string. "From" value (X-M2M-Origin) for AE
 #define AE_RESOURCE_NAME_KEY "ae_resource_name" // Required string. Resource name to be used for the AE
 #define CONTAINER_RESOURCE_NAME_KEY "container_resource_name" // Required string. Resource name to be used for the container.
+#define DESCRIPTOR_VALUE_KEY "descriptor_value" // Configurable description for AE
 #define APP_ID_KEY "app_id" // Required string. App-ID to be used for the AE resource
 #define DNS_PRI_V4_KEY "dns_pri_v4" // Optional string. Include to set DNS primary server address (if DNS is used).
 #define DNS_SEC_V4_KEY "dns_sec_v4" // Optional string. Include to set DNS secondary server address.
@@ -94,7 +95,7 @@
 
 #define DATA_CALL_ATTEMPTS 2 // Number of times to attempt to setup a data call before waiting until next scheduled report.
 #define DATA_CALL_RETRY_INTERVAL 20 // Interval (seconds) for initial retries if data call fails
-#define HTTP_ATTEMPTS 2 // Number of times to attempt to setup a data call before waiting until next scheduled report.
+#define HTTP_ATTEMPTS 4 // Number of times to attempt to setup a data call before waiting until next scheduled report.
 #define HTTP_RETRY_INTERVAL 20 // Interval (seconds) for initial retries if http request fails
 #define REQUEST_INTERVAL 60 // Time (seconds) between reports
 
@@ -141,6 +142,8 @@ const psm_err_map_type status_string[] = {
 enum op_state_enum  {
 	create_ae,
 	create_container,
+	create_descriptor,
+	populate_descriptor,
 	reporting
 };
 
@@ -607,6 +610,32 @@ qapi_Status_t http_request_using_state() {
 			ATIS_LOG_INFO("Create container request result = %d", status);
 			onem2m_resource_free(res);
 			break;
+		
+		case create_descriptor:
+			strcpy(&(address[strlen(address)]),"/");
+			strcpy(&(address[strlen(address)]), json_object_get_string(config_object, AE_RESOURCE_NAME_KEY));
+			res = onem2m_resource_allocate_container();
+			if (! res)
+				return QAPI_ERROR;
+			onem2m_container_set_resourceName_string(res, "DESCRIPTOR");
+			status = onem2m_http_create(address, "1234", res, http_cb_buffer);
+			ATIS_LOG_INFO("Create container request result = %d", status);
+			onem2m_resource_free(res);
+			break;
+		case populate_descriptor:
+			strcpy(&(address[strlen(address)]),"/");
+			strcpy(&(address[strlen(address)]), json_object_get_string(config_object, AE_RESOURCE_NAME_KEY));
+			strcpy(&(address[strlen(address)]),"/");
+			strcpy(&(address[strlen(address)]), "DESCRIPTOR");
+			res = onem2m_resource_allocate_contentInstance();
+			if (! res)
+				return QAPI_ERROR;
+			onem2m_contentInstance_set_contentInfo_string(res, "application/text");
+			onem2m_contentInstance_set_content_string(res, json_object_get_string(config_object, DESCRIPTOR_VALUE_KEY));
+			status = onem2m_http_create(address, "1234", res, http_cb_buffer);
+			ATIS_LOG_INFO("Create ContentInstance request result = %d", status);
+			onem2m_resource_free(res);
+			break;
 		case reporting:
 			strcpy(&(address[strlen(address)]),"/");
 			strcpy(&(address[strlen(address)]), json_object_get_string(config_object, AE_RESOURCE_NAME_KEY));
@@ -647,7 +676,7 @@ qapi_Status_t http_request_with_retry() {
 	UINT i;
 	for (i = 0; i< HTTP_ATTEMPTS; i++) {
 		ATIS_LOG_INFO("Try HTTP request # %d", i+1);
-		status = http_request_using_state();
+		status = http_request_using_state(); 
 		if (status == QAPI_OK) {
 			status = wait_for_http_session();
 			if (status == QAPI_OK) {
