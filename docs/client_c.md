@@ -67,10 +67,14 @@ Note that the SDK package contains several tools for communicating with the BG96
 
 ## How to install
 
+<span style="color:blue;"><em>Please make sure you are able to download/install/build the os iot c library before installing the following codebase</em>. </span>
+<span>Instructions can be found</span>
+
+
 * Clone the Interop-Cellular-IoT repository to a machine connected to a BG96.
 
-```
-git clone https://github.com/TheJordanWine/Interop-Cellular-IoT.git
+```sh
+$ git clone https://github.com/TheJordanWine/Interop-Cellular-IoT.git
 ```
 
 * Compile the client_c source code from the repository.  
