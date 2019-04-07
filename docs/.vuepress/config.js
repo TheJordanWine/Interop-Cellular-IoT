@@ -42,7 +42,8 @@ module.exports = {
                 ['server.md', 'Server'],
                 ['webapp.md', 'WebApp'],
                 ['testing.md', 'Testing'],
-                ['contribute.md', 'How to contribute']
+                ['contribute.md', 'How to contribute'],
+                ['osiot.md', 'OS-IoT Library']
             ]
         }
     }
