@@ -41,7 +41,8 @@ module.exports = {
                 ['client_c.md', 'C Client'],
                 ['server.md', 'Server'],
                 ['webapp.md', 'WebApp'],
-                ['testing.md', 'Testing']
+                ['testing.md', 'Testing'],
+                ['contribute.md', 'How to contribute']
             ]
         }
     }
